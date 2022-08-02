@@ -6,6 +6,7 @@ Install conda environment from master_project.yml (Note: This environment was cr
 
 ## Execute
 cd ../src
+
 ./run.sh
 
 Results are by default saved in the `logs` directory.
