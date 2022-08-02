@@ -9,7 +9,7 @@ class PreProcessing:
         self.df.drop(col_to_drop, axis=1, inplace=True)
         
     def remove_nan_values(self, addrs_col, amt_col):
-        print('Total Num of transactions before dropping NaN:', self.df.shape[0])
+        print('\nTotal Num of transactions before dropping NaN:', self.df.shape[0])
         for col in addrs_col:
             # Since NaN values are stored as string 'nan', select rows without 'nan' values
             self.df = self.df[self.df[col].str.contains("\[nan|nan,|, nan|nan]") == False]
@@ -18,7 +18,7 @@ class PreProcessing:
             
         self.df.dropna(inplace=True)
         self.df.reset_index(drop=True, inplace=True)
-        print('Total Num of transactions after dropping NaN:', self.df.shape[0])
+        print('Total Num of transactions after dropping NaN: {}\n'.format(self.df.shape[0]))
 
     def convert_list_to_string(self, convert_list_cols):
         for col in convert_list_cols:
@@ -46,4 +46,11 @@ def segregate_ip_op_addrs(arg, temp_list):
 
             temp_list.append(new_row)
     return temp_list
+
+
+def sum_amounts(_list):
+    amount  = 0
+    for amt in _list:
+        amount += amt
+    return round(amount,1)
 

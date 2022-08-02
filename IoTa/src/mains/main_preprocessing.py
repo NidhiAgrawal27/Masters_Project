@@ -1,3 +1,4 @@
+from operator import index
 import pandas as pd
 import argparse
 import pathlib
@@ -17,12 +18,22 @@ def main():
 
     utils.set_seed(args.seed)
 
+    # Cleaning and preprocessing the data
     df = pd.read_csv(CONFIG['data_path'])
     preprocess = preprocessing.PreProcessing(df)
     preprocess.drop_unnecessary_cols(col_to_drop = ['message_id', 'milestone_index'])
     preprocess.remove_nan_values(addrs_col = ['input_addresses_x', 'output_addresses_y'], amt_col = ['input_amounts_x', 'output_amounts_y'])
     preprocess.convert_list_to_string(convert_list_cols = ['input_addresses_x', 'input_amounts_x', 'output_addresses_y', 'output_amounts_y'])
     preprocess.convert_to_datetime(datetime_cols=['datetime'])
+
+    preprocess.df['num_input_addresses'] = pd.Series(len(_list) for _list in preprocess.df['input_addresses_x'])
+    preprocess.df['num_output_addresses'] = pd.Series(len(_list) for _list in preprocess.df['output_addresses_y'])
+    preprocess.df['sum_input_amounts'] = pd.Series(preprocessing.sum_amounts(_list) for _list in preprocess.df['input_amounts_x'])
+    preprocess.df['sum_output_amounts'] = pd.Series(preprocessing.sum_amounts(_list) for _list in preprocess.df['output_amounts_y'])
+    preprocess.df['sum_input_amounts'] = preprocess.df['sum_input_amounts'].astype(float)
+    preprocess.df['sum_output_amounts'] = preprocess.df['sum_output_amounts'].astype(float)
+    print('\nCLEANED DF:')
+    print(preprocess.df.info())
 
     # Create 'generated_files' directory if it does not exist.
     pathlib.Path(CONFIG["generated_files"]).mkdir(parents=True, exist_ok=True)
@@ -33,13 +44,40 @@ def main():
     temp_list = []
     preprocess.df.apply(preprocessing.segregate_ip_op_addrs, axis=1, temp_list = temp_list)
     segregated_df = pd.DataFrame([pd.Series(row) for row in temp_list])
-    segregated_df.to_csv(CONFIG['generated_files'] + 'segregated_df.csv', index=False)
+
+    # Remove rows where ip and op addresses are exactly same
+    index_names = segregated_df[(segregated_df['input_addresses_x'] == segregated_df['output_addresses_y'])].index
+    segregated_df.drop(index_names, inplace = True)
+    segregated_df.drop_duplicates(inplace=True)
+
+    # Get count of same tuple (ip adrs, op adrs) in segregated df
+    segregated_df['count'] = segregated_df.groupby(['input_addresses_x', 'output_addresses_y'])['input_addresses_x'].transform('count')
 
     # Generate a new file with unique input and output addresses and assign them ids
     df_unique_addrs = pd.DataFrame()
     df_unique_addrs['addresses'] = pd.unique(segregated_df[['input_addresses_x', 'output_addresses_y']].values.ravel())
     df_unique_addrs['id'] = df_unique_addrs.index
     df_unique_addrs.to_csv(CONFIG['generated_files'] + 'unique_addresses.csv', index=False)
+
+    # Adding id corresponding to input addresses in segregated df
+    df_unique_addrs.rename(columns={'addresses': 'input_addresses_x'}, inplace=True)
+    segregated_df = pd.merge(segregated_df, df_unique_addrs, on='input_addresses_x', how='left')
+    segregated_df.rename(columns={'id': 'id_input_addresses_x'}, inplace=True)
+    segregated_df.dropna(inplace=True)
+    segregated_df.drop_duplicates(inplace=True)
+
+    # Adding id corresponding to output addresses in segregated df
+    df_unique_addrs.rename(columns={'input_addresses_x': 'output_addresses_y'}, inplace=True)
+    segregated_df = pd.merge(segregated_df, df_unique_addrs, on='output_addresses_y', how='left')
+    segregated_df.rename(columns={'id': 'id_output_addresses_y'}, inplace=True)
+    segregated_df.dropna(inplace=True)
+    segregated_df.drop_duplicates(inplace=True)
+
+    segregated_df.reset_index(drop=True)
+    segregated_df.to_csv(CONFIG['generated_files'] + 'segregated_iota.csv', index=False)
+    print('\n\nSEGREGATED IP & OP ADDRESSES DF:')
+    print(segregated_df.info())
+
 
 
 if __name__ == "__main__":
