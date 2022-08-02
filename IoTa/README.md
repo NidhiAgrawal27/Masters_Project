@@ -1,12 +1,13 @@
 ### About
 This repository contains the code for analysis of IoTa dataset using clustering techniques.
 
-### Setup
-Install conda environment from master_project.yml
+### Setup and execution on Terminal
+Install and activate conda environment from master_project.yml
 
 Note: This environment was created on an M1 MacBook running macOS and may not work on other systems, see [Requirements](#requirements) below for a list of main dependencies.
 
-### Execute
+Next, execute the following commands:
+
 cd ../src
 
 ./run.sh
