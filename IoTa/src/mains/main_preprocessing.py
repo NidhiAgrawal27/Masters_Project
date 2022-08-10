@@ -7,6 +7,7 @@ from utilities import utils, preprocessing
 
 CONFIG = {
     "data_path": "../data/first_14_days_UTXO_txs_of_IOTA.csv",
+    # "data_path": "../data/sample_data.csv",
     "figure_dir": "../logs/figures/",
     "generated_files": "../logs/generated_files/"
 }
@@ -40,6 +41,12 @@ def main():
 
     preprocess.df.to_csv(CONFIG['generated_files'] + "processed_data.csv", index=False)
 
+    # Generate a new file with unique transaction ids and assign them unique numbers
+    df_unique_tx_id = pd.DataFrame()
+    df_unique_tx_id['transaction_id'] = pd.unique(preprocess.df[['transaction_id']].values.ravel())
+    df_unique_tx_id['transaction_unique_id'] = df_unique_tx_id.index
+    df_unique_tx_id.to_csv(CONFIG['generated_files'] + 'transaction_id.csv', index=False)
+
     # Segregate input and output addresses pair wise
     temp_list = []
     preprocess.df.apply(preprocessing.segregate_ip_op_addrs, axis=1, temp_list = temp_list)
@@ -51,7 +58,7 @@ def main():
     segregated_df.drop_duplicates(inplace=True)
 
     # Get count of same tuple (ip adrs, op adrs) in segregated df
-    segregated_df['count'] = segregated_df.groupby(['input_addresses_x', 'output_addresses_y'])['input_addresses_x'].transform('count')
+    segregated_df['count_repeat_pair'] = segregated_df.groupby(['input_addresses_x', 'output_addresses_y'])['input_addresses_x'].transform('count')
 
     # Generate a new file with unique input and output addresses and assign them ids
     df_unique_addrs = pd.DataFrame()
@@ -72,6 +79,28 @@ def main():
     segregated_df.rename(columns={'id': 'id_output_addresses_y'}, inplace=True)
     segregated_df.dropna(inplace=True)
     segregated_df.drop_duplicates(inplace=True)
+
+    # Adding id corresponding to transaction_id in segregated df
+    segregated_df = pd.merge(segregated_df, df_unique_tx_id, on='transaction_id', how='left')
+    segregated_df.rename(columns={'id': 'transaction_unique_id'}, inplace=True)
+    segregated_df.dropna(inplace=True)
+    segregated_df.drop_duplicates(inplace=True)
+
+    # Rearrange transaction_unique_id column in segregated_df
+    column_to_move = segregated_df.pop("transaction_unique_id")
+    segregated_df.insert(0, "transaction_unique_id", column_to_move)
+    segregated_df.drop(['transaction_id'], axis=1, inplace=True)
+
+    # Rearrange id_input_addresses_x column in segregated_df
+    column_to_move = segregated_df.pop("id_input_addresses_x")
+    segregated_df.insert(1, "id_input_addresses_x", column_to_move)
+    segregated_df.drop(['input_addresses_x'], axis=1, inplace=True)
+
+    # Rearrange id_output_addresses_y column in segregated_df
+    column_to_move = segregated_df.pop("id_output_addresses_y")
+    segregated_df.insert(2, "id_output_addresses_y", column_to_move)
+    segregated_df.drop(['output_addresses_y'], axis=1, inplace=True)
+
 
     segregated_df.reset_index(drop=True)
     segregated_df.to_csv(CONFIG['generated_files'] + 'segregated_iota.csv', index=False)

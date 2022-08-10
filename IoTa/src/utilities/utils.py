@@ -1,8 +1,6 @@
 import os
 import random
 import numpy as np
-import pandas as pd
-
 
 def set_seed(seed):
     """Set random seed for reproducibility.
