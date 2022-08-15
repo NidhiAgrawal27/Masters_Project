@@ -20,7 +20,7 @@ class PreProcessing:
         self.df.reset_index(drop=True, inplace=True)
         print('Total Num of transactions after dropping NaN: {}\n'.format(self.df.shape[0]))
 
-    def convert_list_to_string(self, convert_list_cols):
+    def convert_string_to_list(self, convert_list_cols):
         for col in convert_list_cols:
             self.df[col] = self.df[col].apply(eval)
 
@@ -31,20 +31,23 @@ class PreProcessing:
 
 # function to segregate input and output addresses pair wise
 def segregate_ip_op_addrs(arg, temp_list):
-    for i in range(len(arg[1])): # arg[1] is input_addresses_x in df
-        for j in range(len(arg[3])): # arg[3] is output_addresses_y in df
-            new_row = {
-                        arg.index[0]: arg[0],
-                        arg.index[1]: arg[1][i],
-                        arg.index[2]: arg[2][i],
-                        arg.index[3]: arg[3][j],
-                        arg.index[4]: arg[4][j]
-                    }
-            if len(arg) > 5:
-                for row_length in range(5, len(arg)):
-                    new_row[arg.index[row_length]] = arg[row_length]
+    if arg.index[1] == 'input_addresses_x' and arg.index[3] == 'output_addresses_y':
+        for i in range(len(arg[1])): # arg[1] is input_addresses_x in df
+            for j in range(len(arg[3])): # arg[3] is output_addresses_y in df
+                new_row = {
+                            arg.index[0]: arg[0],
+                            arg.index[1]: arg[1][i],
+                            arg.index[2]: arg[2][i],
+                            arg.index[3]: arg[3][j],
+                            arg.index[4]: arg[4][j]
+                        }
+                if len(arg) > 5:
+                    for row_length in range(5, len(arg)):
+                        new_row[arg.index[row_length]] = arg[row_length]
 
-            temp_list.append(new_row)
+                temp_list.append(new_row)
+    else:
+        print('ERROR: Incorrect column position for input_addresses_x and output_addresses_y.')
     return temp_list
 
 
@@ -53,4 +56,15 @@ def sum_amounts(_list):
     for amt in _list:
         amount += amt
     return round(amount,1)
+
+
+def get_tx_id(addrs_id, df, col_name):
+    return list(set(df[df[col_name]==addrs_id]['tx_unique_id']))
+
+
+def get_id(_list, df, col_name, id_col_name):
+    id_list = []
+    for l in _list:      
+        id_list.append(df[df[col_name]==l][id_col_name].values[0])
+    return id_list
 
