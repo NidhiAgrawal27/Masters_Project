@@ -23,9 +23,9 @@ def convert_to_gml(gml_file_name, segregated_iota, unique_addresses):
     def write_edge(row):
         f.write( ss + "edge" + nl)
         f.write( ss + "[" + nl)
-        f.write( ssss + "source" + s + '"' + str(row[11]) + '"' + nl)
-        f.write( ssss + "target" + s + '"' + str(row[12]) + '"' + nl)
-        f.write( ssss + "value" + s + str(row[10]) + nl) # segregated_iota_df['count']
+        f.write( ssss + "source" + s + '"' + str(row[1]) + '"' + nl) # row[1] is input addrs id
+        f.write( ssss + "target" + s + '"' + str(row[2]) + '"' + nl) # row[2] is output addrs id
+        f.write( ssss + "value" + s + str(row[10]) + nl) # segregated_iota_df['count_repeat_pair']
         f.write( ss + "]"+ nl)
 
     #Write a node
@@ -48,9 +48,9 @@ def convert_to_gml(gml_file_name, segregated_iota, unique_addresses):
 
     #Generate edges
     def edges(row):
-        if(row[11] != row[12]): # row[11] is input addrs and row[12] is output addrs
-            if((row[11], row[12]) not in added_edges):
-                added_edges.append((row[11], row[12]))
+        if(row[1] != row[2]): # row[1] is input addrs id and row[2] is output addrs id
+            if((row[1], row[2]) not in added_edges):
+                added_edges.append((row[1], row[2]))
                 write_edge(row)
         return
 
