@@ -7,7 +7,6 @@ CONFIG = {
     "generated_files": "../logs/generated_files/segregated_iota.gml",
     "data_path1": "../logs/generated_files/segregated_iota.csv",
     "data_path2": "../logs/generated_files/unique_addresses.csv"
-    
 }
 
 def main():
