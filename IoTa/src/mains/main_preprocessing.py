@@ -6,8 +6,8 @@ from utilities import utils, preprocessing
 
 
 CONFIG = {
-    #"data_path": "../data/first_14_days_UTXO_txs_of_IOTA.csv",
-    "data_path": "../data/sample_data.csv",
+    "data_path": "../data/first_14_days_UTXO_txs_of_IOTA.csv",
+    # "data_path": "../data/sample_data.csv",
     "figure_dir": "../logs/figures/",
     "generated_files": "../logs/generated_files/"
 }
