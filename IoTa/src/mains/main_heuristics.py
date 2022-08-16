@@ -36,13 +36,24 @@ def main():
     #applying the heuristics to the segregated data file
     segregated_iota.apply(lambda x: heuristics.Heuristics(x.id_input_addresses_x, x.id_output_addresses_y,addresses_data,processed_data).implement_heuritsics(segregated_iota), axis=1)
     
-    print("Heuristics 0 and 1 completed.\n")
-    print('h0 value counts:\n', segregated_iota["h0"].value_counts())
-    print('\n\nh1 value counts:\n', segregated_iota["h1"].value_counts(), '\n\n')
-
     segregated_iota['h0'] = segregated_iota['h0'].astype(int)
     segregated_iota['h1'] = segregated_iota['h1'].astype(int)
     segregated_iota.to_csv(CONFIG["segregated_iota"], index=False)
+
+    # Generate new file for heuristics only
+    heuristics_df = pd.DataFrame()
+    heuristics_df['id_input_addresses_x'] = segregated_iota['id_input_addresses_x']
+    heuristics_df['id_output_addresses_y'] = segregated_iota['id_output_addresses_y']
+    heuristics_df['h0'] = segregated_iota['h0']
+    heuristics_df['h1'] = segregated_iota['h1']
+    heuristics_df.drop_duplicates(inplace=True)
+    heuristics_df.to_csv("../logs/generated_files/heuristics.csv", index=False)
+
+    print("Heuristics 0 and 1 completed.\n")
+    print('h0 value counts:\n', heuristics_df["h0"].value_counts())
+    print('\n\nh1 value counts:\n', heuristics_df["h1"].value_counts(), '\n\n')
+
+
 
 if __name__ == "__main__":
     main()
