@@ -37,6 +37,8 @@ def main():
     segregated_iota.apply(lambda x: heuristics.Heuristics(x.id_input_addresses_x, x.id_output_addresses_y,addresses_data,processed_data).implement_heuritsics(segregated_iota), axis=1)
     
     print("Heuristics 0 and 1 completed.\n\n")
+    segregated_iota['h0'] = segregated_iota['h0'].astype(int)
+    segregated_iota['h1'] = segregated_iota['h1'].astype(int)
     segregated_iota.to_csv(CONFIG["segregated_iota"], index=False)
 
 if __name__ == "__main__":
