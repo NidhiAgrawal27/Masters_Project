@@ -54,33 +54,22 @@ def main():
     df_unique_addrs['addresses'] = pd.unique(segregated_df[['input_addresses_x', 'output_addresses_y']].values.ravel())
     df_unique_addrs['addresses_id'] = df_unique_addrs.index
 
-    # Remove rows where ip and op addresses are exactly same
-    index_names = segregated_df[(segregated_df['input_addresses_x'] == segregated_df['output_addresses_y'])].index
-    segregated_df.drop(index_names, inplace = True)
-    segregated_df.drop_duplicates(inplace=True)
-
-    # Get count of same tuple (ip adrs, op adrs) in segregated df
-    segregated_df['count_repeat_pair'] = segregated_df.groupby(['input_addresses_x', 'output_addresses_y'])['input_addresses_x'].transform('count')
-
     # Adding id corresponding to input addresses in segregated df
     df_unique_addrs.rename(columns={'addresses': 'input_addresses_x'}, inplace=True)
     segregated_df = pd.merge(segregated_df, df_unique_addrs, on='input_addresses_x', how='left')
     segregated_df.rename(columns={'addresses_id': 'id_input_addresses_x'}, inplace=True)
     segregated_df.dropna(inplace=True)
-    segregated_df.drop_duplicates(inplace=True)
 
     # Adding id corresponding to output addresses in segregated df
     df_unique_addrs.rename(columns={'input_addresses_x': 'output_addresses_y'}, inplace=True)
     segregated_df = pd.merge(segregated_df, df_unique_addrs, on='output_addresses_y', how='left')
     segregated_df.rename(columns={'addresses_id': 'id_output_addresses_y'}, inplace=True)
     segregated_df.dropna(inplace=True)
-    segregated_df.drop_duplicates(inplace=True)
 
     # Adding id corresponding to transaction_id in segregated df
     segregated_df = pd.merge(segregated_df, df_unique_tx_id, on='transaction_id', how='left')
     segregated_df.rename(columns={'id': 'tx_unique_id'}, inplace=True)
     segregated_df.dropna(inplace=True)
-    segregated_df.drop_duplicates(inplace=True)
 
     # Rearrange transaction_unique_id column in segregated_df
     column_to_move = segregated_df.pop("tx_unique_id")
@@ -96,11 +85,6 @@ def main():
     column_to_move = segregated_df.pop("id_output_addresses_y")
     segregated_df.insert(2, "id_output_addresses_y", column_to_move)
     segregated_df.drop(['output_addresses_y'], axis=1, inplace=True)
-
-    segregated_df.reset_index(drop=True)
-    segregated_df.to_csv(CONFIG['generated_files'] + 'segregated_iota.csv', index=False)
-    print('\n\nSEGREGATED IP & OP ADDRESSES DF:')
-    print(segregated_df.info())
 
     # Generate a new file with unique input and output addresses, their ids and 
     # corresponding transactions where these addresses are input addresses and outputs addresses
@@ -119,6 +103,19 @@ def main():
     print('\nPROCESSED DF:')
     print(preprocess.df.info())
     preprocess.df.to_csv(CONFIG['generated_files'] + "processed_data.csv", index=False)
+
+    # Remove rows where ip and op addresses are exactly same
+    index_names = segregated_df[(segregated_df['id_input_addresses_x'] == segregated_df['id_output_addresses_y'])].index
+    segregated_df.drop(index_names, inplace = True)
+    segregated_df.drop_duplicates(inplace=True)
+
+    # Get count of same tuple (ip adrs, op adrs) in segregated df
+    segregated_df['count_repeat_pair'] = segregated_df.groupby(['id_input_addresses_x', 'id_output_addresses_y'])['id_input_addresses_x'].transform('count')
+
+    segregated_df.reset_index(drop=True)
+    segregated_df.to_csv(CONFIG['generated_files'] + 'segregated_iota.csv', index=False)
+    print('\n\nSEGREGATED IP & OP ADDRESSES DF:')
+    print(segregated_df.info())
 
 
 if __name__ == "__main__":
