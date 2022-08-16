@@ -1,4 +1,3 @@
-from operator import index
 import pandas as pd
 import argparse
 import pathlib
@@ -57,7 +56,6 @@ def main():
 
     # Remove rows where ip and op addresses are exactly same
     index_names = segregated_df[(segregated_df['input_addresses_x'] == segregated_df['output_addresses_y'])].index
-    print('\n\nindex_names: ', segregated_df[(segregated_df['input_addresses_x'] == 'daea9dbfd40754af855682e6261830cacd860d7137d25d0d4b2cde3a5d75635a')].index, '\n\n')
     segregated_df.drop(index_names, inplace = True)
     segregated_df.drop_duplicates(inplace=True)
 

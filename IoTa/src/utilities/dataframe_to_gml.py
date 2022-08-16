@@ -38,8 +38,6 @@ def convert_to_gml(gml_file_name, segregated_iota, unique_addresses):
 
     #Generate nodes
     unique_addresses_df.apply(write_node, axis=1)
-
-    print(nl+"Printing nodes over")
     
     #flush index
     ind = 0
@@ -57,7 +55,7 @@ def convert_to_gml(gml_file_name, segregated_iota, unique_addresses):
     segregated_iota_df.apply(edges, axis = 1)
 
 
-    print(nl+"Printing nodes and edges over")
+    print("Generating nodes and edges for gml file completed."+nl)
 
     #closing node
     f.write("]"+nl)

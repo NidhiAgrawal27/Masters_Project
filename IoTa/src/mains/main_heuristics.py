@@ -1,16 +1,10 @@
-from operator import index
 import pandas as pd
 import argparse
-import pathlib
-from utilities import utils, preprocessing
+from utilities import utils
 from heuristics import heuristics
 
 
 CONFIG = {
-    "data_path": "../data/first_14_days_UTXO_txs_of_IOTA.csv",
-    # "data_path": "../data/sample_data.csv",
-    "figure_dir": "../logs/figures/",
-    "generated_files": "../logs/generated_files/",
     "processed_data":"../logs/generated_files/processed_data.csv",
     "addresses_data":"../logs/generated_files/unique_addresses.csv",
     "segregated_iota":"../logs/generated_files/segregated_iota.csv"
@@ -39,10 +33,10 @@ def main():
     addresses_data["addrs_in_ip_tx_id"]=addresses_data["addrs_in_ip_tx_id"].apply(eval)
     addresses_data["addrs_in_op_tx_id"]=addresses_data["addrs_in_op_tx_id"].apply(eval)
 
-    print("finished_processing")
     #applying the heuristics to the segregated data file
     segregated_iota.apply(lambda x: heuristics.Heuristics(x.id_input_addresses_x, x.id_output_addresses_y,addresses_data,processed_data).implement_heuritsics(segregated_iota), axis=1)
-    print("done heuristics")
+    
+    print("Heuristics 0 and 1 completed.\n\n")
     segregated_iota.to_csv(CONFIG["segregated_iota"])
 
 if __name__ == "__main__":
