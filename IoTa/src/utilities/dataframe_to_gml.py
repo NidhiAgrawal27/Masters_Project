@@ -17,7 +17,7 @@ def convert_to_gml(gml_file_name, segregated_iota, unique_addresses):
     #Root node
     f.write("graph"+nl)
     f.write("[")
-    f.write("directed 1"+nl)
+    f.write(" multigraph 1"+nl)
 
     #Write an edge
     def write_edge(row):
