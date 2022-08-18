@@ -1,12 +1,12 @@
 import pandas as pd
 import argparse
 import pathlib
-from igraph import *
+from igraph import Graph
 import networkx as nx
 from utilities import utils, clustering
 
 CONFIG = {
-    "segregated_iota": "../logs/generated_files/segregated_iota.csv"
+    "heuristics": "../logs/generated_files/heuristics.csv"
 }
 
 def main():
@@ -17,19 +17,30 @@ def main():
 
     utils.set_seed(args.seed)
 
-    segregated_iota=pd.read_csv(CONFIG["segregated_iota"])
+    heuristics=pd.read_csv(CONFIG["heuristics"])
     
     h0 = "h0"
     h1 = "h1"
 
     #applying the clustering to the segregated data file
-    segregated_iota.apply(lambda x: clustering.Clustering(x.h0,x.h1,segregated_iota).implement_clustering(segregated_iota), axis=1)
+    heuristics.apply(lambda x: clustering.Clustering(x.h0,x.h1,heuristics).implement_clustering(heuristics), axis=1)
     
-    segregated_iota['h0 & h1'] = segregated_iota['h0 & h1'].astype(int)
-    segregated_iota['h0 or h1'] = segregated_iota['h0 or h1'].astype(int)
-    
-    segregated_iota.to_csv(CONFIG["segregated_iota"], index=False)
+    heuristics['h0 & h1'] = heuristics['h0 & h1'].astype(int)
+    heuristics['h0 or h1'] = heuristics['h0 or h1'].astype(int)
+    heuristics.to_csv(CONFIG["heuristics"], index=False)
 
+    #creating graph
+    #edge_tuples = heuristics[["id_input_addresses_x", "id_output_addresses_y", "h0 & h1"]].itertuples(index=False)
+    #g = Graph.TupleList(edge_tuples, directed=False, weights=True)
+    
+
+    #cs = g.community_label_propagation()
+
+    #cs_addr = sorted([g.vs.select(c) for c in cs], key=len)
+
+    #cs_size = len(cs)
+
+    #print (cs_size, cs_addr)
 
 if __name__ == "__main__":
     main()
