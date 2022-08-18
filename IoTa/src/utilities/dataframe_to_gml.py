@@ -1,9 +1,9 @@
 import sys, time
 import pandas as pd
 
-def convert_to_gml(gml_file_name, segregated_iota, unique_addresses):
+def convert_to_gml(gml_file_name, segregated_data, unique_addresses):
     
-    segregated_iota_df = pd.read_csv(segregated_iota, sep=',')
+    segregated_data_df = pd.read_csv(segregated_data, sep=',')
     unique_addresses_df = pd.read_csv(unique_addresses, sep=',')
     
     f = open(gml_file_name, "w")
@@ -52,7 +52,7 @@ def convert_to_gml(gml_file_name, segregated_iota, unique_addresses):
                 write_edge(row)
         return
 
-    segregated_iota_df.apply(edges, axis = 1)
+    segregated_data_df.apply(edges, axis = 1)
 
 
     print("Generating nodes and edges for gml file completed."+nl)

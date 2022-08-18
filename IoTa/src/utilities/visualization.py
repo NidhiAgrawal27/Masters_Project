@@ -4,7 +4,7 @@ import seaborn as sns
 import networkx as nx
 
 # Function to plot bar graph  given a dataframe
-def plot_graph(df, graph_type, ylabel, xlabel, title, colour, ylog, rotation):
+def plot_bar_or_line_graph(df, graph_type, ylabel, xlabel, title, colour, ylog, rotation):
     plt.figure(figsize=(12,5))
     if graph_type == 'bar':
         plot_bar = plt.bar(df.index, df, color=colour)
@@ -39,7 +39,7 @@ def plot_community_detection(network_name, community, title):
     return plt     
 
 # Function to plot scatter plot and  histogram
-def plot_graph1(x,y, graph_type,bin, ylabel, xlabel, title, color, ylog, density, edgecolor, marker,linestyle, rotation):
+def plot_hist_or_scatter(x,y, graph_type, bin, ylabel, xlabel, title, color, ylog, density, edgecolor, marker,linestyle, rotation):
     plt.figure(figsize=(12,5))
     if graph_type == 'hist':
         plot_hist = plt.hist(x, bins = bin, color=color, density = density, edgecolor = edgecolor)

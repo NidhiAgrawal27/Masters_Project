@@ -4,12 +4,7 @@ import pathlib
 from utilities import utils, preprocessing
 
 
-CONFIG = {
-    "data_path": "../data/first_14_days_UTXO_txs_of_IOTA.csv",
-    # "data_path": "../data/sample_data.csv",
-    "figure_dir": "../logs/figures/",
-    "generated_files": "../logs/generated_files/"
-}
+CONFIG = utils.pathnames()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -35,8 +30,6 @@ def main():
 
     # Create 'generated_files' directory if it does not exist.
     pathlib.Path(CONFIG["generated_files"]).mkdir(parents=True, exist_ok=True)
-
-    # preprocess.df.to_csv(CONFIG['generated_files'] + "processed_data.csv", index=False)
 
     # Generate a new file with unique transaction ids and assign them unique numbers
     df_unique_tx_id = pd.DataFrame()
@@ -113,7 +106,7 @@ def main():
     segregated_df['count_repeat_pair'] = segregated_df.groupby(['id_input_addresses_x', 'id_output_addresses_y'])['id_input_addresses_x'].transform('count')
 
     segregated_df.reset_index(drop=True)
-    segregated_df.to_csv(CONFIG['generated_files'] + 'segregated_iota.csv', index=False)
+    segregated_df.to_csv(CONFIG['generated_files'] + 'segregated_data.csv', index=False)
     print('\n\nSEGREGATED IP & OP ADDRESSES DF:')
     print(segregated_df.info())
 

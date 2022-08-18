@@ -5,9 +5,7 @@ from igraph import Graph
 import networkx as nx
 from utilities import utils, clustering
 
-CONFIG = {
-    "heuristics": "../logs/generated_files/heuristics.csv"
-}
+CONFIG = utils.pathnames()
 
 def main():
     

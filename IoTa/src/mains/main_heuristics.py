@@ -4,11 +4,7 @@ from utilities import utils
 from heuristics import heuristics
 
 
-CONFIG = {
-    "processed_data":"../logs/generated_files/processed_data.csv",
-    "addresses_data":"../logs/generated_files/unique_addresses.csv",
-    "segregated_iota":"../logs/generated_files/segregated_iota.csv"
-}
+CONFIG = utils.pathnames()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -19,7 +15,7 @@ def main():
 
     processed_data=pd.read_csv(CONFIG["processed_data"])
     addresses_data=pd.read_csv(CONFIG["addresses_data"])
-    segregated_iota=pd.read_csv(CONFIG["segregated_iota"])
+    segregated_data=pd.read_csv(CONFIG["segregated_data"])
 
     #only reading necessary data
     processed_data=processed_data[["tx_unique_id","id_input_addresses_x","id_output_addresses_y","input_amounts_x","output_amounts_y"]]
@@ -34,20 +30,20 @@ def main():
     addresses_data["addrs_in_op_tx_id"]=addresses_data["addrs_in_op_tx_id"].apply(eval)
 
     #applying the heuristics to the segregated data file
-    segregated_iota.apply(lambda x: heuristics.Heuristics(x.id_input_addresses_x, x.id_output_addresses_y,addresses_data,processed_data).implement_heuritsics(segregated_iota), axis=1)
+    segregated_data.apply(lambda x: heuristics.Heuristics(x.id_input_addresses_x, x.id_output_addresses_y,addresses_data,processed_data).implement_heuritsics(segregated_data), axis=1)
     
-    segregated_iota['h0'] = segregated_iota['h0'].astype(int)
-    segregated_iota['h1'] = segregated_iota['h1'].astype(int)
-    segregated_iota.to_csv(CONFIG["segregated_iota"], index=False)
+    segregated_data['h0'] = segregated_data['h0'].astype(int)
+    segregated_data['h1'] = segregated_data['h1'].astype(int)
+    segregated_data.to_csv(CONFIG["segregated_data"], index=False)
 
     # Generate new file for heuristics only
     heuristics_df = pd.DataFrame()
-    heuristics_df['id_input_addresses_x'] = segregated_iota['id_input_addresses_x']
-    heuristics_df['id_output_addresses_y'] = segregated_iota['id_output_addresses_y']
-    heuristics_df['h0'] = segregated_iota['h0']
-    heuristics_df['h1'] = segregated_iota['h1']
+    heuristics_df['id_input_addresses_x'] = segregated_data['id_input_addresses_x']
+    heuristics_df['id_output_addresses_y'] = segregated_data['id_output_addresses_y']
+    heuristics_df['h0'] = segregated_data['h0']
+    heuristics_df['h1'] = segregated_data['h1']
     heuristics_df.drop_duplicates(inplace=True)
-    heuristics_df.to_csv("../logs/generated_files/heuristics.csv", index=False)
+    heuristics_df.to_csv(CONFIG["generated_files"] + "heuristics.csv", index=False)
 
     print("Heuristics 0 and 1 completed.\n")
     print('h0 value counts:\n', heuristics_df["h0"].value_counts())

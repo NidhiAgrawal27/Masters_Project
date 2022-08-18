@@ -57,8 +57,8 @@ class Heuristics:
                 #segregated_iota.loc[((segregated_iota["id_input_addresses_x"]==self.input) & (segregated_iota["id_output_addresses_y"]==self.output)) | ((segregated_iota["id_input_addresses_x"]==self.output) & (segregated_iota["id_output_addresses_y"]==self.input)),"h1"]=0
                 return 0
 
-    def implement_heuritsics(self,segregated_iota):
-        segregated_iota.loc[self.id,"h0"]=self.heuristic0()
-        segregated_iota.loc[self.id,"h1"]=self.heuristic1()
+    def implement_heuritsics(self,segregated_data):
+        segregated_data.loc[self.id,"h0"]=self.heuristic0()
+        segregated_data.loc[self.id,"h1"]=self.heuristic1()
         return       
 

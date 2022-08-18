@@ -4,7 +4,6 @@ import scipy.stats as sp
 import networkx.algorithms.community as nxcom
 
 
-
 def av_neighbors_degree(network_name):
     av_neigh_degree = nx.k_nearest_neighbors(network_name) #getting a dictionary keyed by degree k with the value of average neighbor degree on a real network
     deg_list = av_neigh_degree.keys() #list of degrees
@@ -52,4 +51,5 @@ def communities(network_name):
     
     la_real = len(LabelComm)               # Number of Label Propagation Communities 
 
-    return GreedComm, LabelComm, gr_real,la_real  
+    return GreedComm, LabelComm, gr_real,la_real
+    
