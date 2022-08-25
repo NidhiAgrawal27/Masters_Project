@@ -43,8 +43,8 @@ def main():
     heuristics_df['h0'] = segregated_data['h0']
     heuristics_df['h1'] = segregated_data['h1']
 
-    heuristics_df['h0 and h1'] = segregated_data['h0'] & segregated_data['h1']
-    heuristics_df['h0 or h1'] = segregated_data['h0'] | segregated_data['h1']
+    heuristics_df['h0 and h1'] = heuristics_df['h0'] & heuristics_df['h1']
+    heuristics_df['h0 or h1'] = heuristics_df['h0'] | heuristics_df['h1']
 
     heuristics_df.drop_duplicates(inplace=True)
     heuristics_df.to_csv(PATHNAMES["generated_files"] + "heuristics.csv", index=False)
