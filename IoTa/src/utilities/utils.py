@@ -17,7 +17,7 @@ def pathnames():
 
     dir_name = "../logs/IoTa_logs/"
 
-    CONFIG = {
+    PATHNAMES = {
             "data_path": "../data/first_14_days_UTXO_txs_of_IOTA.csv",
             # "data_path": "../data/sample_data.csv",
             "figure_dir": dir_name + "figures/",
@@ -31,5 +31,5 @@ def pathnames():
             "tx_basic_analysis_fig_dir": dir_name + "figures/tx_basic_analysis/",
         }
 
-    return CONFIG
+    return PATHNAMES
 

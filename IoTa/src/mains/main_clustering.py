@@ -5,7 +5,7 @@ from igraph import Graph
 import networkx as nx
 from utilities import utils, clustering
 
-CONFIG = utils.pathnames()
+PATHNAMES = utils.pathnames()
 
 def main():
     
@@ -15,7 +15,7 @@ def main():
 
     utils.set_seed(args.seed)
 
-    heuristics=pd.read_csv(CONFIG["heuristics"])
+    heuristics=pd.read_csv(PATHNAMES["heuristics"])
     
     h0 = "h0"
     h1 = "h1"
@@ -25,7 +25,7 @@ def main():
     
     heuristics['h0 & h1'] = heuristics['h0 & h1'].astype(int)
     heuristics['h0 or h1'] = heuristics['h0 or h1'].astype(int)
-    heuristics.to_csv(CONFIG["heuristics"], index=False)
+    heuristics.to_csv(PATHNAMES["heuristics"], index=False)
 
     #creating graph
     #edge_tuples = heuristics[["id_input_addresses_x", "id_output_addresses_y", "h0 & h1"]].itertuples(index=False)

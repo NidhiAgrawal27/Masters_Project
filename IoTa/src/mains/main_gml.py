@@ -3,7 +3,7 @@ import argparse
 import pathlib
 from utilities import utils, dataframe_to_gml
 
-CONFIG = utils.pathnames()
+PATHNAMES = utils.pathnames()
 
 def main():
     
@@ -11,9 +11,9 @@ def main():
     parser.add_argument("--seed", type=int, help="random seed", required=True)
     args = parser.parse_args()
 
-    segregated_data_gml = CONFIG['segregated_data_gml']
-    segregated_data_df = CONFIG['segregated_data']
-    unique_addresses_df = CONFIG['addresses_data'] 
+    segregated_data_gml = PATHNAMES['segregated_data_gml']
+    segregated_data_df = PATHNAMES['segregated_data']
+    unique_addresses_df = PATHNAMES['addresses_data'] 
 
     utils.set_seed(args.seed)
 

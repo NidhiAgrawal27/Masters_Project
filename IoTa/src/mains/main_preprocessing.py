@@ -4,7 +4,7 @@ import pathlib
 from utilities import utils, preprocessing
 
 
-CONFIG = utils.pathnames()
+PATHNAMES = utils.pathnames()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -14,7 +14,7 @@ def main():
     utils.set_seed(args.seed)
 
     # Cleaning and preprocessing the data
-    df = pd.read_csv(CONFIG['data_path'])
+    df = pd.read_csv(PATHNAMES['data_path'])
     preprocess = preprocessing.PreProcessing(df)
     preprocess.drop_unnecessary_cols(col_to_drop = ['message_id', 'milestone_index'])
     preprocess.remove_nan_values(addrs_col = ['input_addresses_x', 'output_addresses_y'], amt_col = ['input_amounts_x', 'output_amounts_y'])
@@ -29,13 +29,13 @@ def main():
     preprocess.df['sum_output_amounts'] = preprocess.df['sum_output_amounts'].astype(float)
 
     # Create 'generated_files' directory if it does not exist.
-    pathlib.Path(CONFIG["generated_files"]).mkdir(parents=True, exist_ok=True)
+    pathlib.Path(PATHNAMES["generated_files"]).mkdir(parents=True, exist_ok=True)
 
     # Generate a new file with unique transaction ids and assign them unique numbers
     df_unique_tx_id = pd.DataFrame()
     df_unique_tx_id['transaction_id'] = pd.unique(preprocess.df[['transaction_id']].values.ravel())
     df_unique_tx_id['tx_unique_id'] = df_unique_tx_id.index
-    df_unique_tx_id.to_csv(CONFIG['generated_files'] + 'transaction_id.csv', index=False)
+    df_unique_tx_id.to_csv(PATHNAMES['generated_files'] + 'transaction_id.csv', index=False)
 
     # Segregate input and output addresses pair wise
     temp_list = []
@@ -85,7 +85,7 @@ def main():
     df_unique_addrs['addrs_in_ip_tx_id'] = df_unique_addrs['addresses_id'].apply(preprocessing.get_tx_id, df = segregated_df, col_name = 'id_input_addresses_x')
     df_unique_addrs['addrs_in_op_tx_id'] = df_unique_addrs['addresses_id'].apply(preprocessing.get_tx_id, df = segregated_df, col_name = 'id_output_addresses_y')
     
-    df_unique_addrs.to_csv(CONFIG['generated_files'] + 'unique_addresses.csv', index=False)
+    df_unique_addrs.to_csv(PATHNAMES['generated_files'] + 'unique_addresses.csv', index=False)
     print('\n\nUNIQUE ADDRESSES DF:')
     print(df_unique_addrs.info())
 
@@ -95,7 +95,7 @@ def main():
     
     print('\nPROCESSED DF:')
     print(preprocess.df.info())
-    preprocess.df.to_csv(CONFIG['generated_files'] + "processed_data.csv", index=False)
+    preprocess.df.to_csv(PATHNAMES['generated_files'] + "processed_data.csv", index=False)
 
     # Remove rows where ip and op addresses are exactly same
     index_names = segregated_df[(segregated_df['id_input_addresses_x'] == segregated_df['id_output_addresses_y'])].index
@@ -106,7 +106,7 @@ def main():
     segregated_df['count_repeat_pair'] = segregated_df.groupby(['id_input_addresses_x', 'id_output_addresses_y'])['id_input_addresses_x'].transform('count')
 
     segregated_df.reset_index(drop=True)
-    segregated_df.to_csv(CONFIG['generated_files'] + 'segregated_data.csv', index=False)
+    segregated_df.to_csv(PATHNAMES['generated_files'] + 'segregated_data.csv', index=False)
     print('\n\nSEGREGATED IP & OP ADDRESSES DF:')
     print(segregated_df.info())
 

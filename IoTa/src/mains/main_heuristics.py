@@ -4,7 +4,7 @@ from utilities import utils
 from heuristics import heuristics
 
 
-CONFIG = utils.pathnames()
+PATHNAMES = utils.pathnames()
 
 def main():
     parser = argparse.ArgumentParser()
@@ -13,9 +13,9 @@ def main():
 
     utils.set_seed(args.seed)
 
-    processed_data=pd.read_csv(CONFIG["processed_data"])
-    addresses_data=pd.read_csv(CONFIG["addresses_data"])
-    segregated_data=pd.read_csv(CONFIG["segregated_data"])
+    processed_data=pd.read_csv(PATHNAMES["processed_data"])
+    addresses_data=pd.read_csv(PATHNAMES["addresses_data"])
+    segregated_data=pd.read_csv(PATHNAMES["segregated_data"])
 
     #only reading necessary data
     processed_data=processed_data[["tx_unique_id","id_input_addresses_x","id_output_addresses_y","input_amounts_x","output_amounts_y"]]
@@ -34,7 +34,7 @@ def main():
     
     segregated_data['h0'] = segregated_data['h0'].astype(int)
     segregated_data['h1'] = segregated_data['h1'].astype(int)
-    segregated_data.to_csv(CONFIG["segregated_data"], index=False)
+    segregated_data.to_csv(PATHNAMES["segregated_data"], index=False)
 
     # Generate new file for heuristics only
     heuristics_df = pd.DataFrame()
@@ -42,8 +42,12 @@ def main():
     heuristics_df['id_output_addresses_y'] = segregated_data['id_output_addresses_y']
     heuristics_df['h0'] = segregated_data['h0']
     heuristics_df['h1'] = segregated_data['h1']
+
+    heuristics_df['h0 and h1'] = segregated_data['h0'] & segregated_data['h1']
+    heuristics_df['h0 or h1'] = segregated_data['h0'] | segregated_data['h1']
+
     heuristics_df.drop_duplicates(inplace=True)
-    heuristics_df.to_csv(CONFIG["generated_files"] + "heuristics.csv", index=False)
+    heuristics_df.to_csv(PATHNAMES["generated_files"] + "heuristics.csv", index=False)
 
     print("Heuristics 0 and 1 completed.\n")
     print('h0 value counts:\n', heuristics_df["h0"].value_counts())

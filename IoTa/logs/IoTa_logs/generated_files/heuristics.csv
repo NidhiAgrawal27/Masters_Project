@@ -1,4 +1,4 @@
-id_input_addresses_x,id_output_addresses_y,h0,h1,h0 & h1,h0 or h1
+id_input_addresses_x,id_output_addresses_y,h0,h1,h0 and h1,h0 or h1
 0,1,0,0,0,0
 2,3,0,0,0,0
 2,4,0,0,0,0
