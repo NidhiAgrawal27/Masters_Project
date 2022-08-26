@@ -22,4 +22,3 @@ def Clustering(file):
         print(i," - Number of Clusters:",cs_sizes)
         print ("Addresses belonging to cluster:",cs_addr)
         print('\n')
-        print('\n')
