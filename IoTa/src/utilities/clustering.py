@@ -1,35 +1,25 @@
 import pandas as pd
 import numpy as np
-from typing import Counter
-from itertools import count
+from igraph import Graph
+import networkx as nx
+from utilities import utils
 
-class Clustering:
+heuristics = ["h0", "h1", "h0 and h1", "h0 or h1"]
 
-    _ids=count(0)
 
-    def __init__(self,h0,h1,df):
-        self.h0=h0
-        self.h1=h1
-        self.df=df
-        self.id = next(self._ids)
+def Clustering(file):
+    print("CLUSTERING")
+    for  i in heuristics:
+        df = pd.read_csv(file)
+        df = df[df[i] == 1]
+        edge_tuples = df[["id_input_addresses_x", "id_output_addresses_y"]].itertuples(index=False)
+        g = Graph.TupleList(edge_tuples, directed=False, weights=False)
 
-    def h0_and_h1(self):
-        if (self.h0 == self.h1 == 1):
-            return 1
-        else: 
-            return 0
+        cs = g.community_label_propagation()
+        cs_addr = sorted([g.vs.select(c)["name"] for c in cs], key=len)
+        cs_sizes = [len(cs)]
 
-    def h0_or_h1(self):
-        if (self.h0 == 1):
-            return 1
-        
-        elif (self.h1 == 1):
-            return 1
-        
-        else:
-            return 0
-           
-    def implement_clustering(self,segregated_iota):
-        segregated_iota.loc[self.id,"h0 & h1"]=self.h0_and_h1()
-        segregated_iota.loc[self.id,"h0 or h1"]=self.h0_or_h1()
-        return  
+        print(i," - Number of Clusters:",cs_sizes)
+        print ("Addresses belonging to cluster:",cs_addr)
+        print('\n')
+        print('\n')

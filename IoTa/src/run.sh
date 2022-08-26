@@ -14,7 +14,7 @@ for seed in {42..42}
         
         python -m mains.main_network_analysis --seed $seed
 
-        # python -m mains.main_clustering --seed  $seed
+        python -m mains.main_clustering --seed  $seed
 
     done
 
