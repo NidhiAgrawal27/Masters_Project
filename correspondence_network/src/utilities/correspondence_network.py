@@ -1,7 +1,5 @@
 import numpy as np
 from ast import literal_eval
-import graph_tool as gt
-from graph_tool.all import graph_draw
 import graph_tool.topology as gtt
 
 
