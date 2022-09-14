@@ -72,7 +72,7 @@ def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx
                     edge_property[e]['count_of_same_edge_h0'] += 1
                     edge_property[e]['count_of_same_edge_h0_h1'] += h1
 
-    return
+    return nodes_dict
     
 
 def compute_components(graph_of_correspondences):
@@ -90,5 +90,3 @@ def compute_components(graph_of_correspondences):
 
     return comp_list
 
-# plot a dist of comp and edge weights too - counts
-# concatenate two graphs
