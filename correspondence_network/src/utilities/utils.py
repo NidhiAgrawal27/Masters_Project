@@ -13,16 +13,16 @@ def set_seed(seed):
     np.random.seed(seed)
 
 
-def pathnames(cur):
+def pathnames(cur, heuristic):
 
     if cur == 'btc':
-        dir_name = "../logs/Bitcoin_logs/"
+        dir_name = "../logs/Bitcoin_logs/" + heuristic + '/'
         data_path = "../data/chunk.csv"
     elif cur == 'iota': 
-        dir_name = "../logs/IoTa_logs/"
+        dir_name = "../logs/IoTa_logs/" + heuristic + '/'
         data_path = "../data/first_14_days_UTXO_txs_of_IOTA.csv"
     else: 
-        dir_name = "../logs/sample_logs/"
+        dir_name = "../logs/sample_logs/" + heuristic + '/'
         data_path = "../data/sample_data.csv"
 
     PATHNAMES = {

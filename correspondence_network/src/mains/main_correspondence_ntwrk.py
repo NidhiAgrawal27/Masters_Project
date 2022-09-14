@@ -10,12 +10,14 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, help="random seed", required=True)
     parser.add_argument("--currency", type=str, help="btc: Bitcoin, iota: IoTa", required=True)
+    parser.add_argument("--heuristic", type=str, help="Name of heuristic: h0, or h0+h1", required=True)
     args = parser.parse_args()
 
     utils.set_seed(args.seed)
     cur = args.currency
+    heuristic = args.heuristic
 
-    PATHNAMES = utils.pathnames(cur)
+    PATHNAMES = utils.pathnames(cur, heuristic)
 
     # Cleaning and preprocessing the data
     df = pd.read_csv(PATHNAMES['data_path'])
@@ -50,6 +52,7 @@ def main():
                 nodes_dict = nodes_dict,
                 vertex_property = vertex_property,
                 edge_property = edge_property,
+                heuristic = heuristic,
                 axis=1
             )
 
@@ -77,11 +80,11 @@ def main():
 
     print('Writing files completed.')
 
-    pathlib.Path(PATHNAMES['figure_dir']).mkdir(parents=True, exist_ok=True)
+    fig_dir = PATHNAMES['figure_dir']
+
+    pathlib.Path(fig_dir).mkdir(parents=True, exist_ok=True)
     draw.graph_draw(graph_of_correspondences, vertex_text=graph_of_correspondences.vertex_index, 
-                    output = PATHNAMES['figure_dir'] + 'correspondence_network.pdf')
-
-
+                    output = fig_dir + 'correspondence_network' + '.pdf')
     print('Figure completed.')
 
 if __name__ == "__main__":

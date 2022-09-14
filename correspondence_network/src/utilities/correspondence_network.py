@@ -4,26 +4,31 @@ import graph_tool.topology as gtt
 
 
 def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx, ip_amt_idx, 
-                        op_amt_idx, nodes_dict, vertex_property, edge_property):
+                        op_amt_idx, nodes_dict, vertex_property, edge_property, heuristic):
 
-    # converts string to list form
+    # h0: all input addresses of a tx belong to same user
     nodes_list = literal_eval(row[ip_addrs_idx])
-    ip_amt = literal_eval(row[ip_amt_idx])
-    op_amt = literal_eval(row[op_amt_idx])
-    op_addrs = literal_eval(row[op_addrs_idx])
-    h1 = 0
-    
-    # h1 - get change address
-    if min(op_amt) < min(ip_amt): 
-        idx = np.argmin(op_amt)
-        change_addrs = op_addrs[idx]
-        nodes_list.append(change_addrs)
-        h1 = 1
 
-    nodes_list = set(nodes_list)
+    # h1: get change address
+    h1 = 0
+
+    if heuristic == 'h0+h1':
+        ip_amt = literal_eval(row[ip_amt_idx])
+        op_amt = literal_eval(row[op_amt_idx])
+        op_addrs = literal_eval(row[op_addrs_idx])
+
+        if list(set(nodes_list) & set(op_addrs)) == []: # apply h1 only if op addresses are different from ip addreses
+            if min(op_amt) < min(ip_amt): 
+                idx = np.argmin(op_amt)
+                change_addrs = op_addrs[idx]
+                nodes_list.append(change_addrs)
+                h1 = 1
+
+    nodes_list = list(set(nodes_list))
 
     if len(nodes_list) <= 1: return
 
+    # create nodes
     for node in nodes_list :
         if node in nodes_dict: continue
         vertex = graph_of_correspondences.add_vertex()
@@ -31,16 +36,42 @@ def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx
         nodes_dict[node] = idx
         vertex_property[vertex] = node
 
-    v0 = nodes_dict[nodes_list.pop()]
+    # create edges for fully connected clusters in network
+    for i in range(len(nodes_list)-1):
+        v0 = nodes_dict[nodes_list.pop(0)]
 
-    for node in nodes_list:
-        v1 = nodes_dict[node]
-        if not graph_of_correspondences.edge(v0,v1):
-            e = graph_of_correspondences.add_edge(v0,v1)
-            edge_property[e] = {'node1': v0, 'node2': v1, "h0": 1, "h1": h1, "count_of_same_edge": 1}
-        else: 
-            e = graph_of_correspondences.edge(v0,v1)
-            edge_property[e]['count_of_same_edge'] += 1  
+        for j in range(len(nodes_list)):
+            v1 = nodes_dict[nodes_list[j]]
+
+            if heuristic == 'h0':
+                if not graph_of_correspondences.edge(v0,v1):
+                    e = graph_of_correspondences.add_edge(v0,v1)
+                    edge_property[e] = {
+                                        'node1': v0, 
+                                        'node2': v1, 
+                                        'h0': 1,
+                                        'count_of_same_edge_h0': 1
+                                        }
+                else: 
+                    e = graph_of_correspondences.edge(v0,v1)
+                    edge_property[e]['count_of_same_edge_h0'] += 1
+            
+            elif heuristic == 'h0+h1':
+                if not graph_of_correspondences.edge(v0,v1):
+                    e = graph_of_correspondences.add_edge(v0,v1)
+                    edge_property[e] = {
+                                        'node1': v0, 
+                                        'node2': v1, 
+                                        'h0': 1, 
+                                        'h1': h1, 
+                                        'count_of_same_edge_h0': 1, 
+                                        'count_of_same_edge_h0_h1': h1
+                                        }
+                else: 
+                    e = graph_of_correspondences.edge(v0,v1)
+                    edge_property[e]['count_of_same_edge_h0'] += 1
+                    edge_property[e]['count_of_same_edge_h0_h1'] += h1
+
     return
     
 
@@ -55,7 +86,9 @@ def compute_components(graph_of_correspondences):
         else: components[c].append(i)
 
     for c in components:
-        comp_list.append({'component' : c, 'address_ids' : components[c]})
+        comp_list.append({'component' : c, 'num_of_addrs' : len(components[c]), 'address_ids' : components[c]})
 
     return comp_list
 
+# plot a dist of comp and edge weights too - counts
+# concatenate two graphs
