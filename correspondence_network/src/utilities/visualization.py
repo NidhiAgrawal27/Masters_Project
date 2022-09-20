@@ -12,6 +12,9 @@ def plot_bar_or_line_graph(df, graph_type, anot, xlabel, ylabel, title, colour, 
         plt.yscale('log')
     elif log_scale == 'x':
         plt.xscale('log')
+    elif log_scale == 'xy':
+        plt.xscale('log')
+        plt.yscale('log')
     plt.ylabel(ylabel, size = 14)
     plt.xlabel(xlabel, size = 14)
     plt.title(title, size = 16)

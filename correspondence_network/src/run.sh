@@ -4,9 +4,6 @@
 for seed in {42..42}
     do
 
-        python -m mains.main_correspondence_ntwrk --seed $seed --currency sample --heuristic h0
-        python -m mains.main_correspondence_ntwrk --seed $seed --currency sample --heuristic h0+h1
-        
         python -m mains.main_correspondence_ntwrk --seed $seed --currency iota --heuristic h0
         python -m mains.main_correspondence_ntwrk --seed $seed --currency iota --heuristic h0+h1
 
