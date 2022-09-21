@@ -21,3 +21,14 @@ def plot_bar_or_line_graph(df, graph_type, anot, xlabel, ylabel, title, colour, 
     plt.savefig(fig_file_name, bbox_inches="tight")
     
     return plt
+
+def prob_dist_plot(data, fig_file_name):
+    plt.figure(figsize=(12,5))
+    plt.hist(data, density = True)
+    # plt.annotate()
+    plt.ylim(0,1)
+    plt.xlabel('Num of addresses n', size = 14)
+    plt.ylabel('Probability a component will have num of addresses n', size = 14)
+    plt.title("Distribution", size = 16)
+    plt.savefig(fig_file_name+'_hist', bbox_inches="tight")
+

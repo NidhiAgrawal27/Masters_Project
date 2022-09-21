@@ -44,6 +44,9 @@ def main():
                             fig_dir+'log_dist_addrs_in_comp')
 
 
+    from utilities.visualization import prob_dist_plot
+    prob_dist_plot(df['num_of_addrs'], fig_dir+'dist_plot')
+
 if __name__ == "__main__":
     main()
 
