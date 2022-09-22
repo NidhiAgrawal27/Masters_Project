@@ -1,7 +1,8 @@
+from __future__ import annotations
 import pandas as pd
 import argparse
 import pathlib
-from utilities.visualization import plot_bar_or_line_graph
+from utilities.visualization import plot_graph
 from utilities import utils
 
 
@@ -24,28 +25,41 @@ def main():
 
     pathlib.Path(fig_dir).mkdir(parents=True, exist_ok=True)
 
-    plot_bar_or_line_graph(df['num_of_addrs'], 'line', 0, 'Component Number', 'Num of addresses', 
-                        'Num of addesses in each component', 'red', 0, fig_dir+'line_chart_num_of_addrs_vs_comp')
-    plot_bar_or_line_graph(df['num_of_addrs'], 'bar', 0, 'Component Number', 'Num of addresses', 
-                        'Num of addesses in each component', 'blue', 0, fig_dir+'bar_chart_num_of_addrs_vs_comp')
-    
     df_grouped_by_num_addrs = df.groupby(['num_of_addrs']).size()
-    plot_bar_or_line_graph(df_grouped_by_num_addrs, 'bar', 1, 'Number of addresses in component', 
-                            'Num of Components', 'Distribution of addresses in components', 'cyan', 0, 
-                            fig_dir+'dist_addrs_in_comp')
-        
+    yes_annotation = 1
+    no_annotation = 0
 
-    plot_bar_or_line_graph(df['num_of_addrs'], 'line', 0, 'Component Number', 'Num of addresses', 
-                        'Num of addesses in each component', 'red', 'x', fig_dir+'log_line_chart_num_of_addrs_vs_comp')
-    plot_bar_or_line_graph(df['num_of_addrs'], 'bar', 0, 'Component Number', 'Num of addresses', 
-                        'Num of addesses in each component', 'blue', 'x', fig_dir+'log_bar_chart_num_of_addrs_vs_comp')
-    plot_bar_or_line_graph(df_grouped_by_num_addrs, 'bar', 1, 'Number of addresses in component', 
-                            'Num of Components', 'Distribution of addresses in components', 'cyan', 'y', 
-                            fig_dir+'log_dist_addrs_in_comp')
+    if cur == 'btc': logscale = 'xy'
+    elif cur == 'iota': logscale = 'x'
+    else: logscale = 0
 
+    plot_graph(df['num_of_addrs'], 'line', no_annotation, 
+                'Component Number', 'Num of addresses', 
+                'Num of addesses in each component', 'red', 
+                logscale, fig_dir+'line_num_of_addrs_vs_comp')
 
-    from utilities.visualization import prob_dist_plot
-    prob_dist_plot(df['num_of_addrs'], fig_dir+'dist_plot')
+    plot_graph(df['num_of_addrs'], 'bar', no_annotation, 
+                'Component Number', 'Num of addresses', 
+                'Num of addesses in each component', 'blue', 
+                logscale, fig_dir+'bar_num_of_addrs_vs_comp')
+    
+    
+    if cur == 'btc': logscale = 'xy'
+    elif cur == 'iota': logscale = 'y'
+    else: logscale = 0
+
+    plot_graph(df_grouped_by_num_addrs, 'bar', yes_annotation, 
+                'Number of addresses', 
+                'Num of Components', 'Distribution of addresses in components', 'cyan', 
+                logscale, fig_dir+'dist_addrs_in_comp')
+
+    plot_graph(df['num_of_addrs'], 'dist', no_annotation, 
+                'Num of addresses n', 
+                'Probability a component has n addresses', 
+                'Probability Distribution', 'red', 
+                logscale, fig_dir+'prob_dist_addrs_in_comp')
+
+    print(cur + ' ' + heuristic + ': plotting graphs completed.')
 
 if __name__ == "__main__":
     main()

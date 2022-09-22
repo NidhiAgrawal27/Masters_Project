@@ -17,7 +17,8 @@ def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx
         op_amt = literal_eval(row[op_amt_idx])
         op_addrs = literal_eval(row[op_addrs_idx])
 
-        if list(set(nodes_list) & set(op_addrs)) == []: # apply h1 only if op addresses are different from ip addreses
+        # apply h1 only if op addresses are different from ip addreses
+        if list(set(nodes_list) & set(op_addrs)) == []: 
             if min(op_amt) < min(ip_amt): 
                 idx = np.argmin(op_amt)
                 change_addrs = op_addrs[idx]

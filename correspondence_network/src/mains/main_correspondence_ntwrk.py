@@ -11,11 +11,14 @@ def main():
     parser.add_argument("--seed", type=int, help="random seed", required=True)
     parser.add_argument("--currency", type=str, help="btc: Bitcoin, iota: IoTa", required=True)
     parser.add_argument("--heuristic", type=str, help="Name of heuristic: h0, or h0+h1", required=True)
+    parser.add_argument("--vis", type=str, help="Visualization: yes or no", required=True)
+
     args = parser.parse_args()
 
     utils.set_seed(args.seed)
     cur = args.currency
     heuristic = args.heuristic
+    vis = args.vis
 
     PATHNAMES = utils.pathnames(cur, heuristic)
 
@@ -34,7 +37,7 @@ def main():
     pathlib.Path(PATHNAMES['generated_files']).mkdir(parents=True, exist_ok=True)
     preprocess.unique_tx_id(PATHNAMES['generated_files'])
 
-    print('Preprocessing completed.')
+    print(cur + ' ' + heuristic + ': preprocessing completed.')
 
     # create correspondence network
     graph_of_correspondences = gt.Graph( directed=False )
@@ -58,7 +61,7 @@ def main():
 
     components = correspondence_network.compute_components(graph_of_correspondences)
 
-    print('Correspondence network created.')
+    print(cur + ' ' + heuristic + ': correspondence network created.')
 
     # write csv files for address_id, edge and components data
     vertices_mapping = []
@@ -78,14 +81,17 @@ def main():
     df = pd.DataFrame.from_dict(components, orient='columns')
     df.to_csv(PATHNAMES['generated_files'] + 'components.csv', index=False)
 
-    print('Writing files completed.')
+    print(cur + ' ' + heuristic + ': writing files completed.')
 
-    fig_dir = PATHNAMES['figure_dir']
+    if vis == 'yes':
 
-    pathlib.Path(fig_dir).mkdir(parents=True, exist_ok=True)
-    draw.graph_draw(graph_of_correspondences, vertex_text=graph_of_correspondences.vertex_index, 
-                    output = fig_dir + 'correspondence_network' + '.pdf')
-    print('Figure completed.')
+        fig_dir = PATHNAMES['figure_dir']
+        pathlib.Path(fig_dir).mkdir(parents=True, exist_ok=True)
+        draw.graph_draw(graph_of_correspondences, vertex_text=graph_of_correspondences.vertex_index, 
+                        output = fig_dir + 'correspondence_network' + '.pdf')
+        print(cur + ' ' + heuristic + ': figure completed.')
+
+
 
 if __name__ == "__main__":
     main()

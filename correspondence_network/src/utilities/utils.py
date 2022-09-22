@@ -17,7 +17,7 @@ def pathnames(cur, heuristic):
 
     dir_name = "../logs/" + cur + "_logs/" + heuristic + '/'
     if cur == 'btc':
-        data_path = "../data/chunk.csv"
+        data_path = "../data/btc.csv"
     elif cur == 'iota':
         data_path = "../data/first_14_days_UTXO_txs_of_IOTA.csv"
     else:
