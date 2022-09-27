@@ -13,9 +13,13 @@ def set_seed(seed):
     np.random.seed(seed)
 
 
-def pathnames(cur, heuristic):
+def pathnames(cur, heuristic, data_is_split):
 
-    dir_name = "../logs/" + cur + "_logs/" + heuristic + '/'
+    if data_is_split == 1:
+        dir_name = "../logs/" + 'split/' + cur + "_logs/" + heuristic + '/'
+    else:
+        dir_name = "../logs/" + cur + "_logs/" + heuristic + '/'
+        
     if cur == 'btc':
         data_path = "../data/btc.csv"
     elif cur == 'iota':

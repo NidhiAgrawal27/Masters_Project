@@ -19,8 +19,9 @@ def main():
     cur = args.currency
     heuristic = args.heuristic
     vis = args.vis
-
-    PATHNAMES = utils.pathnames(cur, heuristic)
+    data_is_split = 0
+    
+    PATHNAMES = utils.pathnames(cur, heuristic, data_is_split)
 
     # Cleaning and preprocessing the data
     df = pd.read_csv(PATHNAMES['data_path'])

@@ -17,8 +17,9 @@ def main():
     utils.set_seed(args.seed)
     cur = args.currency
     heuristic = args.heuristic
-
-    PATHNAMES = utils.pathnames(cur, heuristic)
+    data_is_split = 0
+    
+    PATHNAMES = utils.pathnames(cur, heuristic, data_is_split)
     fig_dir = PATHNAMES['figure_dir']
 
     df = pd.read_csv(PATHNAMES['generated_files'] + 'components.csv')

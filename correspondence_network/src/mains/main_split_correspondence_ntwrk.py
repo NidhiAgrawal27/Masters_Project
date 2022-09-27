@@ -23,8 +23,9 @@ def main():
     heuristic = args.heuristic
     vis = args.vis
     chunksize = int(args.chunksize)
+    data_is_split = 1
 
-    PATHNAMES = utils.pathnames(cur, heuristic)
+    PATHNAMES = utils.pathnames(cur, heuristic, data_is_split)
     dir_name = "../logs/" + 'split/' + cur + "_logs/" + heuristic + '/'
     PATHNAMES["figure_dir"] = dir_name + "figures/"
     PATHNAMES["generated_files"] = dir_name + "generated_files/"
