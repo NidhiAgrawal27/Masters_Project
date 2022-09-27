@@ -9,9 +9,9 @@ from utilities import utils, preprocessing, correspondence_network
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, help="random seed", required=True)
-    parser.add_argument("--currency", type=str, help="btc: Bitcoin, iota: IoTa", required=True)
-    parser.add_argument("--heuristic", type=str, help="Name of heuristic: h0, or h0+h1", required=True)
-    parser.add_argument("--vis", type=str, help="Visualization: yes or no", required=True)
+    parser.add_argument("--currency", type=str, help="currency name example - btc: Bitcoin, iota: IoTa", required=True)
+    parser.add_argument("--heuristic", type=str, help="name of heuristic, example: h0, or h0+h1", required=True)
+    parser.add_argument("--vis", type=str, help="visualization: yes or no", required=True)
 
     args = parser.parse_args()
 
