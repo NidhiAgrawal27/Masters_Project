@@ -1,5 +1,6 @@
 import modin.pandas as mpd
 import pandas as pd
+import ray
 import argparse
 import pathlib
 import graph_tool as gt
@@ -9,6 +10,9 @@ from utilities.concatenate_graphs import concat_addrs_edge, create_graph
 
 
 def main():
+
+    ray.init()
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, help="random seed", required=True)
     parser.add_argument("--currency", type=str, help="currency name example - btc: Bitcoin, iota: IoTa", required=True)
