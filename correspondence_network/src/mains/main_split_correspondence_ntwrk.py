@@ -1,4 +1,4 @@
-# import modin.pandas as pd
+import modin.pandas as mpd
 import pandas as pd
 import argparse
 import pathlib
@@ -33,18 +33,22 @@ def main():
 
     # Cleaning and preprocessing the data
     
-    # df = pd.read_csv(PATHNAMES['data_path'])
     df_dict = {'df_addrs1': '', 'df_addrs2': '', 'df_edge1': '', 'df_edge1': ''}
     iter = 0
 
-    chunks_df = pd.read_csv(PATHNAMES['data_path'], chunksize=chunksize)
+    if cur == 'feathercoin' or cur == 'monacoin':
+        chunks_df = mpd.read_csv(PATHNAMES['data_path'], chunksize=chunksize,header=None)
+        chunks_df.columns=['transaction_id','block_index','input_addresses_x','input_amounts_x',
+                                'output_addresses_y','output_amounts_y','timestamp']
+    else: chunks_df = mpd.read_csv(PATHNAMES['data_path'], chunksize=chunksize)
+
     for df in chunks_df:
+
+        df = df._to_pandas()
         
         preprocess = preprocessing.PreProcessing(df)
 
-        if cur == 'btc': preprocess.drop_unnecessary_cols(col_to_drop = ['Unnamed: 0.1', 'Unnamed: 0', 
-                                                            'block_index', 'timestamp'])
-        else: preprocess.drop_unnecessary_cols(col_to_drop = ['message_id', 'milestone_index', 'datetime'])
+        preprocess.drop_unnecessary_cols(cur)
         
         preprocess.remove_nan_values(addrs_col = ['input_addresses_x', 'output_addresses_y'], 
                                     amt_col = ['input_amounts_x', 'output_amounts_y'])
@@ -52,7 +56,7 @@ def main():
         pathlib.Path(PATHNAMES['generated_files']).mkdir(parents=True, exist_ok=True)
         preprocess.unique_tx_id(PATHNAMES['generated_files'])
 
-        print(cur + ' ' + heuristic + ': preprocessing completed.')
+        print(cur + ' ' + heuristic + ' iteration ' + str(iter) + ': preprocessing completed.')
 
         # create correspondence network
         graph_of_correspondences = gt.Graph( directed=False )

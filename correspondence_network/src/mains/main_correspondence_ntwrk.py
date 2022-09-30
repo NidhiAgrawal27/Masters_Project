@@ -24,13 +24,16 @@ def main():
     PATHNAMES = utils.pathnames(cur, heuristic, data_is_split)
 
     # Cleaning and preprocessing the data
-    df = pd.read_csv(PATHNAMES['data_path'])
+
+    if cur=='feathercoin' or cur=='monacoin':
+        df = pd.read_csv(PATHNAMES['data_path'], header=None)
+        df.columns=['transaction_id','block_index','input_addresses_x','input_amounts_x',
+                        'output_addresses_y','output_amounts_y','timestamp']
+    else: df = pd.read_csv(PATHNAMES['data_path'])
 
     preprocess = preprocessing.PreProcessing(df)
 
-    if cur == 'btc': preprocess.drop_unnecessary_cols(col_to_drop = ['Unnamed: 0.1', 'Unnamed: 0', 
-                                                        'block_index', 'timestamp'])
-    else: preprocess.drop_unnecessary_cols(col_to_drop = ['message_id', 'milestone_index', 'datetime'])
+    preprocess.drop_unnecessary_cols(cur)
     
     preprocess.remove_nan_values(addrs_col = ['input_addresses_x', 'output_addresses_y'], 
                                 amt_col = ['input_amounts_x', 'output_amounts_y'])
