@@ -17,7 +17,9 @@ def main():
     utils.set_seed(args.seed)
     cur = args.currency
     heuristic = args.heuristic
-    data_is_split = 0
+    
+    if cur in ['btc_3GB_chunk', 'btc', 'cardano']: data_is_split = 1
+    else: data_is_split = 0
     
     PATHNAMES = utils.pathnames(cur, heuristic, data_is_split)
     fig_dir = PATHNAMES['figure_dir']
