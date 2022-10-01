@@ -1,9 +1,9 @@
 
 # iota
-python -m mains.main_correspondence_ntwrk --seed 42 --currency iota --heuristic h0 --vis yes
-python -m mains.main_correspondence_ntwrk --seed 42 --currency iota --heuristic h0+h1 --vis yes
-python -m mains.main_network_analysis --seed 42 --currency iota --heuristic h0
-python -m mains.main_network_analysis --seed 42 --currency iota --heuristic h0+h1
+# python -m mains.main_correspondence_ntwrk --seed 42 --currency iota --heuristic h0 --vis yes
+# python -m mains.main_correspondence_ntwrk --seed 42 --currency iota --heuristic h0+h1 --vis yes
+# python -m mains.main_network_analysis --seed 42 --currency iota --heuristic h0
+# python -m mains.main_network_analysis --seed 42 --currency iota --heuristic h0+h1
 
 # # btc_sample
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency btc_sample --heuristic h0 --vis yes
@@ -40,5 +40,6 @@ python -m mains.main_network_analysis --seed 42 --currency iota --heuristic h0+h
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency feathercoin --heuristic h0+h1 --vis no
 # python -m mains.main_network_analysis --seed 42 --currency feathercoin --heuristic h0
 # python -m mains.main_network_analysis --seed 42 --currency feathercoin --heuristic h0+h1
+
 
 
