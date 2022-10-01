@@ -1,5 +1,5 @@
 
-# iota
+# # iota
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency iota --heuristic h0 --vis yes
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency iota --heuristic h0+h1 --vis yes
 # python -m mains.main_network_analysis --seed 42 --currency iota --heuristic h0
