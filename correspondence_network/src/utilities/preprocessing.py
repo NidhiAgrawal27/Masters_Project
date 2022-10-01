@@ -11,8 +11,8 @@ class PreProcessing:
         if 'btc' in cur: col_to_drop = ['Unnamed: 0.1', 'Unnamed: 0', 'block_index', 'timestamp']
         elif 'iota' in cur: col_to_drop = ['message_id', 'milestone_index', 'datetime']
         elif 'cardano' in cur: col_to_drop = ['block_index', 'timestamp']
-        elif 'feathercoin' in cur: col_to_drop = ['Unnamed: 0', 'block_index', 'timestamp']
-        elif 'monacoin' in cur: col_to_drop = ['Unnamed: 0', 'block_index', 'timestamp']
+        elif 'feathercoin' in cur: col_to_drop = ['block_index', 'timestamp']
+        elif 'monacoin' in cur: col_to_drop = ['block_index', 'timestamp']
 
         self.df.drop(col_to_drop, axis=1, inplace=True)
 
