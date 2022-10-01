@@ -21,6 +21,7 @@ def main():
     vis = args.vis
     data_is_split = 0
     
+    
     PATHNAMES = utils.pathnames(cur, heuristic, data_is_split)
 
     # Cleaning and preprocessing the data
