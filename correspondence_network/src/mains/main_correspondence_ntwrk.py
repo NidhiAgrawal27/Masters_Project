@@ -21,7 +21,7 @@ def main():
     vis = args.vis
     data_is_split = 0
     
-    
+
     PATHNAMES = utils.pathnames(cur, heuristic, data_is_split)
 
     # Cleaning and preprocessing the data
@@ -30,6 +30,8 @@ def main():
         df = pd.read_csv(PATHNAMES['data_path'], header=None)
         df.columns=['transaction_id','block_index','input_addresses_x','input_amounts_x',
                         'output_addresses_y','output_amounts_y','timestamp']
+    elif cur == 'btc_2011s': 
+        df = pd.read_csv(PATHNAMES['data_path'],nrows=10000000)
     else: df = pd.read_csv(PATHNAMES['data_path'])
 
     preprocess = preprocessing.PreProcessing(df)
