@@ -94,9 +94,8 @@ def main():
         df_addrs = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
         df_edge = pd.DataFrame.from_dict(edge_mapping, orient='columns')
 
-        iter += 1
 
-        if iter == 1:
+        if iter == 0:
             df_dict['df_addrs1'] = df_addrs
             df_dict['df_edge1'] = df_edge
             continue
@@ -111,8 +110,9 @@ def main():
         df_dict['df_addrs1'] = df_addrs_concat
         df_dict['df_edge1'] = df_edge_concat
 
-
         print(cur + ' ' + heuristic + ' iteration ' + str(iter) + ' : correspondence network created.')
+        
+        iter += 1
         
 
     # end of for loop for processing chunks
