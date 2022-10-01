@@ -33,30 +33,33 @@ def concat_addrs_data(df1, df2):
 
 def change_node_ids(df_edge, df_addrs):
 
+    node_list = []
+
     for idx, row in df_edge.iterrows():
+        
         node1 = int(row[0])
         node2 = int(row[1])
 
-        new_node1 = df_addrs.loc[df_addrs['address_id'] == node1, 'correct_address_id']
-        new_node2 = df_addrs.loc[df_addrs['address_id'] == node2, 'correct_address_id']
+        for node in [node1, node2]:
 
-        # if there are more than one rows with same previous address_id, then select the one where 
-        # previous address id is not same as the correct_address_id
-        # this is because edge data of df2 does not have the nodes from df1 that were initially not present in df2
+            if node not in node_list:
+                
+                new_node = df_addrs.loc[df_addrs['address_id'] == node, 'correct_address_id']
+                
+                # if there are more than one row with same previous address_id, then select the one where 
+                # previous address id is not same as the correct_address_id
+                # this is because edge data of df2 does not have the nodes from df1 that were initially not present in df2
 
-        if len(new_node1) > 1:
-            new_node1 = df_addrs.loc[(df_addrs['address_id'] == node1) & 
-                                                    (df_addrs['address_id'] != df_addrs['correct_address_id'])]
-            df_edge.loc[df_edge['node1'] == node1, 'correct_node1'] = int(new_node1['correct_address_id'])
-        else:
-            df_edge.loc[df_edge['node1'] == node1, 'correct_node1'] = int(new_node1)
-
-        if len(new_node2) > 1:
-            new_node2 = df_addrs.loc[(df_addrs['address_id'] == node2) & 
-                                                    (df_addrs['address_id'] != df_addrs['correct_address_id'])]
-            df_edge.loc[df_edge['node2'] == node2, 'correct_node2'] = int(new_node2['correct_address_id'])
-        else:
-            df_edge.loc[df_edge['node2'] == node2, 'correct_node2'] = int(new_node2)
+                if len(new_node) > 1:
+                    new_node = df_addrs.loc[(df_addrs['address_id'] == node) & 
+                                                            (df_addrs['address_id'] != df_addrs['correct_address_id'])]
+                    df_edge.loc[df_edge['node1'] == node, 'correct_node1'] = int(new_node['correct_address_id'])
+                    df_edge.loc[df_edge['node2'] == node, 'correct_node2'] = int(new_node['correct_address_id'])
+                else:
+                    df_edge.loc[df_edge['node1'] == node, 'correct_node1'] = int(new_node)
+                    df_edge.loc[df_edge['node2'] == node, 'correct_node2'] = int(new_node)
+                
+                node_list.append(node)
 
     return df_edge
 
@@ -84,7 +87,7 @@ def concat_addrs_edge(df_addrs_1, df_addrs_2, df_edge_1, df_edge_2):
     df_edge_2['correct_node1'] = df_edge_2['node1']
     df_edge_2['correct_node2'] = df_edge_2['node2']
     df_edge_new_node_ids = change_node_ids(df_edge_2, df_addrs_concat)
-
+    
     # step 3: rename columns of above edge data of second dataframe
     df_edge_new_node_ids.drop(['node1', 'node2'], axis = 1, inplace=True)
     df_edge_new_node_ids.rename(columns={'correct_node1' : 'node1', 'correct_node2' : 'node2'}, inplace=True)

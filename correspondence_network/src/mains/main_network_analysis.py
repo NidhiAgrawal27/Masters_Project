@@ -11,6 +11,7 @@ def main():
     parser.add_argument("--seed", type=int, help="random seed", required=True)
     parser.add_argument("--currency", type=str, help="btc: Bitcoin, iota: IoTa", required=True)
     parser.add_argument("--heuristic", type=str, help="Name of heuristic: h0, or h0+h1", required=True)
+    parser.add_argument("--data_is_split", type=str, help="Data is processed in chunks: yes or no", required=True)
 
     args = parser.parse_args()
 
@@ -18,9 +19,9 @@ def main():
     cur = args.currency
     heuristic = args.heuristic
     
-    if cur in ['btc_3GB_chunk', 'btc', 'cardano']: data_is_split = 1
+    if args.data_is_split == 'yes': data_is_split = 1
     else: data_is_split = 0
-    
+
     PATHNAMES = utils.pathnames(cur, heuristic, data_is_split)
     fig_dir = PATHNAMES['figure_dir']
 
