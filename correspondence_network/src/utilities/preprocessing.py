@@ -5,6 +5,7 @@ class PreProcessing:
     def __init__(self, df):
         self.df = df
     
+
     def drop_unnecessary_cols(self, cur):
 
         if 'btc' in cur: col_to_drop = ['Unnamed: 0.1', 'Unnamed: 0', 'block_index', 'timestamp']
@@ -28,6 +29,7 @@ class PreProcessing:
         self.df.reset_index(drop=True, inplace=True)
         # print('Total Num of transactions after dropping NaN: {}\n'.format(self.df.shape[0]))
 
+
     def unique_tx_id(self, file_path):
         # Replace alphanumeric tx id with unique numeric ids
         df_unique_tx_id = pd.DataFrame()
@@ -38,4 +40,23 @@ class PreProcessing:
         self.df = self.df.merge(df_unique_tx_id, on='transaction_id', how='left')
         self.df.drop(['transaction_id'], axis=1, inplace=True)
         
+
+    def unique_tx_id_for_split_data(self, df_tx_ids):
+            # Replace alphanumeric tx id with unique numeric ids
+            df_unique_tx_id = pd.DataFrame()
+            df_unique_tx_id['transaction_id'] = pd.unique(self.df[['transaction_id']].values.ravel())
+
+            df_tx_ids = pd.concat([df_tx_ids, df_unique_tx_id])
+            df_tx_ids.reset_index(drop=True, inplace=True)
+            df_tx_ids['tx_unique_id'] = df_tx_ids.index
+            
+            df_unique_tx_id = df_unique_tx_id.merge(df_tx_ids, on='transaction_id')
+
+            self.df = self.df.merge(df_unique_tx_id, on='transaction_id', how='left')
+            self.df.drop(['transaction_id'], axis=1, inplace=True)
+
+            return df_tx_ids
+            
+
+
 

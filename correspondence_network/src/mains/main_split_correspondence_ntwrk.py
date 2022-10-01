@@ -38,6 +38,7 @@ def main():
     # Cleaning and preprocessing the data
     
     df_dict = {'df_addrs1': '', 'df_addrs2': '', 'df_edge1': '', 'df_edge1': ''}
+    df_tx_ids = pd.DataFrame()
     iter = 0
 
     if cur == 'feathercoin' or cur == 'monacoin':
@@ -58,7 +59,7 @@ def main():
                                     amt_col = ['input_amounts_x', 'output_amounts_y'])
 
         pathlib.Path(PATHNAMES['generated_files']).mkdir(parents=True, exist_ok=True)
-        preprocess.unique_tx_id(PATHNAMES['generated_files'])
+        df_tx_ids = preprocess.unique_tx_id_for_split_data(df_tx_ids)
 
         print(cur + ' ' + heuristic + ' iteration ' + str(iter) + ': preprocessing completed.')
 
@@ -120,6 +121,7 @@ def main():
 
     df_dict['df_addrs1'].to_csv(PATHNAMES['generated_files'] + 'address_ids.csv', index=False)
     df_dict['df_edge1'].to_csv(PATHNAMES['generated_files'] + 'edge_data.csv', index=False)
+    df_tx_ids.to_csv(PATHNAMES['generated_files'] + 'transaction_ids.csv', index=False)
     
     graph = gt.Graph( directed=False )
     create_graph(graph, df_dict['df_addrs1'], df_dict['df_edge1'])
