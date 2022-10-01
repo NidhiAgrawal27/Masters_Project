@@ -32,9 +32,11 @@ def main():
     yes_annotation = 1
     no_annotation = 0
 
-    if 'btc' in cur: logscale = 'xy'
-    elif 'iota' in cur: logscale = 'x'
-    else: logscale = 0
+    if cur == 'iota': 
+        logscale = 'x'
+    else: 
+        logscale = 'xy'
+        yes_annotation = 0
 
     plot_graph(df['num_of_addrs'], 'line', no_annotation, 
                 'Component Number', 'Num of addresses', 
@@ -47,9 +49,11 @@ def main():
                 logscale, fig_dir+'bar_num_of_addrs_vs_comp')
     
     
-    if 'btc' in cur: logscale = 'xy'
-    elif 'iota' in cur: logscale = 'y'
-    else: logscale = 0
+    if cur == 'iota': 
+        logscale = 'y'
+    else: 
+        logscale = 'xy'
+        yes_annotation = 0
 
     plot_graph(df_grouped_by_num_addrs, 'bar', yes_annotation, 
                 'Number of addresses', 
