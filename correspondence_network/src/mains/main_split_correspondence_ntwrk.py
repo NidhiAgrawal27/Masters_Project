@@ -1,6 +1,6 @@
 import modin.pandas as mpd
 import pandas as pd
-import ray
+#import ray
 import argparse
 import pathlib
 import graph_tool as gt
@@ -11,7 +11,7 @@ from utilities.concatenate_graphs import concat_addrs_edge, create_graph
 
 def main():
 
-    ray.init()
+    #ray.init()
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, help="random seed", required=True)
@@ -46,6 +46,7 @@ def main():
         chunks_df.columns=['transaction_id','block_index','input_addresses_x','input_amounts_x',
                                 'output_addresses_y','output_amounts_y','timestamp']
     else: chunks_df = mpd.read_csv(PATHNAMES['data_path'], chunksize=chunksize)
+    
 
     for df in chunks_df:
 
@@ -62,12 +63,19 @@ def main():
         df_tx_ids = preprocess.unique_tx_id_for_split_data(df_tx_ids)
 
         print(cur + ' ' + heuristic + ' iteration ' + str(iter) + ': preprocessing completed.')
+        
+        if iter == 0:
+            # create correspondence network
+            graph_of_correspondences = gt.Graph( directed=False )
+            nodes_dict = {}
+            vertex_property = graph_of_correspondences.new_vertex_property("string")
+            edge_property = graph_of_correspondences.new_edge_property("object")
 
-        # create correspondence network
-        graph_of_correspondences = gt.Graph( directed=False )
-        nodes_dict = {}
-        vertex_property = graph_of_correspondences.new_vertex_property("string")
-        edge_property = graph_of_correspondences.new_edge_property("object")
+        # # create correspondence network
+        # graph_of_correspondences = gt.Graph( directed=False )
+        # nodes_dict = {}
+        # vertex_property = graph_of_correspondences.new_vertex_property("string")
+        # edge_property = graph_of_correspondences.new_edge_property("object")
 
         preprocess.df.apply(
                     correspondence_network.add_correspondence, 
@@ -83,50 +91,72 @@ def main():
                     axis=1
                 )
 
-        vertices_mapping = []
-        for i in range(graph_of_correspondences.num_vertices()):
-            vertices_mapping.append({'address' : vertex_property[i], 'address_id' : i})
+        print(cur + ' ' + heuristic + ' iteration ' + str(iter) + ' : correspondence network created.')
+#         vertices_mapping = []
+#         for i in range(graph_of_correspondences.num_vertices()):
+#             vertices_mapping.append({'address' : vertex_property[i], 'address_id' : i})
 
-        edge_mapping = []
-        for e in graph_of_correspondences.edges(): 
-            edge_mapping.append(edge_property[e])
+#         edge_mapping = []
+#         for e in graph_of_correspondences.edges(): 
+#             edge_mapping.append(edge_property[e])
 
-        df_addrs = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
-        df_edge = pd.DataFrame.from_dict(edge_mapping, orient='columns')
+#         df_addrs = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
+#         df_edge = pd.DataFrame.from_dict(edge_mapping, orient='columns')
 
+        iter += 1
 
-        if iter == 0:
-            df_dict['df_addrs1'] = df_addrs
-            df_dict['df_edge1'] = df_edge
-            continue
+#         if iter == 1:
+#             df_dict['df_addrs1'] = df_addrs
+#             df_dict['df_edge1'] = df_edge
+#             continue
         
-        df_dict['df_addrs2'] = df_addrs
-        df_dict['df_edge2'] = df_edge
+#         df_dict['df_addrs2'] = df_addrs
+#         df_dict['df_edge2'] = df_edge
 
         # concatenate address and edge data of the current chunk with previous chunks
 
-        df_addrs_concat, df_edge_concat = concat_addrs_edge(df_dict['df_addrs1'], df_dict['df_addrs2'], 
-                                                                df_dict['df_edge1'], df_dict['df_edge2'])
-        df_dict['df_addrs1'] = df_addrs_concat
-        df_dict['df_edge1'] = df_edge_concat
+        # df_addrs_concat, df_edge_concat = concat_addrs_edge(df_dict['df_addrs1'], df_dict['df_addrs2'], 
+        #                                                         df_dict['df_edge1'], df_dict['df_edge2'])
+        # df_dict['df_addrs1'] = df_addrs_concat
+        # df_dict['df_edge1'] = df_edge_concat
 
-        print(cur + ' ' + heuristic + ' iteration ' + str(iter) + ' : correspondence network created.')
-        
-        iter += 1
+
         
 
     # end of for loop for processing chunks
 
     # write csv files for address_id, edge and components data
 
-    df_dict['df_addrs1'].to_csv(PATHNAMES['generated_files'] + 'address_ids.csv', index=False)
-    df_dict['df_edge1'].to_csv(PATHNAMES['generated_files'] + 'edge_data.csv', index=False)
-    df_tx_ids.to_csv(PATHNAMES['generated_files'] + 'transaction_ids.csv', index=False)
+#     df_dict['df_addrs1'].to_csv(PATHNAMES['generated_files'] + 'address_ids.csv', index=False)
+#     df_dict['df_edge1'].to_csv(PATHNAMES['generated_files'] + 'edge_data.csv', index=False)
+#     df_tx_ids.to_csv(PATHNAMES['generated_files'] + 'transaction_ids.csv', index=False)
     
-    graph = gt.Graph( directed=False )
-    create_graph(graph, df_dict['df_addrs1'], df_dict['df_edge1'])
+#     graph = gt.Graph( directed=False )
+#     create_graph(graph, df_dict['df_addrs1'], df_dict['df_edge1'])
 
-    components = correspondence_network.compute_components(graph)
+#     components = correspondence_network.compute_components(graph)
+#     df = pd.DataFrame.from_dict(components, orient='columns')
+#     df.to_csv(PATHNAMES['generated_files'] + 'components.csv', index=False)
+
+    components = correspondence_network.compute_components(graph_of_correspondences)
+
+    print(cur + ' ' + heuristic + ': components computed.')
+
+    # write csv files for address_id, edge and components data
+    vertices_mapping = []
+    for i in range(graph_of_correspondences.num_vertices()):
+        vertices_mapping.append({'address' : vertex_property[i], 'address_id' : i})
+
+    edge_mapping = []
+    for e in graph_of_correspondences.edges(): 
+        edge_mapping.append(edge_property[e])
+
+    df = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
+    df.to_csv(PATHNAMES['generated_files'] + 'address_ids.csv', index=False)
+
+    df = pd.DataFrame.from_dict(edge_mapping, orient='columns')
+    df.to_csv(PATHNAMES['generated_files'] + 'edge_data.csv', index=False)
+        
     df = pd.DataFrame.from_dict(components, orient='columns')
     df.to_csv(PATHNAMES['generated_files'] + 'components.csv', index=False)
 
@@ -144,5 +174,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
 
