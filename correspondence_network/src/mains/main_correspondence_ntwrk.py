@@ -24,19 +24,28 @@ def main():
 
     PATHNAMES = utils.pathnames(cur, heuristic, data_is_split)
 
-    # Cleaning and preprocessing the data
-
     if cur=='feathercoin' or cur=='monacoin':
         df = pd.read_csv(PATHNAMES['data_path'], header=None)
         df.columns=['transaction_id','block_index','input_addresses_x','input_amounts_x',
                         'output_addresses_y','output_amounts_y','timestamp']
     elif cur == 'btc_2011s': 
         df = pd.read_csv(PATHNAMES['data_path'],nrows=10000000)
+    elif cur == 'btc_2012':
+        df = pd.read_csv(PATHNAMES['data_path'], nrows=15000000)
+        print(df.columns)
+        df_timestamp = pd.DataFrame(df['timestamp'].between(1310000000, 1360000000))
+        idx = df_timestamp.index[df_timestamp[0] == True].tolist()
+        df = df.iloc[idx]
     else: df = pd.read_csv(PATHNAMES['data_path'])
+
+
+    # Cleaning and preprocessing the data
 
     preprocess = preprocessing.PreProcessing(df)
 
-    preprocess.drop_unnecessary_cols(cur)
+    col_to_drop = [x for x in df.columns[df.columns.str.contains('Unnamed')]] # for bitcoin data
+
+    preprocess.drop_unnecessary_cols(cur, col_to_drop)
     
     preprocess.remove_nan_values(addrs_col = ['input_addresses_x', 'output_addresses_y'], 
                                 amt_col = ['input_amounts_x', 'output_amounts_y'])
