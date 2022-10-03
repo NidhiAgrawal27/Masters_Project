@@ -23,12 +23,12 @@ def pathnames(cur, heuristic, data_is_split):
     if cur == 'btc_sample':       data_path = "../data/btc_sample.csv"
     elif cur == 'btc_3GB_chunk':  data_path = "../data/btc_3GB_chunk.csv"
     elif cur == 'btc':            data_path = "/local/scratch/btc_trx/BTC_TXS.csv"
-    elif cur == 'btc_2011s':      data_path = "/local/scratch/btc_trx/BTC_TXS.csv"
+    elif cur == 'btc_2012':       data_path = "/local/scratch/btc_trx/BTC_TXS.csv"
     elif cur == 'iota':           data_path = "../data/first_14_days_UTXO_txs_of_IOTA.csv"
     elif cur == 'cardano':        data_path = "/local/scratch/btc_trx/ADA_TXS.csv"
     elif cur == 'feathercoin':    data_path = "/local/scratch/btc_trx/FTC_TXS.csv"
     elif cur == 'monacoin':       data_path = "/local/scratch/btc_trx/MONA_TXS.csv"
-    elif cur == 'sample':         data_path = "../data/sample_data.csv"
+    else: data_path = "../data/sample_data.csv"
 
     PATHNAMES = {
                     "data_path": data_path,
@@ -37,4 +37,5 @@ def pathnames(cur, heuristic, data_is_split):
                 }
 
     return PATHNAMES
+
 

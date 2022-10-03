@@ -6,14 +6,16 @@ class PreProcessing:
         self.df = df
     
 
-    def drop_unnecessary_cols(self, cur):
+    def drop_unnecessary_cols(self, cur, col):
 
-        if 'btc' in cur: col_to_drop = ['Unnamed: 0.1', 'Unnamed: 0', 'block_index', 'timestamp']
-        if 'btc_2011s' in cur: col_to_drop = ['Unnamed: 0', 'block_index', 'timestamp']
+        if 'btc' in cur: col_to_drop = ['block_index', 'timestamp']
         elif 'iota' in cur: col_to_drop = ['message_id', 'milestone_index', 'datetime']
         elif 'cardano' in cur: col_to_drop = ['block_index', 'timestamp']
         elif 'feathercoin' in cur: col_to_drop = ['block_index', 'timestamp']
         elif 'monacoin' in cur: col_to_drop = ['block_index', 'timestamp']
+
+        if col != []:
+            col_to_drop.extend(col)
 
         self.df.drop(col_to_drop, axis=1, inplace=True)
 
