@@ -28,8 +28,6 @@ def main():
         df = pd.read_csv(PATHNAMES['data_path'], header=None)
         df.columns=['transaction_id','block_index','input_addresses_x','input_amounts_x',
                         'output_addresses_y','output_amounts_y','timestamp']
-    elif cur == 'btc_2011s': 
-        df = pd.read_csv(PATHNAMES['data_path'],nrows=10000000)
     elif cur == 'btc_2012':
         df = pd.read_csv(PATHNAMES['data_path'], nrows=15000000)
         print(df.columns)
@@ -97,7 +95,8 @@ def main():
     df = pd.DataFrame.from_dict(components, orient='columns')
     df.to_csv(PATHNAMES['generated_files'] + 'components.csv', index=False)
 
-    print(cur + ' ' + heuristic + ': writing files completed.')
+    print(cur + ' ' + heuristic + ': writing files completed.')\
+
 
     if vis == 'yes':
 

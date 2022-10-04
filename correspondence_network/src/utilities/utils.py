@@ -21,8 +21,6 @@ def pathnames(cur, heuristic, data_is_split):
         dir_name = "../logs/" + cur + "_logs/" + heuristic + '/'
         
     if cur == 'btc_sample':       data_path = "../data/btc_sample.csv"
-    elif cur == 'btc_3GB_chunk':  data_path = "../data/btc_3GB_chunk.csv"
-    elif cur == 'btc':            data_path = "/local/scratch/btc_trx/BTC_TXS.csv"
     elif cur == 'btc_2012':       data_path = "/local/scratch/btc_trx/BTC_TXS.csv"
     elif cur == 'iota':           data_path = "../data/first_14_days_UTXO_txs_of_IOTA.csv"
     elif cur == 'cardano':        data_path = "/local/scratch/btc_trx/ADA_TXS.csv"

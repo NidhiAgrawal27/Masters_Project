@@ -1,4 +1,3 @@
-from cmath import log
 import matplotlib.pyplot as plt
 
 # Function to plot bar graph  given a dataframe
@@ -30,4 +29,6 @@ def plot_graph(df, graph_type, anot, xlabel, ylabel, title, colour, log_scale, f
     plt.savefig(fig_file_name, bbox_inches="tight")
     
     return
+
+
 
