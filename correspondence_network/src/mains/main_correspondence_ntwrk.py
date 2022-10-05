@@ -138,6 +138,7 @@ def main():
                         output = fig_dir + 'correspondence_network' + '.pdf')
         print(cur + ' ' + heuristic + ': network figure completed.')
 
+    print('*********************** Processing of ' + cur + ' completed ***********************\n\n')
 
 
 if __name__ == "__main__":
