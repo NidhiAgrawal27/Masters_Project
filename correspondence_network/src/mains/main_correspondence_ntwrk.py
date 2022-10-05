@@ -37,7 +37,8 @@ def main():
     df_tx_ids = pd.DataFrame()
     iter = 0
 
-
+    print('*********************** Processing of ' + cur + ' initiated ***********************')
+    
     if data_is_split == 'no':
 
         if cur=='feathercoin' or cur=='monacoin':
