@@ -1,93 +1,39 @@
-import numpy as np
-from ast import literal_eval
-import graph_tool.topology as gtt
+from utilities import add_nodes_edges, preprocessing
 
 
-def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx, ip_amt_idx, 
-                        op_amt_idx, nodes_dict, vertex_property, edge_property, heuristic):
+def correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter):
+        
+    preprocess = preprocessing.PreProcessing(df)
 
-    # h0: all input addresses of a tx belong to same user
-    nodes_list = literal_eval(row[ip_addrs_idx])
+    col_to_drop = [x for x in df.columns[df.columns.str.contains('Unnamed')]] # for bitcoin data
 
-    # h1: get change address
-    h1 = 0
-
-    if heuristic == 'h0+h1':
-        ip_amt = literal_eval(row[ip_amt_idx])
-        op_amt = literal_eval(row[op_amt_idx])
-        op_addrs = literal_eval(row[op_addrs_idx])
-
-        # apply h1 only if op addresses are different from ip addreses
-        if len(set(nodes_list) & set(op_addrs)) == 0: 
-            if min(op_amt) < min(ip_amt): 
-                idx = np.argmin(op_amt)
-                change_addrs = op_addrs[idx]
-                nodes_list.append(change_addrs)
-                h1 = 1
-
-    nodes_list = list(set(nodes_list))
-
-    if len(nodes_list) <= 1: return
-
-    # create nodes
-    for node in nodes_list :
-        if node in nodes_dict: continue
-        vertex = graph_of_correspondences.add_vertex()
-        idx = graph_of_correspondences.vertex_index[vertex]
-        nodes_dict[node] = idx
-        vertex_property[vertex] = node
-
-    # create edges for fully connected clusters in network
-    for i in range(len(nodes_list)-1):
-        v0 = nodes_dict[nodes_list.pop(0)]
-
-        for j in range(len(nodes_list)):
-            v1 = nodes_dict[nodes_list[j]]
-
-            if heuristic == 'h0':
-                if not graph_of_correspondences.edge(v0,v1):
-                    e = graph_of_correspondences.add_edge(v0,v1)
-                    edge_property[e] = {
-                                        'node1': v0, 
-                                        'node2': v1, 
-                                        'h0': 1,
-                                        'count_of_same_edge_h0': 1
-                                        }
-                else: 
-                    e = graph_of_correspondences.edge(v0,v1)
-                    edge_property[e]['count_of_same_edge_h0'] += 1
-            
-            elif heuristic == 'h0+h1':
-                if not graph_of_correspondences.edge(v0,v1):
-                    e = graph_of_correspondences.add_edge(v0,v1)
-                    edge_property[e] = {
-                                        'node1': v0, 
-                                        'node2': v1, 
-                                        'h0': 1, 
-                                        'h1': h1, 
-                                        'count_of_same_edge_h0': 1, 
-                                        'count_of_same_edge_h0_h1': h1
-                                        }
-                else: 
-                    e = graph_of_correspondences.edge(v0,v1)
-                    edge_property[e]['count_of_same_edge_h0'] += 1
-                    edge_property[e]['count_of_same_edge_h0_h1'] += h1
-
-    return nodes_dict
+    preprocess.drop_unnecessary_cols(cur, col_to_drop)
     
+    preprocess.remove_nan_values(addrs_col = ['input_addresses_x', 'output_addresses_y'], 
+                                amt_col = ['input_amounts_x', 'output_amounts_y'])
 
-def compute_components(graph_of_correspondences):
-    components = {}
-    comp_list = []
-    comps, _ = gtt.label_components(graph_of_correspondences)
+    df_tx_ids = preprocess.unique_tx_id_for_split_data(df_tx_ids)
 
-    for i in range(graph_of_correspondences.num_vertices()):
-        c = comps[i]
-        if c not in components: components[c] = [i]
-        else: components[c].append(i)
+    print(cur + ' ' + heuristic + ' iteration ' + str(iter) + ': Transaction ids created.')
 
-    for c in components:
-        comp_list.append({'component' : c, 'num_of_addrs' : len(components[c]), 'address_ids' : components[c]})
+    # create correspondence network
+    preprocess.df.apply(
+                add_nodes_edges.add_correspondence, 
+                graph_of_correspondences=graph_of_correspondences, 
+                ip_addrs_idx = 0, 
+                op_addrs_idx = 2, 
+                ip_amt_idx = 1, 
+                op_amt_idx = 3,
+                nodes_dict = nodes_dict,
+                vertex_property = vertex_property,
+                edge_property = edge_property,
+                heuristic = heuristic,
+                axis=1
+            )
 
-    return comp_list
+    print(cur + ' ' + heuristic + ' iteration ' + str(iter) + ' : correspondence network created.')
+
+    iter += 1
+
+    return graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter
 
