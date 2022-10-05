@@ -271,6 +271,7 @@ dependencies:
     - matplotlib==3.5.2
     - modin==0.15.2
     - modin-spreadsheet==0.1.2
+    - mpmath==1.2.1
     - multidict==6.0.2
     - multiprocess==0.70.12.2
     - networkx==2.8
@@ -283,6 +284,7 @@ dependencies:
     - pip==22.1
     - platformdirs==2.5.2
     - plumbum==1.7.2
+    - powerlaw==1.5
     - protobuf==3.20.1
     - psutil==5.9.0
     - py-spy==0.3.12
