@@ -47,7 +47,7 @@ def main():
         elif cur == 'btc_2012':
             df = pd.read_csv(PATHNAMES['data_path'], nrows=15000000)
             df_timestamp = pd.DataFrame(df['timestamp'].between(1310000000, 1360000000))
-            idx = df_timestamp.index[df_timestamp[0] == True].tolist()
+            idx = df_timestamp.index[df_timestamp == True].tolist()
             df = df.iloc[idx]
 
         else: df = pd.read_csv(PATHNAMES['data_path'])
