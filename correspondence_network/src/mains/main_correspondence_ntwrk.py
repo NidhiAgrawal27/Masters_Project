@@ -37,7 +37,7 @@ def main():
     df_tx_ids = pd.DataFrame()
     iter = 0
 
-    print('*********************** Processing of ' + cur + ' initiated ***********************')
+    print('*********************** Processing of ' + cur + ' initiated ***********************\n')
     
     if data_is_split == 'no':
 
