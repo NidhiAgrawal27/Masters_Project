@@ -63,4 +63,3 @@ def plotPowerLaw(degreeArray, degSpacing, avgDeg, fig_file_name, cur):
     plt.legend(fontsize = 12)
     plt.savefig(fig_file_name, bbox_inches="tight")
     
-
