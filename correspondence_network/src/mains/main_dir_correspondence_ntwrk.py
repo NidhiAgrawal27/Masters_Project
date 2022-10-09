@@ -114,6 +114,8 @@ def main():
     df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
     # df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
     df_components = pd.DataFrame.from_dict(components, orient='columns')
+    #df_modularity = pd.DataFrame.from_dict(modularity, orient='columns')
+
 
     # visualization: density graph and power law plot
     fig_dir = PATHNAMES['figure_dir'] + cur + '_' + heuristic + '_'
