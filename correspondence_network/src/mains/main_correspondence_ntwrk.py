@@ -135,6 +135,7 @@ def main():
     df_address_ids.to_csv(PATHNAMES['generated_files'] + 'address_ids.csv', index=False)
     df_edge_data.to_csv(PATHNAMES['generated_files'] + 'edge_data.csv', index=False)
     df_components.to_csv(PATHNAMES['generated_files'] + 'components.csv', index=False)
+    #df_modularity.to_csv(PATHNAMES['generated_files'] + 'modularity.csv', index = False)
     print(cur + ' ' + heuristic + ': writing files completed.')
 
     # visualize network
