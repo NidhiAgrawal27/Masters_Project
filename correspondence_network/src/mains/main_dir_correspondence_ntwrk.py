@@ -97,6 +97,11 @@ def main():
     print(cur + ' ' + heuristic + ': correspondence network created.')
     print('\n')
 
+    # Modularity
+    # modularity = compute_components.compute_modularity(graph_of_correspondences)
+    # print(cur + ' ' + heuristic + ': modularity computed.')
+    # print('\n')
+
     # Create df for address_id, edge and components data
     vertices_mapping = []
     for i in range(graph_of_correspondences.num_vertices()):
