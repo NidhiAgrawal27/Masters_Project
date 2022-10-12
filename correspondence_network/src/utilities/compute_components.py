@@ -47,26 +47,23 @@ def get_majority_voter_state(graph_of_correspondence,number_of_components,fig_fi
     
 #     comps, _ = gtt.label_components(graph_of_correspondences)
     
+#     modularity_graph = gti.modularity(graph_of_correspondences, comps, gamma = 1., weight = None)
+
+#     print("Graph Modularity: ", modularity_graph)
 
 #     for i in set(comps.a):
         
 #         component = gt.GraphView(graph_of_correspondences, vfilt=comps.a == i)
         
-#         # vprop = component.new_vertex_property("int")
-#         # component.vp.label = vprop
-#         # component.graph_properties["label"] = i
-#         # component_pmap = gt.PropertyMap(component, "bool")
-#         # component_vpm = gt.VertexPropertyMap(component_pmap,component)
-#         # vertices = (v for v in component.vertices())
-#         # a = component.vertices_property_map()
-
+#         component_vmap, _= gtt.label_components(component)
+        
 #         num_edges = len([(component.vertex_index[e.source()], component.vertex_index[e.target()])
 #            for e in component.edges()])
 
 #         #num_vertices = len([ v for v in component.vertices()])   
 #         num_vertices = len(component.get_vertices())   
 
-#         modularity = gti.modularity(component, graph_of_correspondences, gamma = 1., weight = None)
+#         modularity = gti.modularity(component, component_vmap, gamma = 1., weight = None)
 #         modularity_list.append({'component' : i, 'num_of_addrs' : num_vertices, 'num_of_edges' : num_edges, 'modularity score' : modularity})
 
 
