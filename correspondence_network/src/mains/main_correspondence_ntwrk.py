@@ -5,7 +5,7 @@ import pathlib
 import graph_tool as gt
 from graph_tool import draw
 from utilities import set_seed, compute_components, pathnames, correspondence_network
-from utilities.visualization import plotPowerLaw, plot_density_graph
+from utilities.visualization import plotPowerLaw, plot_density_graph, plot_modularity_distribution
 
 
 def main():
@@ -58,9 +58,9 @@ def main():
 
     elif data_is_split == 'yes':
 
-        import ray
+        # import ray
         import modin.pandas as mpd
-        ray.init()
+        # ray.init()
 
         if cur == 'feathercoin' or cur == 'monacoin':
             chunks_df = mpd.read_csv(PATHNAMES['data_path'], chunksize=chunksize,header=None)
@@ -93,14 +93,11 @@ def main():
 
 
     components = compute_components.compute_components(graph_of_correspondences)
+    label_prop_states = compute_components.get_majority_voter_state(graph_of_correspondences,graph_of_correspondences.num_vertices())
 
-    print(cur + ' ' + heuristic + ': correspondence network created.')
+    print(cur + ' ' + heuristic + ': correspondence network created, communities and clusters detected.')
     print('\n')
 
-    # Modularity
-    # modularity = compute_components.compute_modularity(graph_of_correspondences)
-    # print(cur + ' ' + heuristic + ': modularity computed.')
-    # print('\n')
 
     # Create df for address_id, edge and components data
     vertices_mapping = []
@@ -114,14 +111,19 @@ def main():
     df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
     df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
     df_components = pd.DataFrame.from_dict(components, orient='columns')
-    #df_modularity = pd.DataFrame.from_dict(modularity, orient='columns')
 
-    
+    #computing modularity of every component
+    df_components["modularity"] = df_components.apply(compute_components.get_component_modularity,
+                                                    graph_of_correspondences=graph_of_correspondences,
+                                                    graph_vertex_property=label_prop_states,
+                                                    graph_edge_property=edge_property,
+                                                    axis=1)
 
     # visualization: density graph and power law plot
     fig_dir = PATHNAMES['figure_dir'] + cur + '_' + heuristic + '_'
 
     plot_density_graph(df_components['num_of_addrs'], 'Number of addesses', fig_dir + 'density_plot.png', cur)
+    plot_modularity_distribution(df_components['modularity'], "Modularity", fig_dir + 'modularity_plot.png', cur)
 
     # an array of degrees of all nodes in the graph
     degreeArray = np.asarray([d for d in graph_of_correspondences.degree_property_map('out').get_array()])
@@ -135,9 +137,8 @@ def main():
     # write csv files for transaction_ids, address_id, edge and components data
     df_tx_ids.to_csv(PATHNAMES['generated_files'] + 'transaction_ids.csv', index=False)
     df_address_ids.to_csv(PATHNAMES['generated_files'] + 'address_ids.csv', index=False)
-    df_edge_data.to_csv(PATHNAMES['generated_files'] + 'edge_data.csv', index=False)
+    # df_edge_data.to_csv(PATHNAMES['generated_files'] + 'edge_data.csv', index=False)
     df_components.to_csv(PATHNAMES['generated_files'] + 'components.csv', index=False)
-    #df_modularity.to_csv(PATHNAMES['generated_files'] + 'modularity.csv', index = False)
     print(cur + ' ' + heuristic + ': writing files completed.')
 
     # visualize network

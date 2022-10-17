@@ -16,6 +16,14 @@ def plot_density_graph(df, xlabel, fig_file_name, cur):
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
 
+def plot_modularity_distribution(df, xlabel, fig_file_name, cur):
+    plt.figure(figsize=(8,8))
+    plt.hist(df, bins = 10, density = True, edgecolor='White')                          
+    plt.xlabel(xlabel, fontsize=14)
+    plt.xlim([0,1])
+    plt.title("Distribution of Modularity for "+ cur.capitalize(), fontsize=15)
+    plt.savefig(fig_file_name, bbox_inches="tight")
+    return
 
 def distributions(avgDeg, degSpacing):
     

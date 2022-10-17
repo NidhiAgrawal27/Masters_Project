@@ -18,7 +18,7 @@ def correspondence_network(df, graph_of_correspondences, vertex_property, edge_p
 
     # create correspondence network
     preprocess.df.apply(
-                add_nodes_edges.add_correspondence, 
+                add_nodes_edges.add_correspondence_single_edge_property, 
                 graph_of_correspondences=graph_of_correspondences, 
                 ip_addrs_idx = 0, 
                 op_addrs_idx = 2, 
