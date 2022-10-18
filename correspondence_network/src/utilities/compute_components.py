@@ -37,7 +37,7 @@ def get_component_modularity(df_components_series,graph_of_correspondences,graph
 
     address_ids = df_components_series[2]
     comp_graph = gt.GraphView(graph_of_correspondences, vfilt=lambda v: v in address_ids)
-    modularity = gti.modularity(comp_graph,b=graph_vertex_property)
+    modularity = gti.modularity(comp_graph,b=graph_vertex_property,weight=graph_edge_property)
  
     if np.isnan(modularity):
         return 0
