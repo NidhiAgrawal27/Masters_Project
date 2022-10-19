@@ -13,6 +13,8 @@ class PreProcessing:
         elif 'cardano' in cur: col_to_drop = ['block_index', 'timestamp']
         elif 'feathercoin' in cur: col_to_drop = ['block_index', 'timestamp']
         elif 'monacoin' in cur: col_to_drop = ['block_index', 'timestamp']
+        elif 'iota_split' in cur: col_to_drop = ['message_id', 'milestone_index', 'datetime', 'scraped']
+
 
         if col != []:
             col_to_drop.extend(col)
