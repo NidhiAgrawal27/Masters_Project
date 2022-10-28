@@ -14,8 +14,6 @@ def correspondence_network(df, graph_of_correspondences, vertex_property, edge_p
 
     df_tx_ids = preprocess.unique_tx_id_for_split_data(df_tx_ids)
 
-    print(cur + ' ' + heuristic + ' iter ' + str(iter) + ' : transaction ids created')
-
     # create correspondence network
     preprocess.df.apply(
                 add_nodes_edges.add_correspondence, 
