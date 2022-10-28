@@ -110,6 +110,7 @@ def main():
             else: print(cur + ' ' + heuristic + ': transaction_ids.csv exists')
 
             # save graph_of_correspondences
+            print(cur + ' ' + heuristic + ': saving graph...')
             graph_of_correspondences.save(dir_generated_files + 'graph.xml.gz')
             print(cur + ' ' + heuristic + ': correspondence network created')
             print(cur + ' ' + heuristic + ': graph saved')
