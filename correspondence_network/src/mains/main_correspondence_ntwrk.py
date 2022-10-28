@@ -172,7 +172,7 @@ def main():
                 print(cur + ' ' + heuristic + ': network figure completed')
             else: print(cur + ' ' + heuristic + ': correspondence_network.pdf exists')
 
-        print('\n\n*********************** Processing of ' + cur + ' ' + heuristic + ' completed ***********************\n')
+    print('\n\n*********************** Processing of ' + cur + ' ' + heuristic + ' completed ***********************\n')
 
     print()
 
