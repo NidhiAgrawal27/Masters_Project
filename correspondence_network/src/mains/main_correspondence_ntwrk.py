@@ -48,13 +48,13 @@ def main():
     df_components = pd.DataFrame()
     iter = 0
 
-    for tq in tqdm(range(1), desc = cur + ' ' + heuristic + ' tqdm() Progress Bar: '):
+    print('\n\n*********************** Processing of ' + cur + ' ' + heuristic + ' initiated ***********************\n')
 
-        print('\n\n*********************** Processing of ' + cur + ' ' + heuristic + ' initiated ***********************\n')
+    for tq in tqdm(range(1), desc = cur + ' ' + heuristic + ' tqdm() Progress Bar: '):
 
         if os.path.isfile(graph_path): 
 
-            print('Loading graph: ', graph_path, '\n')
+            print('\n\nLoading graph: ', graph_path, '\n')
             print(cur + ' ' + heuristic + ': loading graph...')
             graph_of_correspondences = gt.load_graph(graph_path)
             print(cur + ' ' + heuristic + ': graph loaded')

@@ -1,5 +1,5 @@
 
-# iota
+# # iota
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency iota --heuristic h0 --vis yes --data_is_split no
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency iota --heuristic h0+h1 --vis yes --data_is_split no
 
@@ -26,5 +26,4 @@
 # # feathercoin
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency feathercoin --heuristic h0 --vis no --data_is_split no
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency feathercoin --heuristic h0+h1 --vis no --data_is_split no
-
 
