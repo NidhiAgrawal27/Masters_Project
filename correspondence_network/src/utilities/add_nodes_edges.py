@@ -2,7 +2,6 @@ import numpy as np
 from ast import literal_eval
 
 
-
 def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx, ip_amt_idx, 
                         op_amt_idx, nodes_dict, vertex_property, edge_property, heuristic):
 

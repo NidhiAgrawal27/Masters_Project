@@ -1,22 +1,23 @@
 import graph_tool.topology as gtt
-import matplotlib.pyplot as plt
-import graph_tool.inference as  gti
-import graph_tool as gt
 from graph_tool import dynamics as gtd
+import tqdm as tqdm
 
-def compute_components(graph_of_correspondences):
+
+def compute_components(graph_of_correspondences, comps):
     components = {}
     comp_list = []
-    comps, _ = gtt.label_components(graph_of_correspondences)
 
-    for i in range(graph_of_correspondences.num_vertices()):
+    print('\nCompute Components of Graph Progress Bar:')
+    for i in tqdm.tqdm(range(graph_of_correspondences.num_vertices())):
         c = comps[i]
         if c not in components: components[c] = [i]
         else: components[c].append(i)
+    print()
 
-    for c in components:
+    print('Create Components List Progress Bar:')
+    for c in tqdm.tqdm(components):
         comp_list.append({'component' : c, 'num_of_addrs' : len(components[c]), 'address_ids' : components[c]})
+    print()
 
     return comp_list
 
-  
