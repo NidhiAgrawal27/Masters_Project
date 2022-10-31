@@ -21,7 +21,7 @@ def pathnames(cur, heuristic):
     elif cur == 'btc_2012':       data_path = "/local/scratch/btc_trx/BTC_TXS.csv"
     elif cur == 'iota_14days':    data_path = "../data/first_14_days_UTXO_txs_of_IOTA.csv"
     elif cur == 'iota_split':     data_path = "../data/first_14_days_UTXO_txs_of_IOTA.csv"
-    elif cur == 'iota':           data_path = "/local/scratch/exported/iota_tx_data.csv"
+    elif cur == 'iota':           data_path = "/local/scratch/exported/iota_tx_data/IOTA_1year_tx_data.csv.csv"
     elif cur == 'cardano':        data_path = "/local/scratch/btc_trx/ADA_TXS.csv"
     elif cur == 'feathercoin':    data_path = "/local/scratch/btc_trx/FTC_TXS.csv"
     elif cur == 'monacoin':       data_path = "/local/scratch/btc_trx/MONA_TXS.csv"
