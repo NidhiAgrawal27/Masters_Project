@@ -9,6 +9,9 @@ def correspondence_network(df, graph_of_correspondences, vertex_property, edge_p
     preprocess.remove_nan_values(addrs_col = ['input_addresses_x', 'output_addresses_y'], 
                                 amt_col = ['input_amounts_x', 'output_amounts_y'])
     df_tx_ids = preprocess.unique_tx_id_for_split_data(df_tx_ids)
+    if cur == 'iota':
+        for col in preprocess.df.columns:
+            preprocess.df = preprocess.df[preprocess.df[col] != 'Not found']
     # create correspondence network
     print(cur + ' ' + heuristic + ' iter ' + str(iter) + ' Progress Bar:')
     preprocess.df.progress_apply(
