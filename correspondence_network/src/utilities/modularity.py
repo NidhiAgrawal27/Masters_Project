@@ -30,7 +30,7 @@ def label_prop(gin, max_iter = 100, each_update = None):
     return lp.get_state()
 
 
-def get_entities(g, components, currency, heuristic, fig_dir):
+def compute_modularity(g, components, currency, heuristic, fig_dir):
     
     sz_comp_edges = {}   # will not append these values for small communities
     sz_comp_comm = {}

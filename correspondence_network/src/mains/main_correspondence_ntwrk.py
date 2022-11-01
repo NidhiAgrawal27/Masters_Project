@@ -8,7 +8,7 @@ import graph_tool.topology as gtt
 from graph_tool import draw
 import tqdm as tqdm
 from utilities import set_seed, compute_components, pathnames, correspondence_network
-from utilities.modularity import get_entities
+from utilities.modularity import compute_modularity
 from utilities.visualization import plotPowerLaw, plot_density_graph
 
 import warnings
@@ -132,7 +132,7 @@ def main():
     df_components = pd.DataFrame.from_dict(components_list, orient='columns')
 
     # compute modularity    
-    get_entities(graph_of_correspondences, components, cur, heuristic, fig_dir)
+    compute_modularity(graph_of_correspondences, components, cur, heuristic, fig_dir)
 
 
     # map vertext and edge properties and write csv files for address_id
