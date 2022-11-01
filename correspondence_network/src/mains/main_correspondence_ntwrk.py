@@ -4,6 +4,7 @@ import pathlib
 import os
 import graph_tool as gt
 from graph_tool import inference as gti
+import graph_tool.topology as gtt
 from graph_tool import draw
 import tqdm as tqdm
 from utilities import set_seed, compute_components, pathnames, correspondence_network
@@ -20,6 +21,7 @@ def main():
     parser.add_argument("--heuristic", type=str, help="name of heuristic, example: h0, or h0+h1", required=True)
     parser.add_argument("--vis", type=str, help="visualization: yes or no", required=True)
     parser.add_argument("--data_is_split", type=str, help="Data is read in chunks: yes or no", required=True)
+    parser.add_argument("--save_graph", type=str, help="Save graph: yes or no", required=True)
     parser.add_argument("--load_graph", type=str, help="Load saved graph: yes or no", required=True)
     parser.add_argument("--chunksize", type=int, help="Chunk of data to be read in one iteration", required=False)
 
@@ -31,6 +33,7 @@ def main():
     vis = args.vis
     chunksize = args.chunksize
     data_is_split = args.data_is_split
+    save_graph = args.save_graph
     load_graph = args.load_graph
 
     PATHNAMES = pathnames.pathnames(cur, heuristic)
@@ -109,13 +112,13 @@ def main():
             print(cur + ' ' + heuristic + ': writing transaction_ids.csv completed')
         else: print(cur + ' ' + heuristic + ': transaction_ids.csv exists')
 
-        # # save graph_of_correspondences
-        # print(cur + ' ' + heuristic + ': correspondence network created')
-        # print(cur + ' ' + heuristic + ': saving graph...')
-        # graph_of_correspondences.save(dir_generated_files + 'graph.xml.gz')
-        # print(cur + ' ' + heuristic + ': graph saved')
+        # save graph_of_correspondences
+        if save_graph == 'yes':
+            print(cur + ' ' + heuristic + ': saving graph...')
+            graph_of_correspondences.save(dir_generated_files + 'graph.xml.gz')
+            print(cur + ' ' + heuristic + ': graph saved')
 
-    # Load graph
+    # load graph
     else:
         print('\n\nLoading graph: ', graph_path, '\n')
         print(cur + ' ' + heuristic + ': loading graph...')
@@ -123,10 +126,14 @@ def main():
         print(cur + ' ' + heuristic + ': graph loaded')
 
 
-    # Compute Modularity    
-    entities, components = get_entities(graph_of_correspondences, cur, heuristic, fig_dir)
-    modularity = gti.modularity(graph_of_correspondences,entities)
-    print("The modularity of the whole graph is:{}".format(modularity))
+    # compute components    
+    components, _ = gtt.label_components(graph_of_correspondences)
+    components_list = compute_components.compute_components(graph_of_correspondences, components)
+    df_components = pd.DataFrame.from_dict(components_list, orient='columns')
+
+    # compute modularity    
+    get_entities(graph_of_correspondences, components, cur, heuristic, fig_dir)
+
 
     # map vertext and edge properties and write csv files for address_id
     if os.path.isfile(dir_generated_files + 'address_ids.csv') == False:
@@ -145,10 +152,6 @@ def main():
         df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
         print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
     else: print(cur + ' ' + heuristic + ': edge_data.csv exists')
-    
-    
-    components_list = compute_components.compute_components(graph_of_correspondences, components)
-    df_components = pd.DataFrame.from_dict(components_list, orient='columns')
 
     # map vertext and edge properties and write csv files for components data
     if os.path.isfile(dir_generated_files + 'components.csv') == False:    

@@ -1,4 +1,3 @@
-import graph_tool.topology as gtt
 from graph_tool import dynamics as gtd
 import tqdm as tqdm
 

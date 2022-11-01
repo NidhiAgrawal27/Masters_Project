@@ -30,7 +30,7 @@ def label_prop(gin, max_iter = 100, each_update = None):
     return lp.get_state()
 
 
-def get_entities(g, currency, heuristic, fig_dir):
+def get_entities(g, components, currency, heuristic, fig_dir):
     
     sz_comp_edges = {}   # will not append these values for small communities
     sz_comp_comm = {}
@@ -39,11 +39,10 @@ def get_entities(g, currency, heuristic, fig_dir):
     no_entities = 0
     entities = g.new_vertex_property("int") 
 
-    components, _ = gtt.label_components(g)
     component_labels = np.unique( components.a )
     
     print('\nModularity Progress Bar:')
-    for i_comp in tqdm(component_labels,miniters=1):
+    for i_comp in tqdm(component_labels):
 
         # boolean vector components map
         vec_comp = components.a == i_comp 
@@ -88,13 +87,17 @@ def get_entities(g, currency, heuristic, fig_dir):
                     sz_comp_mod[sz_comp]=[comp_modularity]
     print()
 
+    modularity = gti.modularity(g,entities)
+
     sz_comp_edges = {key:np.mean(value) for key,value in sz_comp_edges.items()}
     sz_comp_comm = {key:np.mean(value) for key,value in sz_comp_comm.items()}
     sz_comp_mod = {key:np.mean(value) for key,value in sz_comp_mod.items()}
-    
+
     #plotting the graphs
-    plot_modularity_graph(sz_comp_edges, "Number of edges" , currency, heuristic, fig_dir + 'modularity_edges.png')
-    plot_modularity_graph(sz_comp_comm, "Number of communities", currency, heuristic, fig_dir + 'modularity_communities.png')
-    plot_modularity_graph(sz_comp_mod, "Modularity", currency, heuristic, fig_dir + 'modularity.png')
-    
-    return entities, components
+    title = currency.capitalize() + ' ' + heuristic
+    plot_modularity_graph(sz_comp_edges, "Number of edges" , title, fig_dir + 'modularity_edges.png')
+    plot_modularity_graph(sz_comp_comm, "Number of communities", title, fig_dir + 'modularity_communities.png')
+    plot_modularity_graph(sz_comp_mod, "Modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'modularity.png')
+    print(currency + ' ' + heuristic + ': modularity plots completed\n')
+
+    return

@@ -32,7 +32,7 @@ def plotPowerLaw(df, cur, heuristic, fig_file_name, xmin= None, xmax = None):
     return
 
 
-def plot_modularity_graph(dictionary, community_property, curr, heu, fig_file_name):
+def plot_modularity_graph(dictionary, community_property, title, fig_file_name):
     x = dictionary.keys()
     y = dictionary.values()
     plt.bar(x,y)
@@ -40,7 +40,7 @@ def plot_modularity_graph(dictionary, community_property, curr, heu, fig_file_na
     if not (community_property=="modularity"): plt.yscale("log") 
     plt.xlabel("Component Size")
     plt.ylabel(community_property)
-    plt.title(curr.capitalize() + ' ' + heu)
+    plt.title(title)
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
 
