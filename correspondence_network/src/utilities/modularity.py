@@ -4,6 +4,7 @@ import graph_tool.inference as gti
 import graph_tool.topology as gtt
 from graph_tool import draw
 import numpy as np
+import pandas as pd
 from collections import defaultdict
 from tqdm import tqdm
 from utilities.visualization import plot_modularity_graph
@@ -30,7 +31,7 @@ def label_prop(gin, max_iter = 100, each_update = None):
     return lp.get_state()
 
 
-def compute_modularity(g, components, currency, heuristic, fig_dir):
+def compute_modularity(g, components, currency, heuristic, fig_dir, dir_generated_files):
     
     sz_comp_edges = {}   # will not append these values for small communities
     sz_comp_comm = {}
@@ -93,11 +94,20 @@ def compute_modularity(g, components, currency, heuristic, fig_dir):
     sz_comp_comm = {key:np.mean(value) for key,value in sz_comp_comm.items()}
     sz_comp_mod = {key:np.mean(value) for key,value in sz_comp_mod.items()}
 
+    df_sz_comp_edges = pd.DataFrame([sz_comp_edges])
+    df_sz_comp_comm = pd.DataFrame([sz_comp_comm])
+    df_sz_comp_mod = pd.DataFrame([sz_comp_mod])
+
+    df_sz_comp_edges.to_csv(dir_generated_files + 'sz_comp_edges.csv', index = False)
+    df_sz_comp_comm.to_csv(dir_generated_files + 'sz_comp_comm.csv', index = False)
+    df_sz_comp_mod.to_csv(dir_generated_files + 'sz_comp_mod.csv', index = False)
+    print(currency + ' ' + heuristic + ': writing modularity dictionaries completed')
+
     #plotting the graphs
     title = currency.capitalize() + ' ' + heuristic
     plot_modularity_graph(sz_comp_edges, "Number of edges" , title, fig_dir + 'modularity_edges.png')
     plot_modularity_graph(sz_comp_comm, "Number of communities", title, fig_dir + 'modularity_communities.png')
     plot_modularity_graph(sz_comp_mod, "Modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'modularity.png')
-    print(currency + ' ' + heuristic + ': modularity plots completed\n')
+    print(currency + ' ' + heuristic + ': modularity plots completed')
 
     return

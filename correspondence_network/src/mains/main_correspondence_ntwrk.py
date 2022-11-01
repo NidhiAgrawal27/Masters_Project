@@ -132,7 +132,7 @@ def main():
     df_components = pd.DataFrame.from_dict(components_list, orient='columns')
 
     # compute modularity    
-    compute_modularity(graph_of_correspondences, components, cur, heuristic, fig_dir)
+    compute_modularity(graph_of_correspondences, components, cur, heuristic, fig_dir, dir_generated_files)
 
 
     # map vertext and edge properties and write csv files for address_id
