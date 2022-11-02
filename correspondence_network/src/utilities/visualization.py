@@ -35,7 +35,7 @@ def plotPowerLaw(df, cur, heuristic, fig_file_name, xmin= None, xmax = None):
 def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
     x = dataframe["Component_Size"]
     y = dataframe[community_property]
-    plt.bar(x,y)
+    plt.bar(x = dataframe["Component_Size"],height = dataframe[community_property])
     plt.xscale("log") 
     if not (community_property=="modularity"): plt.yscale("log") 
     plt.xlabel("Component Size")
