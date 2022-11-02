@@ -94,9 +94,9 @@ def compute_modularity(g, components, currency, heuristic, fig_dir, dir_generate
     sz_comp_comm = {key:np.mean(value) for key,value in sz_comp_comm.items()}
     sz_comp_mod = {key:np.mean(value) for key,value in sz_comp_mod.items()}
 
-    df_sz_comp_edges = pd.DataFrame([sz_comp_edges])
-    df_sz_comp_comm = pd.DataFrame([sz_comp_comm])
-    df_sz_comp_mod = pd.DataFrame([sz_comp_mod])
+    df_sz_comp_edges = pd.DataFrame.from_dict(sz_comp_edges)
+    df_sz_comp_comm = pd.DataFrame.from_dict(sz_comp_comm)
+    df_sz_comp_mod = pd.DataFrame.from_dict(sz_comp_mod)
 
     df_sz_comp_edges.to_csv(dir_generated_files + 'sz_comp_edges.csv', index = False)
     df_sz_comp_comm.to_csv(dir_generated_files + 'sz_comp_comm.csv', index = False)
