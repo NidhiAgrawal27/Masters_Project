@@ -79,7 +79,7 @@ def compute_modularity(g, components, currency, heuristic, fig_dir, dir_generate
             
             #calculate modularity for only components having more than one community
             if len(set(communities.fa))>1:
-                comp_modularity = gti.modularity(g,communities)
+                comp_modularity = gti.modularity(gv,communities)
                 
                 #store modularity in a dictionary with component size
                 if sz_comp in sz_comp_mod.keys():
@@ -90,13 +90,13 @@ def compute_modularity(g, components, currency, heuristic, fig_dir, dir_generate
 
     modularity = gti.modularity(g,entities)
 
-    sz_comp_edges = {key:np.mean(value) for key,value in sz_comp_edges.items()}
-    sz_comp_comm = {key:np.mean(value) for key,value in sz_comp_comm.items()}
-    sz_comp_mod = {key:np.mean(value) for key,value in sz_comp_mod.items()}
+    sz_comp_edges = [[key,np.mean(value)] for key,value in sz_comp_edges.items()]
+    sz_comp_comm = [[key,np.mean(value)] for key,value in sz_comp_comm.items()]
+    sz_comp_mod = [[key,np.mean(value)] for key,value in sz_comp_mod.items()]
 
-    df_sz_comp_edges = pd.DataFrame.from_dict(sz_comp_edges)
-    df_sz_comp_comm = pd.DataFrame.from_dict(sz_comp_comm)
-    df_sz_comp_mod = pd.DataFrame.from_dict(sz_comp_mod)
+    df_sz_comp_edges = pd.DataFrame(sz_comp_edges,columns=["Component_Size","Number of edges"])
+    df_sz_comp_comm = pd.DataFrame(sz_comp_comm,columns=["Component_Size","Number of communities"])
+    df_sz_comp_mod = pd.DataFrame(sz_comp_mod,columns=["Component_Size","Modularity"])
 
     df_sz_comp_edges.to_csv(dir_generated_files + 'sz_comp_edges.csv', index = False)
     df_sz_comp_comm.to_csv(dir_generated_files + 'sz_comp_comm.csv', index = False)
@@ -105,9 +105,9 @@ def compute_modularity(g, components, currency, heuristic, fig_dir, dir_generate
 
     #plotting the graphs
     title = currency.capitalize() + ' ' + heuristic
-    plot_modularity_graph(sz_comp_edges, "Number of edges" , title, fig_dir + 'modularity_edges.png')
-    plot_modularity_graph(sz_comp_comm, "Number of communities", title, fig_dir + 'modularity_communities.png')
-    plot_modularity_graph(sz_comp_mod, "Modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'modularity.png')
+    plot_modularity_graph(df_sz_comp_edges, "Number of edges" , title, fig_dir + 'modularity_edges.png')
+    plot_modularity_graph(df_sz_comp_comm, "Number of communities", title, fig_dir + 'modularity_communities.png')
+    plot_modularity_graph(df_sz_comp_mod, "Modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'modularity.png')
     print(currency + ' ' + heuristic + ': modularity plots completed')
 
     return
