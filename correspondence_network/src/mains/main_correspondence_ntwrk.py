@@ -18,7 +18,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, help="random seed", required=True)
     parser.add_argument("--currency", type=str, help="currency name example - btc: Bitcoin, iota: IoTa", required=True)
-    parser.add_argument("--heuristic", type=str, help="name of heuristic, example: h0, or h0+h1", required=True)
+    parser.add_argument("--heuristic", type=str, help="name of heuristic, example: h0, or h0_h1", required=True)
     parser.add_argument("--vis", type=str, help="visualization: yes or no", required=True)
     parser.add_argument("--data_is_split", type=str, help="Data is read in chunks: yes or no", required=True)
     parser.add_argument("--save_graph", type=str, help="Save graph: yes or no", required=True)
@@ -41,7 +41,8 @@ def main():
     pathlib.Path(PATHNAMES['figure_dir']).mkdir(parents=True, exist_ok=True)
     dir_generated_files = PATHNAMES['generated_files'] + cur + '_' + heuristic + '_'
     fig_dir = PATHNAMES['figure_dir'] + cur + '_' + heuristic + '_'
-    graph_path = dir_generated_files + 'graph.xml.gz'
+    save_graph_path = dir_generated_files + 'graph.xml.gz'
+    load_graph_path = PATHNAMES['graph_path']
 
     graph_of_correspondences = gt.Graph( directed=False )
     vertex_property = graph_of_correspondences.new_vertex_property("string")
@@ -115,14 +116,14 @@ def main():
         # save graph_of_correspondences
         if save_graph == 'yes':
             print(cur + ' ' + heuristic + ': saving graph...')
-            graph_of_correspondences.save(dir_generated_files + 'graph.xml.gz')
+            graph_of_correspondences.save(save_graph_path)
             print(cur + ' ' + heuristic + ': graph saved')
 
     # load graph
     else:
-        print('\n\nLoading graph: ', graph_path, '\n')
+        print('\n\nLoading graph: ', load_graph_path, '\n')
         print(cur + ' ' + heuristic + ': loading graph...')
-        graph_of_correspondences = gt.load_graph(graph_path)
+        graph_of_correspondences = gt.load_graph(load_graph_path)
         print(cur + ' ' + heuristic + ': graph loaded')
 
 

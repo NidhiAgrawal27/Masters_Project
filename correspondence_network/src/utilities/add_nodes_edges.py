@@ -11,7 +11,7 @@ def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx
     # h1: get change address
     h1 = 0
 
-    if heuristic == 'h0+h1':
+    if heuristic == 'h0_h1':
         ip_amt = literal_eval(row[ip_amt_idx])
         op_amt = literal_eval(row[op_amt_idx])
         op_addrs = literal_eval(row[op_addrs_idx])
@@ -57,7 +57,7 @@ def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx
                     e = graph_of_correspondences.edge(v0,v1)
                     edge_property[e]['count_of_same_edge_h0'] += 1
             
-            elif heuristic == 'h0+h1':
+            elif heuristic == 'h0_h1':
                 if not graph_of_correspondences.edge(v0,v1):
                     e = graph_of_correspondences.add_edge(v0,v1)
                     edge_property[e] = {

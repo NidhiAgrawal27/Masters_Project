@@ -30,7 +30,8 @@ def pathnames(cur, heuristic):
     PATHNAMES = {
                     "data_path": data_path,
                     "figure_dir": dir_name + "figures/",
-                    "generated_files": dir_name + "generated_files/"
+                    "generated_files": dir_name + "generated_files/",
+                    'graph_path':'/local/scratch/correspondence_network/' + cur + '_'+ heuristic + '_' + 'graph.xml.gz'
                 }
 
     return PATHNAMES
