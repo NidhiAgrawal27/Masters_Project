@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 import argparse
 import pathlib
 import os
@@ -9,7 +10,7 @@ from graph_tool import draw
 import tqdm as tqdm
 from utilities import set_seed, compute_components, pathnames, correspondence_network
 from utilities.modularity import compute_modularity
-from utilities.visualization import plotPowerLaw, plot_density_graph
+from utilities.visualization import plotPowerLaw, plot_density_graph, plot_modularity_graph
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -132,33 +133,59 @@ def main():
     components_list = compute_components.compute_components(graph_of_correspondences, components)
     df_components = pd.DataFrame.from_dict(components_list, orient='columns')
 
-    # compute modularity    
-    compute_modularity(graph_of_correspondences, components, cur, heuristic, fig_dir, dir_generated_files)
+    # compute modularity, no. of edges and no.of communities in the components    
+    comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = compute_modularity(graph_of_correspondences, components, heuristic)
+    
+    df_components["Component_Size"] = comp_size
+    df_components["Number of edges"] = sz_comp_edges
 
+    if heuristic=="h0":
+        df_components["Number of communities"] = sz_comp_comm
+        df_components["Modularity"] = sz_comp_mod
+        #save entities as a vertex property
+        np.save('/local/scratch/correspondence_network/' + cur + '_'+ heuristic + '_' + 'graph_vp_lp_entities.npy', entities.get_array())
 
-    # map vertext and edge properties and write csv files for address_id
-    if os.path.isfile(dir_generated_files + 'address_ids.csv') == False:
-        for i in range(graph_of_correspondences.num_vertices()):
-            vertices_mapping.append({'address' : graph_of_correspondences.vertex_properties[str(i)][i], 'address_id' : i})
-        df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
-        df_address_ids.to_csv(dir_generated_files + 'address_ids.csv', index=False)
-        print(cur + ' ' + heuristic + ': writing address_ids.csv completed')
-    else: print(cur + ' ' + heuristic + ': address_ids.csv exists')
+    #modularity of whole graph
+    modularity = gti.modularity(graph_of_correspondences,entities)
 
-    # map vertext and edge properties and write csv files for edge data
-    if os.path.isfile(dir_generated_files + 'edge_data.csv') == False:
-        for e in graph_of_correspondences.edges(): 
-            edge_mapping.append(graph_of_correspondences.edge_properties[str(e)][e])
-        df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
-        df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
-        print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
-    else: print(cur + ' ' + heuristic + ': edge_data.csv exists')
+    # # map vertext and edge properties and write csv files for address_id
+    # if os.path.isfile(dir_generated_files + 'address_ids.csv') == False:
+    #     for i in range(graph_of_correspondences.num_vertices()):
+    #         vertices_mapping.append({'address' : graph_of_correspondences.vertex_properties[str(i)][i], 'address_id' : i})
+    #     df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
+    #     df_address_ids.to_csv(dir_generated_files + 'address_ids.csv', index=False)
+    #     print(cur + ' ' + heuristic + ': writing address_ids.csv completed')
+    # else: print(cur + ' ' + heuristic + ': address_ids.csv exists')
+
+    # # map vertext and edge properties and write csv files for edge data
+    # if os.path.isfile(dir_generated_files + 'edge_data.csv') == False:
+    #     for e in graph_of_correspondences.edges(): 
+    #         edge_mapping.append(graph_of_correspondences.edge_properties[str(e)][e])
+    #     df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
+    #     df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
+    #     print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
+    # else: print(cur + ' ' + heuristic + ': edge_data.csv exists')
 
     # map vertext and edge properties and write csv files for components data
     if os.path.isfile(dir_generated_files + 'components.csv') == False:    
         df_components.to_csv(dir_generated_files + 'components.csv', index=False)
         print(cur + ' ' + heuristic + ': writing components.csv completed')
     else: print(cur + ' ' + heuristic + ': components.csv exists')
+
+    #title of the graph
+    title = cur.capitalize() + ' ' + heuristic
+
+    #visualisation: Component size vs Edges
+    plot_modularity_graph(df_components, "Number of edges", title, fig_dir + 'comp_size_edges.png')
+    print(cur + ' ' + heuristic + ': comp_size_edges.png completed\n')
+
+    #visualisation: Component size vs Number of communities
+    plot_modularity_graph(df_components, "Number of communities", title, fig_dir + 'comp_size_communities.png')
+    print(cur + ' ' + heuristic + ': comp_size_communities.png completed\n')
+
+    #visualisation: Component size vs Modularity
+    plot_modularity_graph(df_components, "Modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'comp_size_modularity.png')
+    print(cur + ' ' + heuristic + ': comp_size_modularity.png completed\n')
 
     # visualization: density graph
     plot_density_graph(df_components['num_of_addrs'], 'Number of addesses', fig_dir + 'density_plot.png', cur, heuristic)
