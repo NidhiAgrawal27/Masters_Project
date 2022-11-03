@@ -1,7 +1,9 @@
 import pandas as pd
+import numpy as np
 import argparse
 import pathlib
 import os
+import pickle
 import graph_tool as gt
 from graph_tool import inference as gti
 import graph_tool.topology as gtt
@@ -41,8 +43,11 @@ def main():
     pathlib.Path(PATHNAMES['figure_dir']).mkdir(parents=True, exist_ok=True)
     dir_generated_files = PATHNAMES['generated_files'] + cur + '_' + heuristic + '_'
     fig_dir = PATHNAMES['figure_dir'] + cur + '_' + heuristic + '_'
-    save_graph_path = dir_generated_files + 'graph.xml.gz'
-    load_graph_path = PATHNAMES['graph_path']
+
+    graph_dir = PATHNAMES['generated_files'] + 'graph/'
+    pathlib.Path(graph_dir).mkdir(parents=True, exist_ok=True)
+    graph_path = graph_dir + cur + '_' + heuristic + '_'
+    
 
     graph_of_correspondences = gt.Graph( directed=False )
     vertex_property = graph_of_correspondences.new_vertex_property("string")
@@ -115,31 +120,34 @@ def main():
 
         # save graph_of_correspondences
         if save_graph == 'yes':
-            print(cur + ' ' + heuristic + ': saving graph...')
-            graph_of_correspondences.save(save_graph_path)
-            print(cur + ' ' + heuristic + ': graph saved')
+            print(cur + ' ' + heuristic + ': saving graph and properties...')
+            graph_of_correspondences.save(graph_path + 'graph.xml.gz')
+            with open(graph_path + 'vertex_prop.pickle', 'wb') as handle:
+                pickle.dump(vertex_property, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            with open(graph_path + 'edge_prop.pickle', 'wb') as handle:
+                pickle.dump(edge_property, handle, protocol=pickle.HIGHEST_PROTOCOL)
+            print(cur + ' ' + heuristic + ': graph and properties saved')
 
     # load graph
     else:
-        print('\n\nLoading graph: ', load_graph_path, '\n')
-        print(cur + ' ' + heuristic + ': loading graph...')
-        graph_of_correspondences = gt.load_graph(load_graph_path)
-        print(cur + ' ' + heuristic + ': graph loaded')
-
-
-    # compute components    
-    components, _ = gtt.label_components(graph_of_correspondences)
-    components_list = compute_components.compute_components(graph_of_correspondences, components)
-    df_components = pd.DataFrame.from_dict(components_list, orient='columns')
-
-    # compute modularity    
-    compute_modularity(graph_of_correspondences, components, cur, heuristic, fig_dir, dir_generated_files)
+        try:
+            print('\n\nLoading graph: ', graph_path, '\n')
+            print(cur + ' ' + heuristic + ': loading graph and properties...')
+            graph_of_correspondences = gt.load_graph(graph_path + 'graph.xml.gz')
+            with open(graph_path + 'vertex_prop.pickle', 'rb') as handle:
+                vertex_property = pickle.load(handle)
+            with open(graph_path + 'edge_prop.pickle', 'rb') as handle:
+                edge_property = pickle.load(handle)
+            print(cur + ' ' + heuristic + ': graph and properties loaded')
+        except:
+            print('ERROR: Load Graph failed. Graph not found on given path.')
+            return
 
 
     # map vertext and edge properties and write csv files for address_id
     if os.path.isfile(dir_generated_files + 'address_ids.csv') == False:
         for i in range(graph_of_correspondences.num_vertices()):
-            vertices_mapping.append({'address' : graph_of_correspondences.vertex_properties[str(i)][i], 'address_id' : i})
+            vertices_mapping.append({'address' : vertex_property[i], 'address_id' : i})
         df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
         df_address_ids.to_csv(dir_generated_files + 'address_ids.csv', index=False)
         print(cur + ' ' + heuristic + ': writing address_ids.csv completed')
@@ -148,11 +156,18 @@ def main():
     # map vertext and edge properties and write csv files for edge data
     if os.path.isfile(dir_generated_files + 'edge_data.csv') == False:
         for e in graph_of_correspondences.edges(): 
-            edge_mapping.append(graph_of_correspondences.edge_properties[str(e)][e])
+            edge_mapping.append(edge_property[e])
         df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
         df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
         print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
     else: print(cur + ' ' + heuristic + ': edge_data.csv exists')
+
+
+    # compute components    
+    components, _ = gtt.label_components(graph_of_correspondences)
+    components_list = compute_components.compute_components(graph_of_correspondences, components)
+    df_components = pd.DataFrame.from_dict(components_list, orient='columns')
+
 
     # map vertext and edge properties and write csv files for components data
     if os.path.isfile(dir_generated_files + 'components.csv') == False:    
@@ -167,6 +182,9 @@ def main():
     # visualization: power law plot
     plotPowerLaw(df_components['num_of_addrs'], cur, heuristic, fig_dir + 'powerlaw_plot.png')
     print('\n'+ cur + ' ' + heuristic + ': powerlaw_plot.png completed')
+
+    # compute modularity    
+    compute_modularity(graph_of_correspondences, components, cur, heuristic, fig_dir, dir_generated_files)
 
     # visualize network
     if vis == 'yes':

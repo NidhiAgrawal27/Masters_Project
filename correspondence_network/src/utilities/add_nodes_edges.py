@@ -35,7 +35,7 @@ def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx
         idx = graph_of_correspondences.vertex_index[vertex]
         nodes_dict[node] = idx
         vertex_property[vertex] = node
-        graph_of_correspondences.vertex_properties[str(idx)] = vertex_property
+        # graph_of_correspondences.vertex_properties[str(idx)] = vertex_property
 
     # create edges for fully connected clusters in network
     for i in range(len(nodes_list)-1):
@@ -72,7 +72,7 @@ def add_correspondence(row, graph_of_correspondences, ip_addrs_idx, op_addrs_idx
                     e = graph_of_correspondences.edge(v0,v1)
                     edge_property[e]['count_of_same_edge_h0'] += 1
                     edge_property[e]['count_of_same_edge_h0_h1'] += h1
-            graph_of_correspondences.edge_properties[str(e)] = edge_property
+            # graph_of_correspondences.edge_properties[str(e)] = edge_property
             
     return nodes_dict
     
