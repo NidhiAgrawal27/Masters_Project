@@ -161,7 +161,6 @@ def main():
         #save entities as a vertex property
         np.save('/local/scratch/correspondence_network/' + cur + '_'+ heuristic + '_' + 'graph_vp_lp_entities.npy', entities.get_array())
 
-<<<<<<< HEAD:correspondence_network/src/mains/main_correspondence_ntwrk_new.py
     #modularity of whole graph
     modularity = gti.modularity(graph_of_correspondences,entities)
 
@@ -182,26 +181,6 @@ def main():
     #     df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
     #     print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
     # else: print(cur + ' ' + heuristic + ': edge_data.csv exists')
-=======
-    # map vertext and edge properties and write csv files for address_id
-    if os.path.isfile(dir_generated_files + 'address_ids.csv') == False:
-        for i in range(graph_of_correspondences.num_vertices()):
-            vertices_mapping.append({'address' : vertex_property[i], 'address_id' : i})
-        df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
-        df_address_ids.to_csv(dir_generated_files + 'address_ids.csv', index=False)
-        print(cur + ' ' + heuristic + ': writing address_ids.csv completed')
-    else: print(cur + ' ' + heuristic + ': address_ids.csv exists')
-
-    # map vertext and edge properties and write csv files for edge data
-    if os.path.isfile(dir_generated_files + 'edge_data.csv') == False:
-        for e in graph_of_correspondences.edges(): 
-            edge_mapping.append(edge_property[e])
-        df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
-        df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
-        print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
-    else: print(cur + ' ' + heuristic + ': edge_data.csv exists')
->>>>>>> 6f31dc4302d704d80392cdedfa2541a783df43f5:correspondence_network/src/mains/main_correspondence_ntwrk.py
-
 
     # compute components    
     components, _ = gtt.label_components(graph_of_correspondences)
