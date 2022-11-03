@@ -1,8 +1,8 @@
-from utilities import add_nodes_edges, preprocessing
+from utilities import add_nodes_edges, add_nodes_edges_weighted, preprocessing
 from tqdm import tqdm
 tqdm.pandas()
 
-def correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter):
+def correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter, weighted):
     preprocess = preprocessing.PreProcessing(df)
     col_to_drop = [x for x in df.columns[df.columns.str.contains('Unnamed')]] # for bitcoin data
     preprocess.drop_unnecessary_cols(cur, col_to_drop)    
@@ -14,19 +14,34 @@ def correspondence_network(df, graph_of_correspondences, vertex_property, edge_p
             preprocess.df = preprocess.df[preprocess.df[col] != 'Not found']
     # create correspondence network
     print(cur + ' ' + heuristic + ' iter ' + str(iter) + ' Progress Bar:')
-    preprocess.df.progress_apply(
-                            add_nodes_edges.add_correspondence, 
-                            graph_of_correspondences=graph_of_correspondences, 
-                            ip_addrs_idx = 0, 
-                            op_addrs_idx = 2, 
-                            ip_amt_idx = 1, 
-                            op_amt_idx = 3,
-                            nodes_dict = nodes_dict,
-                            vertex_property = vertex_property,
-                            edge_property = edge_property,
-                            heuristic = heuristic,
-                            axis=1
-                        )
+    if weighted == 'no':
+        preprocess.df.progress_apply(
+                                add_nodes_edges.add_correspondence, 
+                                graph_of_correspondences=graph_of_correspondences, 
+                                ip_addrs_idx = 0, 
+                                op_addrs_idx = 2, 
+                                ip_amt_idx = 1, 
+                                op_amt_idx = 3,
+                                nodes_dict = nodes_dict,
+                                vertex_property = vertex_property,
+                                edge_property = edge_property,
+                                heuristic = heuristic,
+                                axis=1
+                            )
+    else:
+        preprocess.df.progress_apply(
+                                    add_nodes_edges_weighted.add_correspondence, 
+                                    graph_of_correspondences=graph_of_correspondences, 
+                                    ip_addrs_idx = 0, 
+                                    op_addrs_idx = 2, 
+                                    ip_amt_idx = 1, 
+                                    op_amt_idx = 3,
+                                    nodes_dict = nodes_dict,
+                                    vertex_property = vertex_property,
+                                    edge_property = edge_property,
+                                    heuristic = heuristic,
+                                    axis=1
+                                )
     iter += 1
     return graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter
 

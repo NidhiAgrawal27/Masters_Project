@@ -26,20 +26,20 @@ def plotPowerLaw(df, cur, heuristic, fig_file_name, xmin= None, xmax = None):
     fit.power_law.plot_ccdf( color= 'b',linestyle='--',label='fit ccdf',ax=fig)
     plt.xscale('log')
     plt.yscale('log')
-    plt.xlabel('\nfit.distribution_compare(power_law, lognormal): '+ str(fit.distribution_compare('power_law', 'lognormal')), fontsize = 16)
-    plt.title(cur.capitalize() + ' ' + heuristic + ': alpha = %f in range [%.0f,%.0f]'%(alpha,xmin,xmax),fontsize=15)
+    plt.xlabel('\nfit.distribution_compare(power_law, lognormal): '+ str(fit.distribution_compare('power_law', 'lognormal')), fontsize = 14)
+    plt.title('PowerLaw Plot for ' + cur.capitalize() + ' ' + heuristic + '\nalpha = %f in range [%.0f,%.0f]'%(alpha,xmin,xmax),fontsize=15)
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
 
 
 def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
     plt.figure(figsize = (8,8))
-    plt.scatter(x = dataframe["Component_Size"], y = dataframe[community_property])
+    plt.scatter(x = dataframe["component_size"], y = dataframe[community_property])
     plt.xscale("log") 
-    if not (community_property=="Modularity"): plt.yscale("log") 
-    plt.xlabel("Component Size")
-    plt.ylabel(community_property)
-    plt.title(title)
+    if not (community_property=="modularity"): plt.yscale("log") 
+    plt.xlabel("Component Size", fontsize=14)
+    plt.ylabel(community_property.capitalize(), fontsize=14)
+    plt.title(title, fontsize=16)
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
 

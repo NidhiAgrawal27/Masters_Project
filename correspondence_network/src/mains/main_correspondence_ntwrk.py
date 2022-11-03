@@ -25,6 +25,7 @@ def main():
     parser.add_argument("--data_is_split", type=str, help="Data is read in chunks: yes or no", required=True)
     parser.add_argument("--save_graph", type=str, help="Save graph: yes or no", required=True)
     parser.add_argument("--load_graph", type=str, help="Load saved graph: yes or no", required=True)
+    parser.add_argument("--weighted", type=str, help="Weighted graph: yes or no", required=True)
     parser.add_argument("--chunksize", type=int, help="Chunk of data to be read in one iteration", required=False)
 
     args = parser.parse_args()
@@ -37,16 +38,20 @@ def main():
     data_is_split = args.data_is_split
     save_graph = args.save_graph
     load_graph = args.load_graph
+    weighted = args.weighted
 
-    PATHNAMES = pathnames.pathnames(cur, heuristic)
+    PATHNAMES = pathnames.pathnames(cur, heuristic, weighted)
     pathlib.Path(PATHNAMES['generated_files']).mkdir(parents=True, exist_ok=True)
     pathlib.Path(PATHNAMES['figure_dir']).mkdir(parents=True, exist_ok=True)
     dir_generated_files = PATHNAMES['generated_files'] + cur + '_' + heuristic + '_'
     fig_dir = PATHNAMES['figure_dir'] + cur + '_' + heuristic + '_'
-
     graph_dir = PATHNAMES['generated_files'] + 'graph/'
     pathlib.Path(graph_dir).mkdir(parents=True, exist_ok=True)
     graph_path = graph_dir + cur + '_' + heuristic + '_'
+    if weighted == 'yes':
+        dir_generated_files = dir_generated_files + 'wt_'
+        fig_dir = fig_dir + 'wt_'
+        graph_path = graph_path + 'wt_'
     
 
     graph_of_correspondences = gt.Graph( directed=False )
@@ -81,7 +86,7 @@ def main():
 
             print('Create Correspondence Network Progress Bar:')
             for i in tqdm.tqdm(range(1)):
-                graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter = correspondence_network.correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter)
+                graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter = correspondence_network.correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter, weighted)
 
 
         elif data_is_split == 'yes':
@@ -96,7 +101,7 @@ def main():
             iter = 0
             for df in chunks_df:
                 df = df._to_pandas()
-                graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter = correspondence_network.correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter)
+                graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter = correspondence_network.correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter, weighted)
 
 
         # start of no_modin_split
@@ -107,7 +112,7 @@ def main():
                                         'output_addresses_y','output_amounts_y','timestamp']
             else: chunks_df = pd.read_csv(PATHNAMES['data_path'], chunksize=chunksize)            
             for i, df in enumerate(chunks_df):
-                    graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter = correspondence_network.correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter)
+                    graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter = correspondence_network.correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter, weighted)
         # end of no_modin split
 
         print('\n\n' + cur + ' ' + heuristic + ': correspondence network created')
@@ -118,7 +123,7 @@ def main():
             print(cur + ' ' + heuristic + ': writing transaction_ids.csv completed')
         else: print(cur + ' ' + heuristic + ': transaction_ids.csv exists')
 
-        # save graph_of_correspondences
+        # save graph_of_correspondences, address data and edge data
         if save_graph == 'yes':
             print(cur + ' ' + heuristic + ': saving graph and properties...')
             graph_of_correspondences.save(graph_path + 'graph.xml.gz')
@@ -128,10 +133,25 @@ def main():
                 pickle.dump(edge_property, handle, protocol=pickle.HIGHEST_PROTOCOL)
             print(cur + ' ' + heuristic + ': graph and properties saved')
 
+             # map vertext and edge properties and write csv files for address_id
+            for i in range(graph_of_correspondences.num_vertices()):
+                vertices_mapping.append({'address' : vertex_property[i], 'address_id' : i})
+            df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
+            df_address_ids.to_csv(dir_generated_files + 'address_ids.csv', index=False)
+            print(cur + ' ' + heuristic + ': writing address_ids.csv completed')
+
+            # map vertext and edge properties and write csv files for edge data
+            for e in graph_of_correspondences.edges(): 
+                edge_mapping.append(edge_property[e])
+            df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
+            df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
+            print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
+            
+
     # load graph
     else:
         try:
-            print('\n\nLoading graph: ', graph_path, '\n')
+            print('\n\nLoading graph: ' + graph_path + 'graph.xml.gz\n')
             print(cur + ' ' + heuristic + ': loading graph and properties...')
             graph_of_correspondences = gt.load_graph(graph_path + 'graph.xml.gz')
             with open(graph_path + 'vertex_prop.pickle', 'rb') as handle:
@@ -156,15 +176,15 @@ def main():
     plotPowerLaw(df_components['num_of_addrs'], cur, heuristic, fig_dir + 'powerlaw_plot.png')
     print('\n'+ cur + ' ' + heuristic + ': powerlaw_plot.png completed')
 
-    # compute modularity, no. of edges and no.of communities in the components    
+    # compute modularity, num of edges and num of communities in the components    
     comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = compute_modularity(graph_of_correspondences, components, heuristic)
     
-    df_components["Component_Size"] = comp_size
-    df_components["Number of edges"] = sz_comp_edges
+    df_components["component_size"] = comp_size
+    df_components["num_of_edges"] = sz_comp_edges
 
     if heuristic=="h0":
-        df_components["Number of communities"] = sz_comp_comm
-        df_components["Modularity"] = sz_comp_mod
+        df_components["num_of_communities"] = sz_comp_comm
+        df_components["modularity"] = sz_comp_mod
         #save entities as a vertex property
         with open(graph_path + 'graph_vp_lp_entities.pickle', 'wb') as handle:
                 pickle.dump(entities, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -172,25 +192,23 @@ def main():
         modularity = gti.modularity(graph_of_correspondences,entities)
 
     # map vertext and edge properties and write csv files for components data
-    if os.path.isfile(dir_generated_files + 'components.csv') == False:    
-        df_components.to_csv(dir_generated_files + 'components.csv', index=False)
-        print(cur + ' ' + heuristic + ': writing components.csv completed')
-    else: print(cur + ' ' + heuristic + ': components.csv exists')
+    df_components.to_csv(dir_generated_files + 'components.csv', index=False)
+    print(cur + ' ' + heuristic + ': writing components.csv completed')
 
-    #title of the graph
+    #title of the plots
     title = cur.capitalize() + ' ' + heuristic
 
     #visualisation: Component size vs Edges
-    plot_modularity_graph(df_components, "Number of edges", title, fig_dir + 'comp_size_edges.png')
+    plot_modularity_graph(df_components, "num_of_edges", title, fig_dir + 'comp_size_edges.png')
     print(cur + ' ' + heuristic + ': comp_size_edges.png completed\n')
 
     if heuristic=="h0":
         #visualisation: Component size vs Number of communities
-        plot_modularity_graph(df_components, "Number of communities", title, fig_dir + 'comp_size_communities.png')
+        plot_modularity_graph(df_components, "num_of_communities", title, fig_dir + 'comp_size_communities.png')
         print(cur + ' ' + heuristic + ': comp_size_communities.png completed\n')
 
         #visualisation: Component size vs Modularity
-        plot_modularity_graph(df_components, "Modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'comp_size_modularity.png')
+        plot_modularity_graph(df_components, "modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'comp_size_modularity.png')
         print(cur + ' ' + heuristic + ': comp_size_modularity.png completed\n')
 
     # visualize network

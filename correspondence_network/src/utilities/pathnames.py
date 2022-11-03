@@ -13,13 +13,14 @@ def set_seed(seed):
     np.random.seed(seed)
 
 
-def pathnames(cur, heuristic):
+def pathnames(cur, heuristic, weighted):
 
     local_dir = '../logs/' 
     server_dir = '/local/scratch/correspondence_network/' 
 
     # below: change local_dir or server_dir in dir_name for accessing local or server dir
-    dir_name = local_dir + cur + '_logs/' + heuristic + '/'
+    if weighted == 'no': dir_name = local_dir + cur + '_logs/unweighted/' + heuristic + '/'
+    else: dir_name = local_dir + cur + '_logs/weighted/' + heuristic + '/'
     
     local_data_dir = '../data/'
     server_data_dir = '/local/scratch/'
