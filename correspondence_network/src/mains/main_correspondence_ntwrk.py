@@ -217,9 +217,6 @@ def main():
     plotPowerLaw(df_components['num_of_addrs'], cur, heuristic, fig_dir + 'powerlaw_plot.png')
     print('\n'+ cur + ' ' + heuristic + ': powerlaw_plot.png completed')
 
-    # compute modularity    
-    compute_modularity(graph_of_correspondences, components, cur, heuristic, fig_dir, dir_generated_files)
-
     # visualize network
     if vis == 'yes':
         if os.path.isfile(fig_dir + 'correspondence_network' + '.pdf') == False:
