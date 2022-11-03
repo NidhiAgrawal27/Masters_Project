@@ -166,28 +166,10 @@ def main():
         df_components["Number of communities"] = sz_comp_comm
         df_components["Modularity"] = sz_comp_mod
         #save entities as a vertex property
-        np.save('/local/scratch/correspondence_network/' + cur + '_'+ heuristic + '_' + 'graph_vp_lp_entities.npy', entities.get_array())
-
-    #modularity of whole graph
-    modularity = gti.modularity(graph_of_correspondences,entities)
-
-    # map vertext and edge properties and write csv files for address_id
-    if os.path.isfile(dir_generated_files + 'address_ids.csv') == False:
-        for i in range(graph_of_correspondences.num_vertices()):
-            vertices_mapping.append({'address' : graph_of_correspondences.vertex_properties[str(i)][i], 'address_id' : i})
-        df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
-        df_address_ids.to_csv(dir_generated_files + 'address_ids.csv', index=False)
-        print(cur + ' ' + heuristic + ': writing address_ids.csv completed')
-    else: print(cur + ' ' + heuristic + ': address_ids.csv exists')
-
-    # map vertext and edge properties and write csv files for edge data
-    if os.path.isfile(dir_generated_files + 'edge_data.csv') == False:
-        for e in graph_of_correspondences.edges(): 
-            edge_mapping.append(graph_of_correspondences.edge_properties[str(e)][e])
-        df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
-        df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
-        print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
-    else: print(cur + ' ' + heuristic + ': edge_data.csv exists')
+        with open(graph_path + 'graph_vp_lp_entities.pickle', 'wb') as handle:
+                pickle.dump(entities, handle, protocol=pickle.HIGHEST_PROTOCOL)
+        #modularity of whole graph
+        modularity = gti.modularity(graph_of_correspondences,entities)
 
     # map vertext and edge properties and write csv files for components data
     if os.path.isfile(dir_generated_files + 'components.csv') == False:    
@@ -202,13 +184,14 @@ def main():
     plot_modularity_graph(df_components, "Number of edges", title, fig_dir + 'comp_size_edges.png')
     print(cur + ' ' + heuristic + ': comp_size_edges.png completed\n')
 
-    #visualisation: Component size vs Number of communities
-    plot_modularity_graph(df_components, "Number of communities", title, fig_dir + 'comp_size_communities.png')
-    print(cur + ' ' + heuristic + ': comp_size_communities.png completed\n')
+    if heuristic=="h0":
+        #visualisation: Component size vs Number of communities
+        plot_modularity_graph(df_components, "Number of communities", title, fig_dir + 'comp_size_communities.png')
+        print(cur + ' ' + heuristic + ': comp_size_communities.png completed\n')
 
-    #visualisation: Component size vs Modularity
-    plot_modularity_graph(df_components, "Modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'comp_size_modularity.png')
-    print(cur + ' ' + heuristic + ': comp_size_modularity.png completed\n')
+        #visualisation: Component size vs Modularity
+        plot_modularity_graph(df_components, "Modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'comp_size_modularity.png')
+        print(cur + ' ' + heuristic + ': comp_size_modularity.png completed\n')
 
     # visualize network
     if vis == 'yes':
