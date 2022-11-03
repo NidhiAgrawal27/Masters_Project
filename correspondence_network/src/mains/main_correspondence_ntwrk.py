@@ -143,11 +143,18 @@ def main():
             print('ERROR: Load Graph failed. Graph not found on given path.')
             return
 
-
     # compute components    
     components, _ = gtt.label_components(graph_of_correspondences)
     components_list = compute_components.compute_components(graph_of_correspondences, components)
     df_components = pd.DataFrame.from_dict(components_list, orient='columns')
+
+    # visualization: density graph
+    plot_density_graph(df_components['num_of_addrs'], 'Number of addesses', fig_dir + 'density_plot.png', cur, heuristic)
+    print(cur + ' ' + heuristic + ': density_plot.png completed\n')
+
+    # visualization: power law plot
+    plotPowerLaw(df_components['num_of_addrs'], cur, heuristic, fig_dir + 'powerlaw_plot.png')
+    print('\n'+ cur + ' ' + heuristic + ': powerlaw_plot.png completed')
 
     # compute modularity, no. of edges and no.of communities in the components    
     comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = compute_modularity(graph_of_correspondences, components, heuristic)
@@ -208,14 +215,6 @@ def main():
     #visualisation: Component size vs Modularity
     plot_modularity_graph(df_components, "Modularity", 'Modularity of ' + title + ' graph: ' + str(round(modularity, 4)), fig_dir + 'comp_size_modularity.png')
     print(cur + ' ' + heuristic + ': comp_size_modularity.png completed\n')
-
-    # visualization: density graph
-    plot_density_graph(df_components['num_of_addrs'], 'Number of addesses', fig_dir + 'density_plot.png', cur, heuristic)
-    print(cur + ' ' + heuristic + ': density_plot.png completed\n')
-
-    # visualization: power law plot
-    plotPowerLaw(df_components['num_of_addrs'], cur, heuristic, fig_dir + 'powerlaw_plot.png')
-    print('\n'+ cur + ' ' + heuristic + ': powerlaw_plot.png completed')
 
     # visualize network
     if vis == 'yes':
