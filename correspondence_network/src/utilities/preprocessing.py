@@ -61,6 +61,3 @@ class PreProcessing:
 
             return df_tx_ids
             
-
-
-

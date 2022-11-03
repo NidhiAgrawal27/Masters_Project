@@ -43,4 +43,3 @@ def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
 
-
