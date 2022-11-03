@@ -171,29 +171,23 @@ def main():
     #modularity of whole graph
     modularity = gti.modularity(graph_of_correspondences,entities)
 
-    # # map vertext and edge properties and write csv files for address_id
-    # if os.path.isfile(dir_generated_files + 'address_ids.csv') == False:
-    #     for i in range(graph_of_correspondences.num_vertices()):
-    #         vertices_mapping.append({'address' : graph_of_correspondences.vertex_properties[str(i)][i], 'address_id' : i})
-    #     df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
-    #     df_address_ids.to_csv(dir_generated_files + 'address_ids.csv', index=False)
-    #     print(cur + ' ' + heuristic + ': writing address_ids.csv completed')
-    # else: print(cur + ' ' + heuristic + ': address_ids.csv exists')
+    # map vertext and edge properties and write csv files for address_id
+    if os.path.isfile(dir_generated_files + 'address_ids.csv') == False:
+        for i in range(graph_of_correspondences.num_vertices()):
+            vertices_mapping.append({'address' : graph_of_correspondences.vertex_properties[str(i)][i], 'address_id' : i})
+        df_address_ids = pd.DataFrame.from_dict(vertices_mapping, orient='columns')
+        df_address_ids.to_csv(dir_generated_files + 'address_ids.csv', index=False)
+        print(cur + ' ' + heuristic + ': writing address_ids.csv completed')
+    else: print(cur + ' ' + heuristic + ': address_ids.csv exists')
 
-    # # map vertext and edge properties and write csv files for edge data
-    # if os.path.isfile(dir_generated_files + 'edge_data.csv') == False:
-    #     for e in graph_of_correspondences.edges(): 
-    #         edge_mapping.append(graph_of_correspondences.edge_properties[str(e)][e])
-    #     df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
-    #     df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
-    #     print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
-    # else: print(cur + ' ' + heuristic + ': edge_data.csv exists')
-
-    # compute components    
-    components, _ = gtt.label_components(graph_of_correspondences)
-    components_list = compute_components.compute_components(graph_of_correspondences, components)
-    df_components = pd.DataFrame.from_dict(components_list, orient='columns')
-
+    # map vertext and edge properties and write csv files for edge data
+    if os.path.isfile(dir_generated_files + 'edge_data.csv') == False:
+        for e in graph_of_correspondences.edges(): 
+            edge_mapping.append(graph_of_correspondences.edge_properties[str(e)][e])
+        df_edge_data = pd.DataFrame.from_dict(edge_mapping, orient='columns')
+        df_edge_data.to_csv(dir_generated_files + 'edge_data.csv', index=False)
+        print(cur + ' ' + heuristic + ': writing edge_data.csv completed')
+    else: print(cur + ' ' + heuristic + ': edge_data.csv exists')
 
     # map vertext and edge properties and write csv files for components data
     if os.path.isfile(dir_generated_files + 'components.csv') == False:    
