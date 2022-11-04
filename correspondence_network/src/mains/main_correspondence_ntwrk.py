@@ -6,7 +6,6 @@ import graph_tool.all as gt
 from graph_tool import inference as gti
 import graph_tool.topology as gtt
 from graph_tool import draw
-import tqdm as tqdm
 from utilities import set_seed, compute_components, pathnames, correspondence_network
 from utilities.modularity import compute_modularity
 from utilities.visualization import plotPowerLaw, plot_density_graph, plot_modularity_graph
@@ -85,8 +84,7 @@ def main():
             else: df = pd.read_csv(PATHNAMES['data_path'])
 
             print('Create Correspondence Network Progress Bar:')
-            for i in tqdm.tqdm(range(1)):
-                graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter = correspondence_network.correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter, weighted)
+            graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, iter = correspondence_network.correspondence_network(df, graph_of_correspondences, vertex_property, edge_property, nodes_dict, df_tx_ids, cur, heuristic, iter, weighted)
 
 
         elif data_is_split == 'yes':
@@ -211,6 +209,7 @@ def main():
 
     # visualize network
     if vis == 'yes':
+        print(wt + ' ' + cur + ' ' + heuristic + ': saving graph_draw visualization...')
         draw.graph_draw(graph_of_correspondences, vertex_text=graph_of_correspondences.vertex_index, 
                         output = fig_dir + 'correspondence_network' + '.pdf')
         print(wt + ' ' + cur + ' ' + heuristic + ': network figure completed')
