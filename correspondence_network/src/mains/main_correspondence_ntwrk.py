@@ -215,7 +215,7 @@ def main():
         print(wt + ' ' + cur + ' ' + heuristic + ': network figure completed')
         
 
-    print('\n\n*********************** Processing of ' + cur + ' ' + heuristic + ' completed ***********************\n')
+    print('\n\n*********************** Processing of ' + cur + ' ' + heuristic + ' ' + wt + ' completed ***********************\n')
 
     print()
 
