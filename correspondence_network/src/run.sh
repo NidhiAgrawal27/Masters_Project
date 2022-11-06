@@ -42,7 +42,7 @@
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency monacoin --heuristic h0 --vis no \
 #                                             --data_is_split no --save_graph yes --load_graph no --weighted no
 
-# python -m mains.main_correspondence_ntwrk --seed 42 --currency monacoin --heuristic h0_h1 --vis no 
+# python -m mains.main_correspondence_ntwrk --seed 42 --currency monacoin --heuristic h0_h1 --vis no \
 #                                             --data_is_split no --save_graph yes --load_graph no --weighted no
 
 # # feathercoin
