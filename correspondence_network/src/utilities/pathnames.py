@@ -16,7 +16,7 @@ def set_seed(seed):
 def pathnames(cur, heuristic, weighted):
 
     local_dir = '../logs/' 
-    server_dir = '/local/scratch/correspondence_network/part1_final_logs/'
+    server_dir = '/local/scratch/correspondence_network/'
 
     # below: change local_dir or server_dir in dir_name for accessing local or server dir
     if weighted == 'no': dir_name = local_dir + cur + '_logs/unweighted/' + heuristic + '/'
@@ -35,11 +35,16 @@ def pathnames(cur, heuristic, weighted):
     elif cur == 'feathercoin':    data_path = server_data_dir + 'btc_trx/FTC_TXS.csv'
     elif cur == 'monacoin':       data_path = server_data_dir + 'btc_trx/MONA_TXS.csv'
 
+    # below: change local_dir or server_dir in dir_name for accessing local or server dir
+    if weighted == 'no': 
+        graph_dir = server_dir + 'part1_final_logs/' + cur + '_logs/unweighted/' + heuristic + '/generated_files/graph/'
+    else: graph_dir = server_dir + 'part1_final_logs/' + cur + '_logs/weighted/' + heuristic + '/generated_files/graph/'
 
     PATHNAMES = {
                     "data_path": data_path,
                     "figure_dir": dir_name + "figures/",
                     "generated_files": dir_name + "generated_files/",
+                    "graph_dir": graph_dir 
                 }
 
     return PATHNAMES

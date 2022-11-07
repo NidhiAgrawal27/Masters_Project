@@ -42,7 +42,7 @@ def main():
     pathlib.Path(PATHNAMES['figure_dir']).mkdir(parents=True, exist_ok=True)
     dir_generated_files = PATHNAMES['generated_files'] + cur + '_' + heuristic + '_'
     fig_dir = PATHNAMES['figure_dir'] + cur + '_' + heuristic + '_'
-    graph_dir = PATHNAMES['generated_files'] + 'graph/'
+    graph_dir = PATHNAMES['graph_dir']
     pathlib.Path(graph_dir).mkdir(parents=True, exist_ok=True)
     graph_path = graph_dir + cur + '_' + heuristic + '_'
     wt = 'unweighted'
