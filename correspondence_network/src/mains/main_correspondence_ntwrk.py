@@ -52,6 +52,7 @@ def main():
         dir_generated_files = dir_generated_files + 'wt_'
         fig_dir = fig_dir + 'wt_'
         load_graph_path = load_graph_path + 'wt_'
+        save_graph_path = save_graph_path + 'wt_'
         wt = 'weighted'
     
 
