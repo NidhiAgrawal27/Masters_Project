@@ -42,14 +42,16 @@ def main():
     pathlib.Path(PATHNAMES['figure_dir']).mkdir(parents=True, exist_ok=True)
     dir_generated_files = PATHNAMES['generated_files'] + cur + '_' + heuristic + '_'
     fig_dir = PATHNAMES['figure_dir'] + cur + '_' + heuristic + '_'
-    graph_dir = PATHNAMES['graph_dir']
-    pathlib.Path(graph_dir).mkdir(parents=True, exist_ok=True)
-    graph_path = graph_dir + cur + '_' + heuristic + '_'
+    load_graph_dir = PATHNAMES['load_graph_dir']
+    load_graph_path = load_graph_dir + cur + '_' + heuristic + '_'
+    save_graph_dir = PATHNAMES['generated_files'] + 'graph/'
+    pathlib.Path(save_graph_dir).mkdir(parents=True, exist_ok=True)
+    save_graph_path = save_graph_dir + cur + '_' + heuristic + '_'
     wt = 'unweighted'
     if weighted == 'yes':
         dir_generated_files = dir_generated_files + 'wt_'
         fig_dir = fig_dir + 'wt_'
-        graph_path = graph_path + 'wt_'
+        load_graph_path = load_graph_path + 'wt_'
         wt = 'weighted'
     
 
@@ -122,10 +124,10 @@ def main():
         # save graph_of_correspondences, address data and edge data
         if save_graph == 'yes':
             print(wt + ' ' + cur + ' ' + heuristic + ': saving graph and properties...')
-            graph_of_correspondences.save(graph_path + 'graph.xml.gz')
-            with open(graph_path + 'vertex_prop.pickle', 'wb') as handle:
+            graph_of_correspondences.save(save_graph_path + 'graph.xml.gz')
+            with open(save_graph_path + 'vertex_prop.pickle', 'wb') as handle:
                 pickle.dump(vertex_property, handle, protocol=pickle.HIGHEST_PROTOCOL)
-            with open(graph_path + 'edge_prop.pickle', 'wb') as handle:
+            with open(save_graph_path + 'edge_prop.pickle', 'wb') as handle:
                 pickle.dump(edge_property, handle, protocol=pickle.HIGHEST_PROTOCOL)
             print(wt + ' ' + cur + ' ' + heuristic + ': graph and properties saved')
 
@@ -147,16 +149,16 @@ def main():
     # load graph
     else:
         try:
-            print('\n\nLoading graph: ' + graph_path + 'graph.xml.gz\n')
+            print('\n\nLoading graph: ' + load_graph_path + 'graph.xml.gz\n')
             print(wt + ' ' + cur + ' ' + heuristic + ': loading graph and properties...')
-            graph_of_correspondences = gt.load_graph(graph_path + 'graph.xml.gz')
-            with open(graph_path + 'vertex_prop.pickle', 'rb') as handle:
+            graph_of_correspondences = gt.load_graph(load_graph_path + 'graph.xml.gz')
+            with open(load_graph_path + 'vertex_prop.pickle', 'rb') as handle:
                 vertex_property = pickle.load(handle)
-            with open(graph_path + 'edge_prop.pickle', 'rb') as handle:
+            with open(load_graph_path + 'edge_prop.pickle', 'rb') as handle:
                 edge_property = pickle.load(handle)
             print(wt + ' ' + cur + ' ' + heuristic + ': graph and properties loaded')
         except:
-            print('ERROR: Load Graph failed. Graph not found on given path.')
+            print('ERROR: Load Graph failed. Graph or vertex_prop.pickle or edge_prop.pickle not found on given path.')
             return
 
     # compute components    

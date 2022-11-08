@@ -37,14 +37,14 @@ def pathnames(cur, heuristic, weighted):
 
     # below: change local_dir or server_dir in dir_name for accessing local or server dir
     if weighted == 'no': 
-        graph_dir = server_dir + 'part1_final_logs/' + cur + '_logs/unweighted/' + heuristic + '/generated_files/graph/'
-    else: graph_dir = server_dir + 'part1_final_logs/' + cur + '_logs/weighted/' + heuristic + '/generated_files/graph/'
+        load_graph_dir = server_dir + 'part1_final_logs/' + cur + '_logs/unweighted/' + heuristic + '/generated_files/graph/'
+    else: load_graph_dir = server_dir + 'part1_final_logs/' + cur + '_logs/weighted/' + heuristic + '/generated_files/graph/'
 
     PATHNAMES = {
                     "data_path": data_path,
                     "figure_dir": dir_name + "figures/",
                     "generated_files": dir_name + "generated_files/",
-                    "graph_dir": graph_dir 
+                    "load_graph_dir": load_graph_dir 
                 }
 
     return PATHNAMES
