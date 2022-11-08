@@ -185,7 +185,7 @@ def main():
         df_components["num_of_communities"] = sz_comp_comm
         df_components["modularity"] = sz_comp_mod
         #save entities as a vertex property
-        with open(graph_path + 'graph_vp_lp_entities.pickle', 'wb') as handle:
+        with open(save_graph_path + 'graph_vp_lp_entities.pickle', 'wb') as handle:
                 pickle.dump(entities, handle, protocol=pickle.HIGHEST_PROTOCOL)
         #modularity of whole graph
         modularity = gti.modularity(graph_of_correspondences,entities)
