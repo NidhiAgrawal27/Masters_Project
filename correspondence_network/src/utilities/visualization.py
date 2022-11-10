@@ -1,7 +1,8 @@
 import matplotlib.pyplot as plt
 import powerlaw as pl
 import numpy as np
-import warnings
+import matplotlib as mpl
+
 
 
 def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
@@ -10,8 +11,8 @@ def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
     plt.hist(df, bins = bins_num, density = True, edgecolor='White')
     plt.xscale('log')
     plt.yscale('log')                            
-    plt.xlabel(xlabel, fontsize=14)
-    plt.ylabel('Probability', fontsize=14)
+    plt.xlabel('Connected component size c', fontsize=14)
+    plt.ylabel('Probability Density', fontsize=14)
     plt.title("Distribution of addresses for " + cur.capitalize() + ' ' + heuristic ,fontsize=15)
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
@@ -29,10 +30,10 @@ def plotPowerLaw(df, cur, heuristic, fig_file_name, xmin= None, xmax = None):
     fit.power_law.plot_ccdf( color= 'b',linestyle='--',label='fit ccdf',ax=fig)
     plt.xscale('log')
     plt.yscale('log')
-    plt.ylabel('Cumulative Distribution Function Probability', fontsize = 14)
-    plt.xlabel('\nNumber of addresses', fontsize = 14)
+    plt.ylabel('Complementary cumulative distribution function 1 - P(c)', fontsize = 14)
+    plt.xlabel('\nConnected component size c', fontsize = 14)
     # plt.xlabel('\nNumber of addresses\nfit.distribution_compare(power_law, lognormal): '+ str(fit.distribution_compare('power_law', 'lognormal')), fontsize = 14)
-    plt.title('PowerLaw Plot for ' + cur.capitalize() + ' ' + heuristic + '\nalpha = %f in range [xmin, xmax] = [%.0f,%.0f]'%(alpha,xmin,xmax),fontsize=15)
+    plt.title('PowerLaw Plot for ' + cur.capitalize() + ' ' + heuristic + '\n\u03B1 = %f in range [xmin, xmax] = [%.0f,%.0f]'%(alpha,xmin,xmax),fontsize=15)
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
 
