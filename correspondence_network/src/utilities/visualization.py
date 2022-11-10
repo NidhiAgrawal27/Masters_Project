@@ -11,7 +11,7 @@ def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
     plt.xscale('log')
     plt.yscale('log')                            
     plt.xlabel(xlabel, fontsize=14)
-    plt.ylabel('Density', fontsize=14)
+    plt.ylabel('Probability', fontsize=14)
     plt.title("Distribution of addresses for " + cur.capitalize() + ' ' + heuristic ,fontsize=15)
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
