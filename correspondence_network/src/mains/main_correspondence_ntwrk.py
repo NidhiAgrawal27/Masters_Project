@@ -195,7 +195,7 @@ def main():
     print(wt + ' ' + cur + ' ' + heuristic + ': writing components.csv completed')
 
     #title of the plots
-    title = cur.capitalize() + ' ' + heuristic
+    title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
 
     #visualisation: Component size vs Edges
     plot_modularity_graph(df_components, "num_of_edges", title, fig_dir + 'comp_size_edges.png')

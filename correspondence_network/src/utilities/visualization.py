@@ -1,8 +1,6 @@
 import matplotlib.pyplot as plt
 import powerlaw as pl
 import numpy as np
-import matplotlib as mpl
-
 
 
 def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
@@ -11,9 +9,9 @@ def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
     plt.hist(df, bins = bins_num, density = True, edgecolor='White')
     plt.xscale('log')
     plt.yscale('log')                            
-    plt.xlabel('Connected component size c', fontsize=14)
+    plt.xlabel('Connected component size', fontsize=14)
     plt.ylabel('Probability Density', fontsize=14)
-    plt.title("Distribution of addresses for " + cur.capitalize() + ' ' + heuristic ,fontsize=15)
+    plt.title(' '.join(cur.split('_')).capitalize() + ' ' + heuristic ,fontsize=15)
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
 
@@ -33,7 +31,8 @@ def plotPowerLaw(df, cur, heuristic, fig_file_name, xmin= None, xmax = None):
     plt.ylabel('Complementary cumulative distribution function 1 - P(c)', fontsize = 14)
     plt.xlabel('\nConnected component size c', fontsize = 14)
     # plt.xlabel('\nNumber of addresses\nfit.distribution_compare(power_law, lognormal): '+ str(fit.distribution_compare('power_law', 'lognormal')), fontsize = 14)
-    plt.title('PowerLaw Plot for ' + cur.capitalize() + ' ' + heuristic + '\n\u03B1 = %f in range [xmin, xmax] = [%.0f,%.0f]'%(alpha,xmin,xmax),fontsize=15)
+    plt.title('PowerLaw Plot for ' + ' '.join(cur.split('_')).capitalize() + ' ' + 
+                    heuristic + '\n\u03B1 = %f in range [xmin, xmax] = [%.0f,%.0f]'%(alpha,xmin,xmax),fontsize=15)
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
 
@@ -43,8 +42,8 @@ def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
     plt.scatter(x = dataframe["component_size"], y = dataframe[community_property])
     plt.xscale("log") 
     if not (community_property=="modularity"): plt.yscale("log") 
-    plt.xlabel("Component Size", fontsize=14)
-    plt.ylabel(community_property.capitalize(), fontsize=14)
+    plt.xlabel('Connected component size', fontsize=14)
+    plt.ylabel(' '.join(community_property.split('_')).capitalize(), fontsize=14)
     plt.title(title, fontsize=16)
     plt.savefig(fig_file_name, bbox_inches="tight")
     return
