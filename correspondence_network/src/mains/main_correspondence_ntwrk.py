@@ -197,7 +197,7 @@ def main():
         # save modularity value in a file
         if os.path.isfile(modularity_file): 
             df_mod = pd.read_csv(modularity_file)
-            if cur + '_' + heuristic + '_' + wt in df_mod['graph']:
+            if cur + '_' + heuristic + '_' + wt in df_mod['graph'].values:
                 df_mod['modularity'].loc[df_mod['graph'] == cur + '_' + heuristic + '_' + wt] = modularity
             else:
                 df_mod = df_mod.append({'graph' : cur + '_' + heuristic + '_' + wt, 'modularity' : modularity}, ignore_index=True)
