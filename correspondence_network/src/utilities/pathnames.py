@@ -34,7 +34,7 @@ def pathnames(cur, heuristic, weighted):
     elif cur == 'feathercoin':    data_path = server_data_dir + 'btc_trx/FTC_TXS.csv'
     elif cur == 'monacoin':       data_path = server_data_dir + 'btc_trx/MONA_TXS.csv'
     else: 
-        print('Data Path not found for currency ' + cur + '. Check path or pathnames.py file for the entry of this currency')
+        print('\n\nERROR : Data Path not found for currency ' + cur + '. Check path or pathnames.py file for the entry of this currency\n\n')
 
     # below: change local_dir or server_dir in dir_name for accessing local or server dir
     if weighted == 'no': 
