@@ -1,6 +1,7 @@
 import pandas as pd
 import argparse
 import pathlib
+import os
 import pickle
 import graph_tool.all as gt
 from graph_tool import inference as gti
@@ -42,6 +43,7 @@ def main():
     pathlib.Path(PATHNAMES['figure_dir']).mkdir(parents=True, exist_ok=True)
     dir_generated_files = PATHNAMES['generated_files'] + cur + '_' + heuristic + '_'
     fig_dir = PATHNAMES['figure_dir'] + cur + '_' + heuristic + '_'
+    modularity_file = PATHNAMES['logs_home_dir'] + 'modularity_of_all_graphs.csv'
     load_graph_dir = PATHNAMES['load_graph_dir']
     load_graph_path = load_graph_dir + cur + '_' + heuristic + '_'
     save_graph_dir = PATHNAMES['generated_files'] + 'graph/'
@@ -189,6 +191,15 @@ def main():
                 pickle.dump(entities, handle, protocol=pickle.HIGHEST_PROTOCOL)
         #modularity of whole graph
         modularity = gti.modularity(graph_of_correspondences,entities)
+
+        # save modularity value in a file
+        if os.path.isfile(modularity_file): 
+            df_mod = pd.read_csv(modularity_file)
+            df_mod['modularity'].loc[df_mod['graph'] == cur + '_' + heuristic + '_' + wt] = modularity
+        else: 
+            df_mod = pd.DataFrame(columns =['graph' , 'modularity'])
+            df_mod = df_mod.append({'graph' : cur + '_' + heuristic + '_' + wt, 'modularity' : modularity}, ignore_index=True)
+        df_mod.to_csv(modularity_file, index = False)
 
     # map vertext and edge properties and write csv files for components data
     df_components.to_csv(dir_generated_files + 'components.csv', index=False)

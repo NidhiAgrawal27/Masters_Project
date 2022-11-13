@@ -44,7 +44,8 @@ def pathnames(cur, heuristic, weighted):
                     "data_path": data_path,
                     "figure_dir": dir_name + "figures/",
                     "generated_files": dir_name + "generated_files/",
-                    "load_graph_dir": load_graph_dir 
+                    "load_graph_dir": load_graph_dir,
+                    "logs_home_dir" : local_dir
                 }
 
     return PATHNAMES

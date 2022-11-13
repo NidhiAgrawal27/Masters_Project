@@ -11,6 +11,7 @@ uzh_color_map = ['#0028a5', '#dc6027', '#91c34a', '#fede00', '#a3adb7', '#0b82a0
 
 plt.rc('text', usetex=False)
 plt.rcParams['font.family'] = 'Microsoft Sans Serif'
+# plt.rcParams['font.family'] = 'sans-serif'
 plt.rcParams['font.sans-serif'] = 'TheSans'
 plt.rcParams['axes.labelsize'] = 16
 plt.rcParams['font.size'] = 12
