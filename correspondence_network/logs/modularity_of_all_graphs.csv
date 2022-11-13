@@ -1,0 +1,11 @@
+graph,modularity
+iota_14days_h0_weighted,0.9802
+iota_14days_h0_unweighted,0.9675
+btc_sample_h0_weighted,0.881
+btc_sample_h0_unweighted,0.8747
+feathercoin_h0_weighted,0.6537
+feathercoin_h0_unweighted,0.709
+iota_h0_weighted,0.5083
+iota_h0_unweighted,0.5725
+monacoin_h0_weighted,0.9585
+monacoin_h0_unweighted,0.9456
