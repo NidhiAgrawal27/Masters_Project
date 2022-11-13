@@ -86,6 +86,8 @@ def main():
                 df_timestamp = pd.DataFrame(df['timestamp'].between(1310000000, 1360000000))
                 idx = df_timestamp.index[df_timestamp['timestamp'] == True].tolist()
                 df = df.iloc[idx]
+            elif cur == 'cardano_sample':
+                df = pd.read_csv(PATHNAMES['data_path'], nrows=1000000)
             else: df = pd.read_csv(PATHNAMES['data_path'])
 
             print('Create Correspondence Network Progress Bar:')

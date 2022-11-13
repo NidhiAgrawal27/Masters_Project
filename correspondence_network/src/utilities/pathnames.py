@@ -28,12 +28,13 @@ def pathnames(cur, heuristic, weighted):
     if cur == 'btc_sample':       data_path = local_data_dir + 'btc_sample.csv'
     elif cur == 'iota_14days':    data_path = local_data_dir + 'first_14_days_UTXO_txs_of_IOTA.csv'
     elif cur == 'iota_split':     data_path = local_data_dir + 'first_14_days_UTXO_txs_of_IOTA.csv'
-
     elif cur == 'btc_2012':       data_path = server_data_dir + 'btc_trx/BTC_TXS.csv'
     elif cur == 'iota':           data_path = server_data_dir + 'exported/iota_tx_data/IOTA_1year_tx_data.csv'
-    elif cur == 'cardano':        data_path = server_data_dir + 'btc_trx/ADA_TXS.csv'
+    elif 'cardano' in cur:        data_path = server_data_dir + 'btc_trx/ADA_TXS.csv'
     elif cur == 'feathercoin':    data_path = server_data_dir + 'btc_trx/FTC_TXS.csv'
     elif cur == 'monacoin':       data_path = server_data_dir + 'btc_trx/MONA_TXS.csv'
+    else: 
+        print('Data Path not found for currency ' + cur + '. Check path or pathnames.py file for the entry of this currency')
 
     # below: change local_dir or server_dir in dir_name for accessing local or server dir
     if weighted == 'no': 
