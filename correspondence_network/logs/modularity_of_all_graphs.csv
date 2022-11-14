@@ -9,3 +9,5 @@ iota_h0_weighted,0.5083
 iota_h0_unweighted,0.5725
 monacoin_h0_weighted,0.9585
 monacoin_h0_unweighted,0.9456
+cardano_sample_h0_unweighted,0.7221780934390374
+cardano_sample_h0_weighted,0.7120491750441572
