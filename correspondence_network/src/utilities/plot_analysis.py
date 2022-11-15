@@ -7,10 +7,6 @@ import mpl_scatter_density # adds projection='scatter_density'
 from scipy.stats import gaussian_kde
 import pandas as pd
 
-mona_uwt_h0 = pd.read_csv('/Users/sanjanawarambhey/Downloads/Github/monacoin_logs/unweighted/h0/generated_files/monacoin_h0_components.csv')
-mona_uwt_h0_h1 = pd.read_csv('/Users/sanjanawarambhey/Downloads/Github/monacoin_logs/unweighted/h0_h1/generated_files/monacoin_h0_h1_components.csv')
-mona_wt_h0 = pd.read_csv('/Users/sanjanawarambhey/Downloads/Github/monacoin_logs/weighted/monacoin_h0_wt_components.csv')
-mona_wt_h0_h1 = pd.read_csv('/Users/sanjanawarambhey/Downloads/Github/monacoin_logs/weighted/monacoin_h0_h1_wt_components.csv')
 
 def plotPowerLaw_impose(df1, df2, cur, heuristic1, heuristic2, type_of_file, fig_file_name, xmin= None, xmax = None):
     plt.figure(figsize=(8,8))
@@ -61,8 +57,7 @@ def plot_heatmap(dataframe, title, fig_file_name):
     return
 
 
-# plotPowerLaw_impose(mona_wt_h0['num_of_addrs'],mona_wt_h0_h1['num_of_addrs'], "Monacoin", 'h0', 'h0_h1', 'weighted', 'Monacoin_powerlaw', xmax=None, xmin=None)
-plot_heatmap(mona_wt_h0,'Monacoin','Monacoin_powerlaw')
+
 
 
 
