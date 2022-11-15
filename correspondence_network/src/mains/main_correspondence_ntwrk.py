@@ -9,6 +9,7 @@ import graph_tool.topology as gtt
 from graph_tool import draw
 from utilities import set_seed, compute_components, pathnames, correspondence_network
 from utilities.modularity import compute_modularity
+from utilities.modularity_multiprocess import Modularity
 from utilities.visualization import plotPowerLaw, plot_density_graph, plot_modularity_graph
 
 import warnings
@@ -179,8 +180,11 @@ def main():
     plotPowerLaw(df_components['num_of_addrs'], cur, heuristic, fig_dir + 'powerlaw_plot.png')
     print('\n'+ wt + ' ' + cur + ' ' + heuristic + ': powerlaw_plot.png completed')
 
-    # compute modularity, num of edges and num of communities in the components    
-    comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = compute_modularity(graph_of_correspondences, components, heuristic)
+    # compute modularity, num of edges and num of communities in the components- w/o multiprocess   
+    # comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = compute_modularity(graph_of_correspondences, components, heuristic)
+    
+    # compute modularity, num of edges and num of communities in the components- with multiprocess
+    comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = Modularity().compute_modularity(graph_of_correspondences,components, heuristic)
     
     df_components["component_size"] = comp_size
     df_components["num_of_edges"] = sz_comp_edges
