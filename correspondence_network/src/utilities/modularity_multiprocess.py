@@ -118,7 +118,7 @@ class Modularity:
         prop_dict = {key:value for sublist in result for key,value in sublist[4].items()}
         
         for key,value in prop_dict.items():
-            entities[key] = value
+            entities[g.vertex(key)] = value
 
         #returns empty communities, modularity and entities for h0_h1 heuristic
         return sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities
