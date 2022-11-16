@@ -1,10 +1,10 @@
 
 # # iota_14days
-python -m mains.main_correspondence_ntwrk --seed 42 --currency iota_14days --heuristic h0 --vis no \
-                                            --data_is_split no --save_graph yes --load_graph no --weighted no
-                                            
+# python -m mains.main_correspondence_ntwrk --seed 42 --currency iota_14days --heuristic h0 --vis no \
+#                                             --data_is_split no --save_graph yes --load_graph no --weighted no
+
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency iota_14days --heuristic h0_h1 --vis no \
-#                                             --data_is_split no --save_graph yes --load_graph no --weighted yes
+#                                             --data_is_split no --save_graph yes --load_graph no --weighted no
 
 # # iota_split
 # python -m mains.main_correspondence_ntwrk --seed 42 --currency iota_split --heuristic h0 --vis yes \
