@@ -61,7 +61,7 @@ def plotPowerLaw(df, cur, heuristic, fig_file_name, xmin= None, xmax = None):
     plt.xscale('log')
     plt.yscale('log')
     plt.ylabel('Complementary cumulative distribution function 1 - P(c)')
-    plt.xlabel('\nConnected component size c')
+    plt.xlabel('Connected component size c')
     # plt.xlabel('\nNumber of addresses\nfit.distribution_compare(power_law, lognormal): '+ str(fit.distribution_compare('power_law', 'lognormal')), fontsize = 14)
     plt.title('PowerLaw Plot for ' + ' '.join(cur.split('_')).capitalize() + ' ' + 
                     heuristic + '\n' + r'$\alpha$' + '= %f in range [xmin, xmax] = [%.0f, %.0f]'%(alpha,xmin,xmax))
