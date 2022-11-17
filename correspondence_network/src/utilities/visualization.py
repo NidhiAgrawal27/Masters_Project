@@ -31,16 +31,8 @@ mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=uzh_color_map)
 
 def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
     plt.figure(figsize=(8,8))
-    # bins_num = np.logspace(np.log10(min(df)), np.log10(max(df)+1),30)
-    # plt.hist(df, bins = bins_num, density = True, edgecolor='White')
-
-    import scipy.stats as stats
-    df_plot = df.copy().sort_values()
-    df_mean = np.mean(df_plot)
-    df_std = np.std(df_plot)
-    pdf = stats.norm.pdf(df_plot, df_mean, df_std)
-    plt.scatter(df_plot, pdf)
-
+    bins_num = np.logspace(np.log10(min(df)), np.log10(max(df)+1),30)
+    plt.hist(df, bins = bins_num, density = True, edgecolor='White')
     plt.xscale('log')
     plt.yscale('log')                            
     plt.xlabel('Connected component size')
