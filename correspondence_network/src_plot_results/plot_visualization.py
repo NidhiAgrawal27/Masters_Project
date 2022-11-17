@@ -8,6 +8,7 @@ import pandas as pd
 import matplotlib.offsetbox as offsetbox
 import scipy.stats as stats
 
+
 uzh_color_map = ['#0028a5', '#dc6027', '#91c34a', '#fede00', '#a3adb7', '#0b82a0', '#2a7f62', # FULL
                  '#667ec9', '#eaa07d', '#bfdf94', '#fcec7c', '#c8ced4', '#6bb7c7', '#80b6a4', # 60%
                  '#3353b7', '#e38052', '#aad470', '#fbe651', '#b5bdc5', '#3c9fb6', '#569d85', # 80%
@@ -32,30 +33,7 @@ plt.rcParams.update({
 mpl.rcParams['axes.linewidth'] = 1.2
 mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=uzh_color_map)
 
-mona_coin = pd.read_csv('/Users/sanjanawarambhey/Downloads/Github/monacoin_logs/weighted/monacoin_h0_wt_components.csv')
-mona_coin_h0h1 = pd.read_csv('/Users/sanjanawarambhey/Downloads/Github/monacoin_logs/unweighted/h0/generated_files/monacoin_h0_components.csv')
 
-def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
-    plt.figure(figsize=(8,8))
-    # bins_num = np.logspace(np.log10(min(df)), np.log10(max(df)+1),30)
-    # plt.hist(df, bins = bins_num, density = True, edgecolor='White')
-
-    import scipy.stats as stats
-    df_plot = df.copy().sort_values()
-    df_mean = np.mean(df_plot)
-    df_std = np.std(df_plot)
-    pdf = stats.norm.pdf(df_plot, df_mean, df_std)
-    plt.scatter(df_plot, pdf)
-
-    plt.xscale('log')
-    plt.yscale('log')                            
-    plt.xlabel('Connected component size')
-    plt.ylabel('Probability Density')
-    plt.title(' '.join(cur.split('_')).capitalize() + ' ' + heuristic)
-    plt.savefig(fig_file_name, bbox_inches="tight")
-    plt.cla()
-    plt.show()
-    return
 
 
 def plotPowerLaw(df, cur, heuristic, fig_file_name, xmin= None, xmax = None):
@@ -74,28 +52,7 @@ def plotPowerLaw(df, cur, heuristic, fig_file_name, xmin= None, xmax = None):
     plt.title('PowerLaw Plot for ' + ' '.join(cur.split('_')).capitalize() + ' ' + 
                     heuristic + '\n' + r'$\alpha$' + '= %f in range [xmin, xmax] = [%.0f, %.0f]'%(alpha,xmin,xmax))
     plt.savefig(fig_file_name, bbox_inches="tight")
-    plt.cla()
-    return
-
-
-def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
-    plt.figure(figsize = (8,8))
-    plt.scatter(x = dataframe["component_size"], y = dataframe[community_property])
-    plt.xscale("log")
-    prop_name = ' '.join(community_property.split('_')).capitalize()
-    min_val_comp = dataframe['component_size'].min()
-    max_val_comp = dataframe['component_size'].max()
-    title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
-    if not (community_property=="modularity"): plt.yscale("log") 
-    if community_property != 'modularity':
-        min_val = dataframe[community_property].min()
-        max_val = dataframe[community_property].max()
-        title = title + '\n'+ prop_name + ': Min: ' + str(min_val) + ' Max: ' + str(max_val)
-    plt.xlabel('Connected component size')
-    plt.ylabel(prop_name)
-    plt.title(title)
-    plt.savefig(fig_file_name, bbox_inches="tight")
-    plt.cla()
+    plt.clf()
     return
 
 
@@ -123,83 +80,174 @@ def plotPowerLaw_superimpose(df1, df2, cur, heuristic1, heuristic2, fig_file_nam
                 ' ' + 'and \n' + r'$\alpha$' + ' = %f for'%(alpha2)+ " " + heuristic2+ " " + 'in range [xmin, xmax] = [%.0f, %.0f]'%(xmin2,xmax2))
     plt.legend()
     plt.savefig(fig_file_name, bbox_inches="tight")
-    plt.cla()
+    plt.clf()
     return
 
 
-def plot_edges(dataframe, cur, fig_file_name):
+def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
+    plt.figure(figsize = (8,8))
+    plt.scatter(x = dataframe["component_size"], y = dataframe[community_property])
+    plt.xscale("log")
+    prop_name = ' '.join(community_property.split('_')).capitalize()
+    min_val_comp = dataframe['component_size'].min()
+    max_val_comp = dataframe['component_size'].max()
+    title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
+    if not (community_property=="modularity"): plt.yscale("log") 
+    if community_property != 'modularity':
+        min_val = dataframe[community_property].min()
+        max_val = dataframe[community_property].max()
+        title = title + '\n'+ prop_name + ': Min: ' + str(min_val) + ' Max: ' + str(max_val)
+    if community_property == 'num_of_communities':
+        X = np.array(np.log(dataframe['component_size']))
+        Y = np.array(np.log(dataframe['num_of_communities']))
+        slope, intercept  = np.polyfit(X, Y, 1)
+        title = title + '\n' + ' Slope: ' + str(round(slope, 2)) + ' Intercept: ' + str(round(intercept, 2))
+    plt.xlabel('Connected component size')
+    plt.ylabel(prop_name)
+    plt.title(title)
+    plt.savefig(fig_file_name, bbox_inches="tight")
+    plt.clf()
+    return
+
+
+def plot_gaussian(x, y, cur, xlabel, ylabel, fig_file_name):
     fig = plt.figure(figsize = (8,8))
-    x = dataframe["component_size"]
-    y = dataframe["num_of_edges"]
     xy = np.vstack([x,y])
     z = gaussian_kde(xy)(xy)
     fig, ax = plt.subplots()
     ax.scatter(x, y, c=z, s=30) 
-    min_val = dataframe["num_of_edges"].min()
-    max_val = dataframe["num_of_edges"].max()
-    min_val_comp = dataframe["component_size"].min()
-    max_val_comp = dataframe["component_size"].max()
-    title = ' '.join(cur.split('_')).capitalize() + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp) + '\n Number of edges: Min: ' + str(min_val) + ' Max: ' + str(max_val)
+    min_val = y.min()
+    max_val = y.max()
+    min_val_comp = x.min()
+    max_val_comp = x.max()
+    title = ' '.join(cur.split('_')).capitalize() + '\n ' + xlabel + ': Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
+    title = title + '\n '+ ylabel + ': Min: ' + str(min_val) + ' Max: ' + str(max_val)
     sm = plt.cm.ScalarMappable(cmap = plt.cm.get_cmap('viridis'))
     fig.colorbar(sm)
-    plt.xlabel('Connected component size')
-    plt.ylabel(' '.join("num_of_edges".split('_')).capitalize())
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
     plt.title(title)
     plt.xscale("log") 
     plt.yscale("log") 
     plt.savefig(fig_file_name, bbox_inches="tight")
-    plt.cla()
+    plt.clf()
     return
 
 
-def plot_find_exponent(dataframe, prop, title, fig_file_name):
-    fig = plt.figure(figsize = (8,8))
+def plot_find_slope(dataframe, prop, title, fig_file_name):
+    plt.figure(figsize = (8,8))
     x = dataframe["component_size"]
-    ax = fig.add_subplot()
     y = dataframe[prop]
+    # plt.scatter(x,y)
     X = np.array(np.log(x))
     Y = np.array(np.log(y))
-    plt.scatter(x = X, y = Y)
-    p = np.polyfit(X, Y,1)
-    slope = p[0]
-    intercept = p[1]
-    text1 = ("The exponent for this graph function is" +  ' ' + str(round(slope, 2)))
-    text2 = ("The intercept for this graph function is" +  ' ' + str(round(intercept, 2)))
-    text = text1 + '\n' + text2
-    ob = offsetbox.AnchoredText(text, loc=2)
-    prop_name = ' '.join(x_label.split('_')).capitalize()
-    ax.add_artist(ob)
-    plt.xlabel('Connected component size')
-    plt.ylabel(prop_name)
-    title = title + ': '+ prop_name 
-    # + '\n' + ' Slope: ' + str(round(slope, 2)) + ' Intercept: ' + str(round(intercept, 2))
-    plt.savefig(fig_file_name, bbox_inches="tight")
+    plt.scatter(X,Y)
+    slope, intercept  = np.polyfit(X, Y, 1)
+    xseq = np.linspace(0, max(X)-1, num=10)
+    plt.plot(xseq, slope * xseq + intercept, color='r')
+    prop_name = ' '.join(prop.split('_')).capitalize()
+    min_val_comp = dataframe['component_size'].min()
+    max_val_comp = dataframe['component_size'].max()
+    title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
+    min_val = dataframe[prop].min()
+    max_val = dataframe[prop].max()
+    title = title + '\n'+ prop_name + ': Min: ' + str(min_val) + ' Max: ' + str(max_val)
+    title = title + '\n' + ' Slope: ' + str(round(slope, 2)) + ' Intercept: ' + str(round(intercept, 2))
+    # plt.xscale('log')
+    # plt.yscale('log')
+    plt.xlabel('Connected component size (log value)')
+    plt.ylabel(prop_name + ' (log value)') 
     plt.title(title)
-    plt.cla()
-    # plt.show()
+    plt.savefig(fig_file_name, bbox_inches="tight")
+    plt.clf()
     return
 
-def plot_densitygraph_vertical(df1, df2, prop, fig_file_name, cur, heuristic1, heuristic2):
-    fig, axs = plt.subplots(2)
-    import scipy.stats as stats
-    df1_plot = df1[prop].copy().sort_values()
-    df2_plot = df2[prop].copy().sort_values()
-    df1_mean = np.array(np.mean(df1_plot, axis=0))
-    df1_std = np.array(np.std(df1_plot, axis=0))
-    pdf1 = stats.norm.pdf(df1_plot, df1_mean, df1_std)
-    df2_mean = np.mean(df2_plot)
-    df2_std = np.std(df2_plot)
-    pdf2 = stats.norm.pdf(df2_plot, df2_mean, df2_std)
-    axs[0].scatter(df1_plot, pdf1)
-    axs[1].scatter(df2_plot, pdf2) 
+
+def plot_probability(df, xlabel, fig_file_name, cur, heuristic):
+    plt.figure(figsize=(8,8))
+    val_counts = df.value_counts(normalize=True)
+    plt.scatter(val_counts.index, val_counts)
     plt.xscale('log')
     plt.yscale('log')                            
     plt.xlabel('Connected component size')
-    plt.ylabel('Probability Density')  
-    axs[0].set_title(' '.join(cur.split('_')).capitalize() + ' ' + heuristic1)
-    axs[1].set_title(' '.join(cur.split('_')).capitalize() + ' ' + heuristic2)
-    plt.title(' '.join(cur.split('_')).capitalize())
+    plt.ylabel('Probability')
+    title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
+    min_val_comp = df.min()
+    max_val_comp = df.max()
+    min_prob = round(val_counts.min(), 5)
+    max_prob = round(val_counts.max(), 5)
+    title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
+    title = title + '\n Probability: Min: ' + str(min_prob) + ' Max: ' + str(max_prob)
+    plt.title(title)
     plt.savefig(fig_file_name, bbox_inches="tight")
-    plt.cla()
+    plt.clf()
     return
 
+
+def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
+    plt.figure(figsize=(8,8))
+    bins_num = np.logspace(np.log10(min(df)), np.log10(max(df)+1),30)
+    plt.hist(df, bins = bins_num, density = True, edgecolor='White')
+    plt.xscale('log')
+    plt.yscale('log')                            
+    plt.xlabel('Connected component size')
+    plt.ylabel('Probability Density')
+    title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
+    min_val_comp = df.min()
+    max_val_comp = df.max()
+    title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
+    plt.title(title)
+    plt.savefig(fig_file_name, bbox_inches="tight")
+    plt.clf()
+    return
+
+
+def plot_pdf(df, xlabel, fig_file_name, cur, heuristic):
+    plt.figure(figsize=(8,8))
+    df_plot = df.copy().sort_values()
+    df_mean = np.mean(df_plot)
+    df_std = np.std(df_plot)
+    pdf = stats.norm.pdf(df_plot, df_mean, df_std)
+    plt.scatter(df_plot, pdf)
+    plt.xscale('log')
+    plt.yscale('log')                            
+    plt.xlabel('Connected component size')
+    plt.ylabel('Probability Density')
+    title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
+    min_val_comp = df_plot.min()
+    max_val_comp = df_plot.max()
+    min_prob = round(pdf.min(), 5)
+    max_prob = round(pdf.max(), 5)
+    title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
+    title = title + '\n Probability Density: Min: ' + str(min_prob) + ' Max: ' + str(max_prob)
+    plt.title(title)
+    plt.savefig(fig_file_name, bbox_inches="tight")
+    plt.clf()
+    return
+
+
+# def plot_densitygraph_vertical(df1, df2, prop, fig_file_name, cur, heuristic1, heuristic2):
+#     fig, axs = plt.subplots(2)
+#     import scipy.stats as stats
+#     df1_plot = df1[prop].copy().sort_values()
+#     df2_plot = df2[prop].copy().sort_values()
+#     df1_mean = np.array(np.mean(df1_plot, axis=0))
+#     df1_std = np.array(np.std(df1_plot, axis=0))
+#     pdf1 = stats.norm.pdf(df1_plot, df1_mean, df1_std)
+#     df2_mean = np.mean(df2_plot)
+#     df2_std = np.std(df2_plot)
+#     pdf2 = stats.norm.pdf(df2_plot, df2_mean, df2_std)
+#     axs[0].scatter(df1_plot, pdf1)
+#     axs[1].scatter(df2_plot, pdf2) 
+#     plt.xscale('log')
+#     plt.yscale('log')                            
+#     plt.xlabel('Connected component size')
+#     plt.ylabel('Probability Density')  
+#     axs[0].set_title(' '.join(cur.split('_')).capitalize() + ' ' + heuristic1)
+#     axs[1].set_title(' '.join(cur.split('_')).capitalize() + ' ' + heuristic2)
+#     plt.title(' '.join(cur.split('_')).capitalize())
+#     plt.savefig(fig_file_name, bbox_inches="tight")
+#     plt.clf()
+#     return
+
+ 

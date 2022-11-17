@@ -14,7 +14,7 @@ def main(load_dir, save_dir, currencies, heuristic_list, weighted, modularity_fi
         
             for heuristic in heuristic_list:
 
-                fig_path = save_dir + cur + '/' + wt + '/' + heuristic + '/'
+                fig_path = save_dir + cur + '_logs/' + wt + '/' + heuristic + '/figures/'
                 pathlib.Path(fig_path).mkdir(parents=True, exist_ok=True)
 
                 title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
@@ -49,7 +49,7 @@ if __name__ == "__main__":
     save_dir = '../logs/plot_results_seperate/'
     modularity_file = '../logs/modularity_of_all_graphs.csv'
     
-    currencies = ['feathercoin']#, 'btc_sample', 'iota_14days', 'iota', 'monacoin']
+    currencies = ['feathercoin', 'btc_sample']#, 'iota_14days', 'iota', 'monacoin']
     heuristic_list = ['h0', 'h0_h1']
     weighted = ['weighted', 'unweighted']
     
