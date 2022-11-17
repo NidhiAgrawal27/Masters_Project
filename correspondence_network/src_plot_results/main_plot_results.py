@@ -1,6 +1,6 @@
 import pandas as pd
 import pathlib
-from plot_visualization import plot_density_graph, plot_edges, plot_modularity_graph, plotPowerLaw_superimpose
+from plot_visualization import plot_density_graph, plot_edges, plot_modularity_graph, plotPowerLaw_superimpose,plot_densitygraph_vertical,plot_find_exponent
 
 
 def main(load_dir, save_dir, currencies, weighted, modularity_file):
@@ -43,7 +43,9 @@ def main(load_dir, save_dir, currencies, weighted, modularity_file):
             plotPowerLaw_superimpose(df_components_h0['num_of_addrs'], df_components_h0_h1['num_of_addrs'], cur, 'h0', 'h0_h1', fig_path + cur + '_powerlaw_plot.png', xmin= None, xmax = None)
             plot_edges(df_components_h0, cur, save_fig_dir_h0 + 'edges.png')
             plot_edges(df_components_h0_h1, cur, save_fig_dir_h0_h1 + 'edges.png')
-
+            plot_densitygraph_vertical((df_components_h0,df_components_h0_h1,'num_of_addrs',fig_path + cur + 'stacked_density_plots.png' , cur, 'h0', 'h0_h1'))
+            plot_find_exponent(df_components_h0, 'num_of_communities', title_h0, save_fig_dir_h0)
+            plot_find_exponent(df_components_h0_h1, 'num_of_communities', title_h0_h1, save_fig_dir_h0_h1)
             # plot_modularity_graph(df_components_h0, "num_of_edges", title_h0, save_fig_dir_h0 + 'comp_size_edges.png')
             # plot_modularity_graph(df_components_h0_h1, "num_of_edges", title_h0_h1, save_fig_dir_h0_h1 + 'comp_size_edges.png')
             # plotPowerLaw(df_components_h0['num_of_addrs'], cur, 'h0', save_fig_dir_h0 + 'powerlaw_plot.png')
