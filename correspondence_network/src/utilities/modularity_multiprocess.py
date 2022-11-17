@@ -70,10 +70,10 @@ class Modularity:
             sz_comp_mod.append(0)
 
         else:
-            lock.acquire()
             gv= gt.GraphView(g, vfilt = vec_comp)    
             redv = defaultdict(lambda : self.no_entities.value+len(redv))  
             communities = self.label_prop(gv, 20)
+            lock.acquire()
             for v in gv.vertices():
                 v_index = int(v)
                 prop_list[v_index] = redv[communities[v]]
