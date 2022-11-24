@@ -38,10 +38,10 @@ class Modularity:
         return lp.get_state()
 
     def multiprocess_component_calc(self,i_comp,components,heuristic,g):
-        sz_comp_size = []
-        sz_comp_edges = []
-        sz_comp_comm = []
-        sz_comp_mod = []
+        # sz_comp_size = []
+        # sz_comp_edges = []
+        # sz_comp_comm = []
+        # sz_comp_mod = []
         prop_list = {}
         lock = Lock()
 
@@ -49,12 +49,12 @@ class Modularity:
         vec_comp = components == i_comp
 
         # no. of vertices belonging to the particular component- size of the component        
-        sz_comp =  int(np.sum(vec_comp))
-        sz_comp_size.append(sz_comp)
+        comp_size =  int(np.sum(vec_comp))
+        # sz_comp_size.append(sz_comp)
 
         if heuristic == "h0_h1":
-            sz_comp_edges.append(gt.GraphView(g, vfilt = vec_comp).num_edges())
-            return sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, prop_list
+            comp_edges = gt.GraphView(g, vfilt = vec_comp).num_edges()
+            return comp_size, comp_edges, None, None, None
 
         # giving the unique label for small communities
         if np.sum(vec_comp) < 6 and heuristic=="h0":
@@ -64,10 +64,9 @@ class Modularity:
                 prop_list[v_index] = self.no_entities.value
             self.no_entities.value += 1
             lock.release()
-
-            sz_comp_edges.append(gt.GraphView(g, vfilt = vec_comp).num_edges())
-            sz_comp_comm.append(1)
-            sz_comp_mod.append(0)
+            comp_edges = gt.GraphView(g, vfilt = vec_comp).num_edges()
+            comp_comm = 1
+            comp_mod = 0
 
         else:
             gv= gt.GraphView(g, vfilt = vec_comp)    
@@ -81,22 +80,22 @@ class Modularity:
             lock.release()
             
             #store number of edges dictionary with component size
-            sz_comp_edges.append(gv.num_edges())
+            comp_edges = gv.num_edges()
 
             #store number of communities dictionary with component size
-            sz_comp_comm.append(len(set(communities.fa)))
+            comp_comm = len(set(communities.fa))
 
             #calculate modularity for only components having more than one community
             if len(set(communities.fa))>1:
-                comp_modularity = gti.modularity(gv,communities)
+                comp_mod = gti.modularity(gv,communities)
 
                 #store modularity in a dictionary with component size
-                sz_comp_mod.append(comp_modularity)
+                # sz_comp_mod.append(comp_modularity)
 
-            else: sz_comp_mod.append(0)
+            else: comp_mod = 0
 
         #returns empty communities, modularity and entities for h0_h1 heuristic
-        return sz_comp_size[0], sz_comp_edges[0], sz_comp_comm[0], sz_comp_mod[0], prop_list
+        return comp_size, comp_edges, comp_comm, comp_mod, prop_list
 
 
     def compute_modularity(self, g, components, heuristic):
