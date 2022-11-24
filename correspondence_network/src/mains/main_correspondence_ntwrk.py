@@ -10,7 +10,7 @@ from graph_tool import draw
 from utilities import set_seed, compute_components, pathnames, correspondence_network
 from utilities.modularity import compute_modularity
 from utilities.modularity_multiprocess import Modularity
-from utilities.visualization import plotPowerLaw, plot_density_graph, plot_modularity_graph
+from utilities.visualization import plotPowerLaw, plot_density_graph, plot_modularity_graph, plot_edges_gaussian
 
 import warnings
 warnings.filterwarnings('ignore')
@@ -173,7 +173,7 @@ def main():
     df_components = pd.DataFrame.from_dict(components_list, orient='columns')
 
     # visualization: density graph
-    plot_density_graph(df_components['num_of_addrs'], 'Number of addesses', fig_dir + 'density_plot.png', cur, heuristic)
+    plot_density_graph(df_components['num_of_addrs'], 'Connected Component Size', fig_dir + 'density_plot.png', cur, heuristic)
     print(wt + ' ' + cur + ' ' + heuristic + ': density_plot.png completed\n')
 
     # visualization: power law plot
@@ -218,7 +218,7 @@ def main():
     title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
 
     #visualisation: Component size vs Edges
-    plot_modularity_graph(df_components, "num_of_edges", title, fig_dir + 'comp_size_edges.png')
+    plot_edges_gaussian(df_components['num_of_addrs'], df_components['num_of_edges'], cur, wt, 'Connected Component Size', 'Number of Edges', fig_dir + 'comp_size_edges.png')
     print(wt + ' ' + cur + ' ' + heuristic + ': comp_size_edges.png completed\n')
 
     if heuristic=="h0":
