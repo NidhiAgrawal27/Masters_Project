@@ -54,7 +54,7 @@ class Modularity:
 
         if heuristic == "h0_h1":
             sz_comp_edges.append(gt.GraphView(g, vfilt = vec_comp).num_edges())
-            return sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod
+            return sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, prop_list
 
         # giving the unique label for small communities
         if np.sum(vec_comp) < 6 and heuristic=="h0":
@@ -113,12 +113,16 @@ class Modularity:
 
         sz_comp_size = [sublist[0] for sublist in result]
         sz_comp_edges = [sublist[1] for sublist in result]
-        sz_comp_comm = [sublist[2] for sublist in result]
-        sz_comp_mod = [sublist[3] for sublist in result]
-        prop_dict = {key:value for sublist in result for key,value in sublist[4].items()}
-        
-        for key,value in prop_dict.items():
-            entities[g.vertex(key)] = value
 
-        #returns empty communities, modularity and entities for h0_h1 heuristic
-        return sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities
+        if heuristic=="h0":
+            sz_comp_comm = [sublist[2] for sublist in result]
+            sz_comp_mod = [sublist[3] for sublist in result]
+            prop_dict = {key:value for sublist in result for key,value in sublist[4].items()}
+            
+            for key,value in prop_dict.items():
+                entities[g.vertex(key)] = value
+
+            #returns empty communities, modularity and entities for h0_h1 heuristic
+            return sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities
+        else:
+            return sz_comp_size, sz_comp_edges, None, None, None
