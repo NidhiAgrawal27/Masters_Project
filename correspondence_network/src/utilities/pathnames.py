@@ -23,7 +23,8 @@ def pathnames(cur, heuristic, weighted):
     else: dir_name = local_dir + cur + '_logs/weighted/' + heuristic + '/'
     
     local_data_dir = '../data/'
-    server_data_dir = '/local/scratch/'
+    # server_data_dir = '/local/scratch/'
+    server_data_dir = '/srv/abacus-1/'
         
     if cur == 'btc_sample':       data_path = local_data_dir + 'btc_sample.csv'
     elif cur == 'iota_14days':    data_path = local_data_dir + 'first_14_days_UTXO_txs_of_IOTA.csv'
