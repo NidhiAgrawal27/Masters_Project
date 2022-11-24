@@ -29,7 +29,7 @@ def main(load_dir, save_dir, currencies, heuristic_list, weighted, modularity_fi
                 df_components = pd.read_csv(comp_filename)
 
                 plot_density_graph(df_components['num_of_addrs'], 'Number of addesses', save_fig_dir + 'density_plot.png', cur, heuristic)
-                plotPowerLaw(df_components['num_of_addrs'], cur, heuristic, save_fig_dir + 'powerlaw_plot.png')
+                # plotPowerLaw(df_components['num_of_addrs'], cur, heuristic, save_fig_dir + 'powerlaw_plot.png')
                 plot_modularity_graph(df_components, "num_of_edges", title, save_fig_dir + 'comp_size_edges.png')
 
                 if heuristic == 'h0':
