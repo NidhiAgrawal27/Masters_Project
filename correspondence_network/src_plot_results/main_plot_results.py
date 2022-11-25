@@ -61,7 +61,7 @@ if __name__ == "__main__":
     save_dir = '../logs/plot_results/'
     modularity_file = load_dir + 'modularity_of_all_graphs.csv'
 
-    currencies = ['feathercoin', 'btc_sample', 'iota_14days', 'iota', 'monacoin']
+    currencies = ['feathercoin', 'btc_sample'] # ['feathercoin', 'btc_sample', 'iota_14days', 'iota', 'monacoin']
     weighted = ['weighted', 'unweighted']
     
     main(load_dir, save_dir, currencies, weighted, modularity_file)

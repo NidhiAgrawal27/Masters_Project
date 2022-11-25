@@ -37,7 +37,8 @@ def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
     bins_num = np.logspace(np.log10(min(df)), np.log10(max(df)+1),30)
     plt.hist(df, bins = bins_num, density = True, cumulative=-1, histtype='step')
     plt.xscale('log')
-    plt.yscale('log')                            
+    plt.yscale('log')
+    plt.minorticks_off()                        
     plt.xlabel('Connected component size')
     plt.ylabel('Probability Density')
     title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
@@ -73,12 +74,10 @@ def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
     x = dataframe["component_size"]
     y = dataframe[community_property]
     plt.scatter(x, y)
-    plt.xscale("log")
     prop_name = ' '.join(community_property.split('_')).capitalize()
     min_val_comp = dataframe['component_size'].min()
     max_val_comp = dataframe['component_size'].max()
     title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
-    if not (community_property=="modularity"): plt.yscale("log") 
     if community_property != 'modularity':
         min_val = dataframe[community_property].min()
         max_val = dataframe[community_property].max()
@@ -90,6 +89,9 @@ def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
         title = title + '\n' + ' Slope: ' + str(round(slope, 2)) + ' Intercept: ' + str(round(intercept, 2))
         plt.plot(x, x/3, color='green', label = 'Theoretical max num of communities')
         plt.legend()
+    if max(x) > 10 : plt.xscale("log")
+    if max(y) > 10 :
+        if not (community_property=="modularity"): plt.yscale("log")
     plt.xlabel('Connected component size')
     plt.ylabel(prop_name)
     plt.title(title)
@@ -120,11 +122,13 @@ def plot_edges_gaussian(x, y, cur, wt, xlabel, ylabel, fig_file_name):
     plt.xlabel(xlabel)
     plt.ylabel(ylabel)
     plt.title(title)
-    plt.xscale("log") 
-    plt.yscale("log") 
+    if max(x) > 10 : plt.xscale("log")
+    if max(y) > 10 : plt.yscale("log")
+    plt.minorticks_off()
     plt.savefig(fig_file_name, bbox_inches="tight")
     plt.clf()
     return
+
 
 
 def plotPowerLaw_superimpose(df1, df2, cur, heuristic1, heuristic2, fig_file_name, xmin= None, xmax = None):
@@ -145,6 +149,7 @@ def plotPowerLaw_superimpose(df1, df2, cur, heuristic1, heuristic2, fig_file_nam
     plt.ylim(0.0001, y_max_lim)
     plt.xscale('log')
     plt.yscale('log')
+    plt.minorticks_off()
     plt.ylabel('Complementary cumulative distribution function 1 - P(c)')
     plt.xlabel('Connected component size c')
     plt.title('PowerLaw Plot for: ' + ' '.join(cur.split('_')).capitalize() + ' ' + cur.capitalize() + 
