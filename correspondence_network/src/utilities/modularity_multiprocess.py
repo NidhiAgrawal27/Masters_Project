@@ -18,7 +18,7 @@ class Modularity:
         self.no_entities = Manager().Value('i',0)
         self.component_number = Manager().Value('i',0)
 
-    def worker_init():
+    def worker_init(self):
         raise Exception("Worker Initialization Error!")
 
     def label_prop(self,gin, max_iter = 100, each_update = None):
