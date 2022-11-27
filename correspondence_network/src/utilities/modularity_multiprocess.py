@@ -18,9 +18,6 @@ class Modularity:
         self.no_entities = Manager().Value('i',0)
         self.component_number = Manager().Value('i',0)
 
-    def worker_init(self):
-        raise Exception("Worker Initialization Error!")
-
     def label_prop(self,gin, max_iter = 100, each_update = None):
         try:  
             no_nodes = gin.num_vertices()
@@ -111,7 +108,7 @@ class Modularity:
         component_labels = np.unique( components.a )
 
         print('\nModularity Progress Bar:')
-        pool = Pool(processes=16, initializer= self.worker_init)
+        pool = Pool(processes=16)
         sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, prop_dict_list = zip(*pool.map(functools.partial(self.multiprocess_component_calc,components=components.a,heuristic=heuristic,g=g),tqdm(component_labels)))
         pool.close()
         pool.join()
