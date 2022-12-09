@@ -184,7 +184,7 @@ def main():
     # comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = compute_modularity(graph_of_correspondences, components, heuristic)
     
     # compute modularity, num of edges and num of communities in the components- with multiprocess
-    comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod,sz_comp_mod_rand, entities = Modularity().compute_modularity(graph_of_correspondences,components, heuristic)
+    comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = Modularity().compute_modularity(graph_of_correspondences,components, heuristic)
     
     df_components["component_size"] = comp_size
     df_components["num_of_edges"] = sz_comp_edges
@@ -192,7 +192,6 @@ def main():
     if heuristic=="h0":
         df_components["num_of_communities"] = sz_comp_comm
         df_components["modularity"] = sz_comp_mod
-        df_components["randomized_modularity"] = sz_comp_mod_rand
         #save entities as a vertex property
         with open(save_graph_path + 'graph_vp_lp_entities.pickle', 'wb') as handle:
                 pickle.dump(entities, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -212,7 +211,7 @@ def main():
         df_mod.to_csv(modularity_file, index = False)
 
     # map vertext and edge properties and write csv files for components data
-    df_components.to_csv(dir_generated_files + 'components_rand.csv', index=False)
+    df_components.to_csv(dir_generated_files + 'components.csv', index=False)
     print(wt + ' ' + cur + ' ' + heuristic + ': writing components.csv completed')
 
     #title of the plots

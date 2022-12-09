@@ -1,6 +1,5 @@
 import graph_tool as gt
 import graph_tool.dynamics as gtd
-import graph_tool.generation as gtg
 import graph_tool.inference as gti
 import graph_tool.topology as gtt
 from graph_tool import draw
@@ -59,7 +58,7 @@ class Modularity:
 
             if heuristic == "h0_h1":
                 comp_edges = gt.GraphView(g, vfilt = vec_comp).num_edges()
-                return comp_size, comp_edges, None, None, None, None
+                return comp_size, comp_edges, None, None, None
 
             # giving the unique label for small communities
             if np.sum(vec_comp) < 6 and heuristic=="h0":
@@ -72,8 +71,6 @@ class Modularity:
                 comp_edges = gt.GraphView(g, vfilt = vec_comp).num_edges()
                 comp_comm = 1
                 comp_mod = 0
-                comp_rand_mod = 0
-                
 
             else:
                 gv= gt.GraphView(g, vfilt = vec_comp)    
@@ -96,37 +93,10 @@ class Modularity:
                 #calculate modularity for only components having more than one community
                 if len(set(communities.fa))>1:
                     comp_mod = gti.modularity(gv,communities)
-                    
-                    comp_mod_rand = []
-                     
-                    for i in range(10):
-                    
-                        gcopy = gt.GraphView(gv)
-                        gtg.random_rewire(gcopy, model='configuration', n_iter = 5)
-                        
-                        communities_rand = self.label_prop(gcopy, 20)
-                        
-                        lock.acquire()
-                        for v in gv.vertices():
-                            v_index = int(v)
-                            prop_list[v_index] = redv[communities_rand[v]]
-                        self.no_entities.value += len(redv)
-                        lock.release()        
-
-                        comp_modularity_rnd = gti.modularity(gcopy,communities_rand)
-                        
-                        #store modularity in a dictionary
-                        comp_mod_rand.append(comp_modularity_rnd)
-                    
-                    comp_rand_mod = sum(comp_mod_rand) / len(comp_mod_rand)
-                    
-                    
-                else: 
-                    comp_mod = 0 
-                    comp_rand_mod = 0
+                else: comp_mod = 0
 
             #returns empty communities, modularity and entities for h0_h1 heuristic
-            return comp_size, comp_edges, comp_comm, comp_mod, comp_rand_mod, prop_list
+            return comp_size, comp_edges, comp_comm, comp_mod, prop_list
         
         except:
             raise Exception("Error getting results in component {}!".format(self.component_number.value))
@@ -139,7 +109,7 @@ class Modularity:
 
         print('\nModularity Progress Bar:')
         pool = Pool(processes=16)
-        sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, sz_comp_rand_mod, prop_dict_list = zip(*pool.map(functools.partial(self.multiprocess_component_calc,components=components.a,heuristic=heuristic,g=g),tqdm(component_labels)))
+        sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, prop_dict_list = zip(*pool.map(functools.partial(self.multiprocess_component_calc,components=components.a,heuristic=heuristic,g=g),tqdm(component_labels)))
         pool.close()
         pool.join()
         print("Modularity computed. Joining different process results")
@@ -151,6 +121,6 @@ class Modularity:
                 entities[g.vertex(key)] = value
 
             #returns empty communities, modularity and entities for h0_h1 heuristic
-            return sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod,sz_comp_rand_mod, entities
+            return sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities
         else:
-            return sz_comp_size, sz_comp_edges, None, None, None, None
+            return sz_comp_size, sz_comp_edges, None, None, None
