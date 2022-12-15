@@ -42,7 +42,7 @@ mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=uzh_color_map)
 
 
 
-def plotPowerLaw_superimpose(df1, df2, cur, heuristic1, heuristic2, fig_file_name, xmin= None, xmax = None):
+def plotPowerLaw_superimpose(df1, df2, cur, heuristic1, heuristic2, wt, fig_file_name, xmin= None, xmax = None):
     plt.figure(figsize=(8,8))
     fit1 = pl.Fit(df1 , xmin, xmax = xmax)
     fit2 = pl.Fit(df2 , xmin, xmax = xmax)
@@ -55,9 +55,9 @@ def plotPowerLaw_superimpose(df1, df2, cur, heuristic1, heuristic2, fig_file_nam
     xmax1 = max(df1)
     xmax2 = max(df2)
     fig1 = fit1.plot_ccdf(color= uzh_colors["red"], label= heuristic1 + ', '+ r'$\alpha$ = ' + alpha1 + ' in range c = [%.0f, %.0f]'%(xmin1,xmax1))
-    # fit1.power_law.plot_ccdf( color= uzh_colors['red'],linestyle='--',ax=fig1, label= heuristic1)
+    fit1.power_law.plot_ccdf( color= uzh_colors['red'],linestyle='--',ax=fig1)
     fig2 = fit2.plot_ccdf(color= uzh_colors["green"], label= heuristic2 + ', '+ r'$\alpha$ = ' + alpha2 + ' in range c = [%.0f, %.0f]'%(xmin2,xmax2))
-    # fit2.power_law.plot_ccdf( color= uzh_colors["green"],linestyle='-.',ax=fig2, label= heuristic2)
+    fit2.power_law.plot_ccdf( color= uzh_colors["green"],linestyle='-.',ax=fig2)
     y_max_lim = max(fig1.properties()['ylim'][1], fig2.properties()['ylim'][1]) # get max value of y axis
     plt.ylim(0.0001, y_max_lim)
     plt.xscale('log')
@@ -65,7 +65,7 @@ def plotPowerLaw_superimpose(df1, df2, cur, heuristic1, heuristic2, fig_file_nam
     plt.minorticks_off()
     plt.ylabel('Complementary cumulative distribution function: 1 - P(c)')
     plt.xlabel('Connected component size c')
-    plt.title('PowerLaw Plot for: ' + ' '.join(cur.split('_')).capitalize())
+    plt.title('PowerLaw Plot for: ' + ' '.join(cur.split('_')).capitalize() + ' ' + wt)
     # plt.title('PowerLaw Plot for: ' + ' '.join(cur.split('_')).capitalize() + ' ' + cur.capitalize() + 
     #             '\n' + r'$\alpha$' + ' = ' + alpha1 + ' for ' + heuristic1+' in range of component size c = [%.0f, %.0f]'%(xmin1,xmax1)+ 
     #             ' ' + 'and \n' + r'$\alpha$' + ' = ' + alpha2 + " for " + heuristic2+ " " + 'in range of component size c = [%.0f, %.0f]'%(xmin2,xmax2))
@@ -107,7 +107,7 @@ def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
 
 
 
-def plot_edges_gaussian(x, y, cur, wt, xlabel, ylabel, fig_file_name):
+def plot_edges_gaussian(x, y, title, wt, xlabel, ylabel, fig_file_name):
     fig = plt.figure(figsize = (8,8))
     xy = np.vstack([x,y])
     z = gaussian_kde(xy)(xy)
@@ -117,8 +117,8 @@ def plot_edges_gaussian(x, y, cur, wt, xlabel, ylabel, fig_file_name):
     max_val = y.max()
     min_val_comp = x.min()
     max_val_comp = x.max()
-    title = ' '.join(cur.split('_')).capitalize() + '\n ' + xlabel + ': Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
-    title = title + '\n '+ ylabel + ': Min: ' + str(min_val) + ' Max: ' + str(max_val)
+    title = title + '\n ' + xlabel + ': Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp) + \
+                '\n '+ ylabel + ': Min: ' + str(min_val) + ' Max: ' + str(max_val)
     sm = plt.cm.ScalarMappable(cmap = plt.cm.get_cmap('viridis'))
     fig.colorbar(sm)
     x_unique = np.unique(x)
@@ -139,7 +139,7 @@ def plot_edges_gaussian(x, y, cur, wt, xlabel, ylabel, fig_file_name):
 
 
 
-def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
+def plot_density_graph(df, xlabel, fig_file_name, title):
     plt.figure(figsize=(8,8))
     bins_num = np.logspace(np.log10(min(df)), np.log10(max(df)+1),30)
     plt.hist(df, bins = bins_num, density = True, cumulative=-1, histtype='step')
@@ -148,7 +148,6 @@ def plot_density_graph(df, xlabel, fig_file_name, cur, heuristic):
     plt.minorticks_off()                        
     plt.xlabel('Connected component size')
     plt.ylabel('Probability Density')
-    title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
     min_val_comp = df.min()
     max_val_comp = df.max()
     title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)

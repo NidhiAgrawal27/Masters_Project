@@ -9,7 +9,7 @@ import graph_tool.topology as gtt
 from graph_tool import draw
 from utilities import set_seed, compute_components, pathnames, correspondence_network
 from utilities.modularity import compute_modularity
-from utilities.modularity_multiprocess import Modularity
+from utilities.modularity_multiprocess_randomized import Modularity
 from utilities.visualization import plotPowerLaw, plot_density_graph, plot_modularity_graph, plot_edges_gaussian
 
 import warnings
@@ -172,8 +172,11 @@ def main():
     components_list = compute_components.compute_components(graph_of_correspondences, components)
     df_components = pd.DataFrame.from_dict(components_list, orient='columns')
 
+    #title of the plots
+    title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
+
     # visualization: density graph
-    plot_density_graph(df_components['num_of_addrs'], 'Connected Component Size', fig_dir + 'density_plot.png', cur, heuristic)
+    plot_density_graph(df_components['num_of_addrs'], 'Connected Component Size', fig_dir + 'density_plot.png', title)
     print(wt + ' ' + cur + ' ' + heuristic + ': density_plot.png completed\n')
 
     # visualization: power law plot
@@ -184,7 +187,7 @@ def main():
     # comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = compute_modularity(graph_of_correspondences, components, heuristic)
     
     # compute modularity, num of edges and num of communities in the components- with multiprocess
-    comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, entities = Modularity().compute_modularity(graph_of_correspondences,components, heuristic)
+    comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod,sz_comp_mod_rand, entities = Modularity().compute_modularity(graph_of_correspondences,components, heuristic)
     
     df_components["component_size"] = comp_size
     df_components["num_of_edges"] = sz_comp_edges
@@ -192,6 +195,7 @@ def main():
     if heuristic=="h0":
         df_components["num_of_communities"] = sz_comp_comm
         df_components["modularity"] = sz_comp_mod
+        df_components["randomized_modularity"] = sz_comp_mod_rand
         #save entities as a vertex property
         with open(save_graph_path + 'graph_vp_lp_entities.pickle', 'wb') as handle:
                 pickle.dump(entities, handle, protocol=pickle.HIGHEST_PROTOCOL)
@@ -211,14 +215,12 @@ def main():
         df_mod.to_csv(modularity_file, index = False)
 
     # map vertext and edge properties and write csv files for components data
-    df_components.to_csv(dir_generated_files + 'components.csv', index=False)
+    df_components.to_csv(dir_generated_files + 'components_rand.csv', index=False)
     print(wt + ' ' + cur + ' ' + heuristic + ': writing components.csv completed')
 
-    #title of the plots
-    title = ' '.join(cur.split('_')).capitalize() + ' ' + heuristic
 
     #visualisation: Component size vs Edges
-    plot_edges_gaussian(df_components['num_of_addrs'], df_components['num_of_edges'], cur, wt, 'Connected Component Size', 'Number of Edges', fig_dir + 'comp_size_edges.png')
+    plot_edges_gaussian(df_components['num_of_addrs'], df_components['num_of_edges'], title, wt, 'Connected Component Size', 'Number of Edges', fig_dir + 'comp_size_edges.png')
     print(wt + ' ' + cur + ' ' + heuristic + ': comp_size_edges.png completed\n')
 
     if heuristic=="h0":
