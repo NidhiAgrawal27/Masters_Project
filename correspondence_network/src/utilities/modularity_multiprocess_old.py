@@ -61,7 +61,7 @@ class Modularity:
                 return comp_size, comp_edges, None, None, None
 
             # giving the unique label for small communities
-            if np.sum(vec_comp) < 6 and heuristic=="h0":
+            if (np.sum(vec_comp) < 6 or np.sum(vec_comp)>1000000) and heuristic=="h0":
                 lock.acquire()
                 for v in np.where(vec_comp)[0]:
                     v_index = int(v)
