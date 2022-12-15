@@ -48,7 +48,7 @@ def clustering(df, df_gt, file_name, h, output_dir):
 
     sizes = [int(p * len(g.vs)) for p in props if int(p * len(g.vs)) <= len(sample_known_addr)]
 
-    for seed in tqdm(range(5), desc = 'Seed Progress Bar: '):
+    for seed in tqdm(range(101), desc = 'Seed Progress Bar: '):
         res_cols = [
                         "file", "n_nodes_graph", "n_edges_graph", "prop_graph", "prop_known",
                         "n_clusters", "cluster_sizes", "ami", "homog", "mod", "ars", "urs",
