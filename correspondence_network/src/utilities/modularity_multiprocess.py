@@ -62,7 +62,7 @@ class Modularity:
                 return comp_size, comp_edges, None, None, None, None
 
             # giving the unique label for small communities
-            if np.sum(vec_comp) < 6 and heuristic=="h0":
+            if (np.sum(vec_comp) < 6 or np.sum(vec_comp)>1000000) and heuristic=="h0":
                 lock.acquire()
                 for v in np.where(vec_comp)[0]:
                     v_index = int(v)
@@ -138,7 +138,7 @@ class Modularity:
         component_labels = np.unique( components.a )
 
         print('\nModularity Progress Bar:')
-        pool = Pool(processes=16)
+        pool = Pool(processes=32)
         sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, sz_comp_rand_mod, prop_dict_list = zip(*pool.map(functools.partial(self.multiprocess_component_calc,components=components.a,heuristic=heuristic,g=g),tqdm(component_labels)))
         pool.close()
         pool.join()
