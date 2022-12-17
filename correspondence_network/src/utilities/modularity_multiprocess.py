@@ -109,9 +109,14 @@ class Modularity:
 
         print('\nModularity Progress Bar:')
         pool = Pool(processes=16)
-        sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, prop_dict_list = zip(*pool.map(functools.partial(self.multiprocess_component_calc,components=components.a,heuristic=heuristic,g=g),tqdm(component_labels)))
-        pool.close()
-        pool.join()
+        try:
+            sz_comp_size, sz_comp_edges, sz_comp_comm, sz_comp_mod, prop_dict_list = zip(*pool.map(functools.partial(self.multiprocess_component_calc,components=components.a,heuristic=heuristic,g=g),tqdm(component_labels)))
+            pool.close()
+            pool.join()
+        except KeyboardInterrupt:
+            pool.terminate()
+        finally:
+            pool.terminate()
         print("Modularity computed. Joining different process results")
 
         if heuristic=="h0":
