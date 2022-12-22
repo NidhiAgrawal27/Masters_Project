@@ -16,6 +16,7 @@ def main(load_dir, save_dir, currencies, weighted, heuristics):
     for cur in tqdm(currencies):
         for wt in weighted:
             for heuristic in heuristics:
+                print('*********** Processing started for', cur, wt, heuristic, '***********\n')
                 generated_files_dir = load_dir + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/'
                 if wt == 'weighted':
                     comp_file = generated_files_dir + cur + '_' + heuristic + '_wt_components.csv'
@@ -23,8 +24,8 @@ def main(load_dir, save_dir, currencies, weighted, heuristics):
                 else:
                     comp_file = generated_files_dir + cur + '_' + heuristic + '_components.csv'
                     edge_data_file = generated_files_dir + cur + '_' + heuristic + '_edge_data.csv'
-                save_file = save_dir + comp_file
-                pathlib.Path(save_dir+generated_files_dir).mkdir(parents=True, exist_ok=True)
+                save_file = save_dir + cur + '_' + heuristic + '_components.csv'
+                pathlib.Path(save_dir).mkdir(parents=True, exist_ok=True)
                 df_comp = pd.read_csv(comp_file)
                 df_edge_data = pd.read_csv(edge_data_file)
 
@@ -35,20 +36,21 @@ def main(load_dir, save_dir, currencies, weighted, heuristics):
                 df_comp['num_of_edges_from_logs']=0
                 df_comp = df_comp.progress_apply(get_num_edges, df_edge_data=df_edge_data, axis = 1)
                 df_comp.to_csv(save_file)
+                print('\n*********** Processing completed for ', cur, wt, heuristic, '***********\n\n')
 
 
 
 if __name__ == "__main__":
 
-    # load_dir = '/local/scratch/correspondence_network/part1_final_logs/'
+    load_dir = '/local/scratch/correspondence_network/part1_final_logs/'
     # save_dir = '/local/scratch/correspondence_network/part1_plots/'
     
-    load_dir = '/Users/nidhiagrawal/Desktop/Assignments/MastersProject/Github/FINAL/part1_final_logs/'
+    # load_dir = '/Users/nidhiagrawal/Desktop/Assignments/MastersProject/Github/FINAL/part1_final_logs/'
     # save_dir = load_dir
     save_dir = '../logs/num_edges/'
 
     # currencies = ['feathercoin', 'btc_sample', 'iota_14days', 'iota', 'monacoin', 'cardano_sample']
-    currencies = ['cardano_sample']
+    currencies = ['iota']
     weighted = ['weighted', 'unweighted']
     heuristics = ['h0', 'h0_h1']
     
