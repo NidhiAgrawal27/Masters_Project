@@ -21,11 +21,12 @@ def main(load_dir, save_dir, currencies, weighted, heuristics):
                 if wt == 'weighted':
                     comp_file = generated_files_dir + cur + '_' + heuristic + '_wt_components.csv'
                     edge_data_file = generated_files_dir + cur + '_' + heuristic + '_wt_edge_data.csv'
+                    save_file = save_dir + cur + '_' + heuristic + '_wt_components.csv'
                 else:
                     comp_file = generated_files_dir + cur + '_' + heuristic + '_components.csv'
                     edge_data_file = generated_files_dir + cur + '_' + heuristic + '_edge_data.csv'
-                save_file = save_dir + cur + '_' + heuristic + '_components.csv'
-                pathlib.Path(save_dir).mkdir(parents=True, exist_ok=True)
+                    save_file = save_dir + cur + '_' + heuristic + '_components.csv'
+                
                 df_comp = pd.read_csv(comp_file)
                 df_edge_data = pd.read_csv(edge_data_file)
 
@@ -53,6 +54,8 @@ if __name__ == "__main__":
     currencies = ['iota']
     weighted = ['weighted', 'unweighted']
     heuristics = ['h0', 'h0_h1']
+    
+    pathlib.Path(save_dir).mkdir(parents=True, exist_ok=True)
     
     main(load_dir, save_dir, currencies, weighted, heuristics)
 
