@@ -14,6 +14,8 @@ def get_num_edges(arg, df_edge_data):
 
 def main(load_dir, save_dir, currencies, weighted, heuristics):
     for cur in tqdm(currencies):
+        save_dir = save_dir + cur + '_logs/'
+        pathlib.Path(save_dir).mkdir(parents=True, exist_ok=True)
         for wt in weighted:
             for heuristic in heuristics:
                 print('*********** Processing started for', cur, wt, heuristic, '***********\n')
@@ -54,8 +56,6 @@ if __name__ == "__main__":
     currencies = ['iota']
     weighted = ['weighted', 'unweighted']
     heuristics = ['h0', 'h0_h1']
-    
-    pathlib.Path(save_dir).mkdir(parents=True, exist_ok=True)
-    
+
     main(load_dir, save_dir, currencies, weighted, heuristics)
 
