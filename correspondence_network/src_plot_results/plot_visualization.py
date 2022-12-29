@@ -79,21 +79,23 @@ def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
     plt.figure(figsize = (8,8))
     x = dataframe["component_size"]
     y = dataframe[community_property]
-    plt.scatter(x, y)
+    
     prop_name = ' '.join(community_property.split('_')).capitalize()
     min_val_comp = dataframe['component_size'].min()
     max_val_comp = dataframe['component_size'].max()
     title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
-    if community_property != 'modularity':
+    if 'modularity' not in community_property:
+        plt.scatter(x, y, color=uzh_colors['green'])
         min_val = dataframe[community_property].min()
         max_val = dataframe[community_property].max()
         title = title + '\n'+ prop_name + ': Min: ' + str(min_val) + ' Max: ' + str(max_val)
+    else: plt.scatter(x, y)
     if community_property == 'num_of_communities':
         X = np.array(np.log(dataframe['component_size']))
         Y = np.array(np.log(dataframe['num_of_communities']))
         slope, intercept  = np.polyfit(X, Y, 1)
         title = title + '\n' + ' Slope: ' + str(round(slope, 2)) + ' Intercept: ' + str(round(intercept, 2))
-        plt.plot(x, x/3, color=uzh_colors['green'], label = 'Theoretical max num of communities')
+        plt.plot(x, x/3, color=uzh_colors['green_60'], label = 'Theoretical max num of communities')
         plt.legend()
     if max(x) > 10 : plt.xscale("log")
     if max(y) > 10 :
