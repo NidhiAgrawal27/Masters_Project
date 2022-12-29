@@ -104,7 +104,7 @@ def main():
                 chunks_df.columns=['transaction_id','block_index','input_addresses_x','input_amounts_x',
                                         'output_addresses_y','output_amounts_y','timestamp']
             elif cur == 'cardano_sample':
-                df = mpd.read_csv(PATHNAMES['data_path'], nrows=20000000)
+                chunks_df = mpd.read_csv(PATHNAMES['data_path'], nrows=20000000)
             else: chunks_df = mpd.read_csv(PATHNAMES['data_path'], chunksize=chunksize)
             iter = 0
             for df in chunks_df:
