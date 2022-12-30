@@ -88,7 +88,7 @@ def main():
             #     idx = df_timestamp.index[df_timestamp['timestamp'] == True].tolist()
             #     df = df.iloc[idx]
             elif cur == 'cardano_sample':
-                df = pd.read_csv(PATHNAMES['data_path'], nrows=1000000)
+                df = pd.read_csv(PATHNAMES['data_path'], nrows=20000000)
             else: df = pd.read_csv(PATHNAMES['data_path'])
 
             print('Create Correspondence Network Progress Bar:')
@@ -103,8 +103,6 @@ def main():
                 chunks_df = mpd.read_csv(PATHNAMES['data_path'], chunksize=chunksize,header=None)
                 chunks_df.columns=['transaction_id','block_index','input_addresses_x','input_amounts_x',
                                         'output_addresses_y','output_amounts_y','timestamp']
-            elif cur == 'cardano_sample':
-                chunks_df = mpd.read_csv(PATHNAMES['data_path'], nrows=20000000)
             else: chunks_df = mpd.read_csv(PATHNAMES['data_path'], chunksize=chunksize)
             iter = 0
             for df in chunks_df:
