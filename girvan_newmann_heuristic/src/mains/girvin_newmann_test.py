@@ -71,18 +71,23 @@ new_mod = mod
 n = 2
 modularity_list = []
 G_gt,vp_graph = nx2gt(G)
-split = 0
+split = 0       # total edges being removed
+comm_split = 0  # total number of times the component split after removing the edges
+
+# change the while condition as this is not properly terminating.
+# maybe keep it to a certain number of splits- eg: 10 component splits, 15 component splits, etc.
 
 while new_mod - mod <= 0:
     split += 1
     _,edge_betweenness = gtc.betweenness(G_gt)
-    # edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))  # for splitting only one edge
-    edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-10],max(edge_betweenness)])
+    # edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))  # for splitting only one edge at once
+    edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-10],max(edge_betweenness)])   # for splitting multiple edges at the same time
     for e in edge:
         G_gt.remove_edge(e)
     G = gt2nx(G_gt, vp_graph)
     
     if nx.number_connected_components(G) >= n:
+        comm_split+=1
         print("The graph has broken into two components after removing edge")
         print("The graph has broken after {} splits".format(split))
         # break
@@ -93,8 +98,20 @@ while new_mod - mod <= 0:
         
         # # add other metrics here like the ARI, AMI, etc. here # #
         
-        modularity_list.append({'number_of_components' : nx.number_connected_components(G), 'New_modularity' : new_mod, 'Original_modularity' : mod})
+        modularity_list.append({'total edge splits':split, 'total component splits':comm_split, 'number_of_components' : nx.number_connected_components(G), 'New_modularity' : new_mod, 'Original_modularity' : mod})
         n = nx.number_connected_components(G)+1
+
+        # #compare the separated components with the ground truth and verify that they are splitting into the same entity components ##
+
+### graphs to be plotted after exiting the while loop ###
+# modularity change vs component splits
+# AMI, ARI, homogeneity change vs component splits
+# number of communities vs component split
+
+
+# Also, this is a manual method of removing one edge at a time- does not directly use the Girvan Neumann Algorithm
+# how does directly using the Girvann Neumann Algorithm give us results- compare the plots from the two of them
+
 
 components = nx.connected_components(G)
 components = list(components)
