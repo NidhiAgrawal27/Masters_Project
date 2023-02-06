@@ -62,6 +62,7 @@ def plotPowerLaw_superimpose(df1, df2, cur, heuristic1, heuristic2, wt, fig_file
     plt.ylim(0.0001, y_max_lim)
     plt.xscale('log')
     plt.yscale('log')
+    plt.xlim(right=100000)
     plt.minorticks_off()
     plt.ylabel('Complementary cumulative distribution function: 1 - P(c)')
     plt.xlabel('Connected component size c')
@@ -102,6 +103,7 @@ def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
         if not (community_property=="modularity"): plt.yscale("log")
     plt.xlabel('Connected component size')
     plt.ylabel(prop_name)
+    plt.xlim(right=100000)
     plt.title(title)
     plt.savefig(fig_file_name, bbox_inches="tight")
     plt.clf()
@@ -140,13 +142,13 @@ def plot_edges_gaussian(x, y, title, wt, xlabel, ylabel, fig_file_name):
 
 
 
-
 def plot_density_graph(df, xlabel, fig_file_name, title):
     plt.figure(figsize=(8,8))
     bins_num = np.logspace(np.log10(min(df)), np.log10(max(df)+1),30)
     plt.hist(df, bins = bins_num, density = True, cumulative=-1, histtype='step')
     plt.xscale('log')
     plt.yscale('log')
+    plt.xlim(right=100000)
     plt.minorticks_off()                        
     plt.xlabel('Connected component size')
     plt.ylabel('Probability Density')
@@ -157,3 +159,4 @@ def plot_density_graph(df, xlabel, fig_file_name, title):
     plt.savefig(fig_file_name, bbox_inches="tight")
     plt.clf()
     return
+
