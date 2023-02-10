@@ -45,6 +45,7 @@ def plot_density_graph(df, xlabel, fig_file_name, title):
     plt.hist(df, bins = bins_num, density = True, cumulative=-1, histtype='step')
     plt.xscale('log')
     plt.yscale('log')
+    plt.xlim(right=100000)
     plt.minorticks_off()                        
     plt.xlabel('Connected component size')
     plt.ylabel('Probability Density')
@@ -67,7 +68,7 @@ def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
     min_val_comp = dataframe['component_size'].min()
     max_val_comp = dataframe['component_size'].max()
     title = title + '\n Component Size: Min: ' + str(min_val_comp) + ' Max: ' + str(max_val_comp)
-    if community_property != 'modularity':
+    if 'modularity' not in community_property:
         plt.scatter(x, y, color=uzh_colors['green'])
         min_val = dataframe[community_property].min()
         max_val = dataframe[community_property].max()
@@ -85,6 +86,7 @@ def plot_modularity_graph(dataframe, community_property, title, fig_file_name):
         if not (community_property=="modularity"): plt.yscale("log")
     plt.xlabel('Connected component size')
     plt.ylabel(prop_name)
+    plt.xlim(right=100000)
     plt.title(title)
     plt.savefig(fig_file_name, bbox_inches="tight")
     plt.clf()
@@ -144,6 +146,7 @@ def plotPowerLaw_superimpose(df1, df2, cur, heuristic1, heuristic2, wt, fig_file
     plt.ylim(0.0001, y_max_lim)
     plt.xscale('log')
     plt.yscale('log')
+    plt.xlim(right=100000)
     plt.minorticks_off()
     plt.ylabel('Complementary cumulative distribution function: 1 - P(c)')
     plt.xlabel('Connected component size c')

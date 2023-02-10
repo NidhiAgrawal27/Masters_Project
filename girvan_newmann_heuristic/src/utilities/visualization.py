@@ -36,6 +36,19 @@ mpl.rcParams['axes.linewidth'] = 1.2
 mpl.rcParams['axes.prop_cycle'] = mpl.cycler(color=uzh_color_map)
 
 
+def plot_girvan_newmann_metrics(x, y, xlabel, ylabel, title, colour, save_fig_filepath):
+    plt.figure(figsize=(5,5))
+    plt.plot(x, y, '-ok', color = uzh_colors[colour])
+    plt.ylabel(ylabel)
+    plt.xlabel(xlabel)
+    plt.title(title)
+    plt.minorticks_off()
+    plt.tight_layout()
+    plt.savefig(save_fig_filepath)
+    return
+
+
+
 def plot_metrics(df_list, title_list, metrics, metric_names, fig_dir):
     title_h0 = title_list[0]
     title_h0_h1 = title_list[1]
