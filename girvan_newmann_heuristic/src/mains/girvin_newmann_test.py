@@ -43,6 +43,23 @@ def nx2gt(g0):
         vertex_property[i] = mpi[i]
     return ggt, vertex_property
 
+def get_address_labels(nx_graph, local_ground_truth_data):
+    entity = {}
+    nx.set_node_attributes(nx_graph, entity, "entity")
+    for comp in nx.connected_component_subgraph(nx_graph):
+        list_of_addrs = pd.DataFrame([vertex for vertex in comp.nodes()], columns = ["address"])
+        num_entities = list(pd.merge(list_of_addrs,local_ground_truth_data,left_on="address",right_on="address")['entity'])
+        if len(set(num_entities)) == 1:
+            for nodename in comp.nodes():
+                entity[nodename] = num_entities[0]
+        else:
+            for nodename in comp.nodes():
+                entity[nodename] = "Unknown"
+                # # one solution
+                # max_entity = num_entities.value_counts().index.tolist()[0]
+                # entity[nodename] = max_entity
+    
+    return entity
 
 # load the files and convert the graph
 print("Loading graph")
@@ -57,8 +74,8 @@ G = gt2nx(graph_gt, vertex_property)
 # Get the largest connected component
 G = max([G.subgraph(c).copy() for c in nx.connected_components(G)],key=len)
 nodes_largest = pd.DataFrame({"address":list(G.nodes())})
-df_common = pd.merge(nodes_largest,df_gt,left_on="address",right_on="address")
-# print(len(set(df_common["entity"])))
+df_common_gt = pd.merge(nodes_largest,df_gt,left_on="address",right_on="address")
+total_entities = len(set(df_common_gt["entity"]))
 
 print('*************************')
 
@@ -77,7 +94,7 @@ comm_split = 0  # total number of times the component split after removing the e
 # change the while condition as this is not properly terminating.
 # maybe keep it to a certain number of splits- eg: 10 component splits, 15 component splits, etc.
 
-while new_mod - mod <= 0:
+while comm_split <= total_entities:
     split += 1
     _,edge_betweenness = gtc.betweenness(G_gt)
     # edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))  # for splitting only one edge at once
@@ -95,6 +112,9 @@ while new_mod - mod <= 0:
         new_communities = [list(c) for c in new_label_prop_comm]
         new_mod = nx_comm.modularity(G, new_communities)
         print(new_mod)
+
+        # get labels of the addresses
+        entity_labels = get_address_labels(G, df_common)
         
         # # add other metrics here like the ARI, AMI, etc. here # #
         
@@ -107,11 +127,6 @@ while new_mod - mod <= 0:
 # modularity change vs component splits
 # AMI, ARI, homogeneity change vs component splits
 # number of communities vs component split
-
-
-# Also, this is a manual method of removing one edge at a time- does not directly use the Girvan Neumann Algorithm
-# how does directly using the Girvann Neumann Algorithm give us results- compare the plots from the two of them
-
 
 components = nx.connected_components(G)
 components = list(components)
