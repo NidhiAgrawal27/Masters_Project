@@ -86,16 +86,16 @@ def main():
 
     # extract the required components from the graph
     subgraphs = extract_subgraphs(G, entity_df)
-    count_subgraphs = -1
+    subgraph_index = -1
 
     for subgraph_and_num_entities in subgraphs:
-        count_subgraphs += 1
+        subgraph_index += 1
         G = subgraph_and_num_entities[0]
         num_entities = subgraph_and_num_entities[1]
 
         if num_entities>=2:
             # print("The number of entities in the subgraph are {}".format(num_entities))
-            print("The number of entities in the subgraph-{} are {}".format(count_subgraphs, num_entities))
+            print("The number of entities in the subgraph-{} are {}".format(subgraph_index, num_entities))
 
             # common addresses in the ground truth
             sub_addresses = pd.DataFrame({"address":list(G.nodes())})
@@ -127,16 +127,16 @@ def main():
                         edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))
                     except:
                         print('Continue the loop for next subgraph')
-                        total_entities = -1
+                        total_entities = -1 # ?????? is this correct?
                         continue
 
                 for e in edge:
-                    G_gt.remove_edge(e)
+                    G_gt.remove_edge(e) # shouln't split+=1 be here???????
                 G = gt2nx(G_gt, vp_graph)
                 
-                if nx.number_connected_components(G) >= n: # ???????
+                if nx.number_connected_components(G) >= n:
                     comm_split+=1
-                    print("The graph has broken into two components after removing edge")
+                    print("The graph has broken into two components after removing edge") # can it not be broken into more comp?????
                     print("The graph has broken after {} edge splits".format(split))
                     # break
                     new_label_prop_comm = nx_comm.label_propagation_communities(G)
@@ -158,13 +158,15 @@ def main():
                                             'new_modularity' : new_mod, 
                                             'original_modularity' : mod, 
                                             "count_of_known_entites": count_of_true_entity_labels,
-                                            'count_subgraphs': count_subgraphs
+                                            'subgraph_index': subgraph_index
                                         })
                     n = nx.number_connected_components(G)+1
                     G_gt, vp_graph = nx2gt(G)
 
                     # #compare separated components with the ground truth and verify that they split into same entity comps # #
             
+            if total_entities == -1: continue
+
             modularity_df = pd.DataFrame(modularity_list)
 
             ### graphs to be plotted after exiting the while loop ###
