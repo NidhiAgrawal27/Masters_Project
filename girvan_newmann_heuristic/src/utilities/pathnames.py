@@ -1,7 +1,7 @@
 def pathnames(cur, heuristic, weighted):
 
-    local_dir = '../GN_logs/' 
-    server_dir = '/local/scratch/correspondence_network/GN_logs/'
+    local_dir = '../gn_logs/' 
+    server_dir = '/local/scratch/correspondence_network/gn_logs/'
     data_path = '../data/'
     ground_truth_path = data_path + 'ground_truth/btc_ground_truth.csv'
 

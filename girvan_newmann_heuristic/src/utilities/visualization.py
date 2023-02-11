@@ -48,27 +48,3 @@ def plot_girvan_newmann_metrics(x, y, xlabel, ylabel, title, colour, save_fig_fi
     return
 
 
-
-def plot_metrics(df_list, title_list, metrics, metric_names, fig_dir):
-    title_h0 = title_list[0]
-    title_h0_h1 = title_list[1]
-    df_h0 = df_list[0]
-    df_h0_h1 = df_list[1]
-    for i in range(len(metrics)):
-        x1 = df_h0['prop_graph']
-        y1 = df_h0[metrics[i]]
-        x2 = df_h0_h1['prop_graph']
-        y2 = df_h0_h1[metrics[i]]
-        plt.figure(figsize=(5,5))
-        plt.plot(x1, y1, '-ok', label=title_h0, color = uzh_colors['blue']) # plot h0
-        plt.plot(x2, y2, '-ok', label=title_h0_h1, color = uzh_colors['red']) # plot h0_h1
-        if metric_names[i] == 'Number of Cluster': plt.yscale('log')  
-        plt.legend()
-        plt.ylabel(metric_names[i])
-        plt.xlabel('p')
-        plt.title(f"{metric_names[i]} as a function of p")
-        plt.minorticks_off()
-        plt.tight_layout()
-        plt.savefig(fig_dir + metrics[i] + '.png')
-    return
-
