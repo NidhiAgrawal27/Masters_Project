@@ -58,6 +58,8 @@ def main():
     entity_df = pd.merge(addresses, df_gt, left_on = "address", right_on = "address", how = "inner")
     entity_df = entity_df.drop('sector', axis=1)
     entity_df = entity_df.drop('id', axis=1)
+
+    
     def compute_components(graph_of_correspondences, comps):
         components = {}
         comp_list = []
