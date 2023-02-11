@@ -4,7 +4,9 @@ import pandas as pd
 def get_address_labels(nx_graph, local_ground_truth_data):
     entity = {}
     nx.set_node_attributes(nx_graph, entity, "entity")
-    for comp in nx.connected_component_subgraph(nx_graph):
+    # for comp in nx.connected_component_subgraph(nx_graph):
+    for c in nx.connected_components(nx_graph):
+        comp = nx_graph.subgraph(c)
         list_of_addrs = pd.DataFrame([vertex for vertex in comp.nodes()], columns = ["address"])
         num_entities = list(pd.merge(list_of_addrs,local_ground_truth_data,left_on="address",right_on="address")['entity'])
         if len(set(num_entities)) == 1:
