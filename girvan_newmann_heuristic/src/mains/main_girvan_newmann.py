@@ -1,5 +1,4 @@
 import pandas as pd
-import numpy as np
 import os
 import argparse
 import pathlib
@@ -11,22 +10,17 @@ warnings.filterwarnings('ignore')
 
 # from sklearn.metrics import adjusted_mutual_info_score, homogeneity_score, rand_score, adjusted_rand_score, pair_confusion_matrix
 
-# import graph_tool.topology as gtt
 import graph_tool.all as gt
 import graph_tool.centrality as gtc
 import graph_tool.util as gtu
-# from graph_tool import dynamics as gtd
 
 import networkx as nx
 import networkx.algorithms.community as nx_comm
-# from networkx.algorithms.community.centrality import girvan_newman
 
 from utilities import set_seed, pathnames
 from utilities.visualization import plot_girvan_newmann_metrics
-# from utilities.compute_components import compute_components
 from utilities.gt2nx import gt2nx
 from utilities.nx2gt import nx2gt
-# from utilities.extract_entities import extract_entities
 from utilities.extract_subgraphs import extract_subgraphs
 from utilities.get_address_labels import get_address_labels
 
@@ -179,11 +173,11 @@ def main():
             # number of communities vs component split
             # graph showing the change in increasing address validation
 
-            #save all csv files
+            #save csv files
             if os.path.exists(dir_generated_files + "modularity.csv"):
                 print('in if loop')
                 keys = modularity_list[0].keys()
-                with open('Modularity.csv', 'w', newline='') as output_file:
+                with open(dir_generated_files + "modularity.csv", 'w', newline='') as output_file:
                     dict_writer = csv.DictWriter(output_file, keys)
                     dict_writer.writeheader()
                     dict_writer.writerows(modularity_list)
@@ -210,9 +204,6 @@ def main():
                                             fig_dir + 'count_of_known_entites.png'
                                         )
 
-            #save graph
-            # nx.write_graphml(G, dir_generated_files + "finalized_graph.graphml")
-            
     print('\n\n*********************** Processing of ' + cur + ' ' + wt + ' completed ***********************\n')
     print()
 
