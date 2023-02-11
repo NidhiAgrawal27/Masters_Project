@@ -129,3 +129,9 @@ dmypy.json
 .pyre/
 
 .DS_Store
+
+girvan_newmann_heuristic/data/
+correspondence_network/logs/
+correspondence_network/src/trial*
+correspondence_network/logs/
+
