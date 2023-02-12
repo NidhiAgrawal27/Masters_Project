@@ -68,7 +68,7 @@ def main(i, wt, modularity_df, save_dir):
     plot_girvan_newmann_metrics(
                                     modularity_df['count_of_known_entites'].index, 
                                     modularity_df['count_of_known_entites'], 
-                                    "Iterations", 
+                                    "Iterations \n ({} graph)".format(wt.capitalize()), 
                                     'count of addresses with known entities', 
                                     'Girvin Newmann count of known entites Mapping \n File idx: {}, Component idx: {} \n Num of unique entities: {} \n Total num of addresses: {}'.format(i, modularity_df['subgraph_index'][0], modularity_df['num_of_unique_entities_in_comp'][0], modularity_df['total_num_of_addresses_in_comp'][0]), 
                                     # 'Girvin Newmann count of known entites Mapping \n Num of unique entities in the component-{} are {} \n Total num of addresses in the component-{} are {}'.format(modularity_df['subgraph_index'][0], modularity_df['num_of_unique_entities_in_comp'][0], modularity_df['subgraph_index'][0], modularity_df['total_num_of_addresses_in_comp'][0]), 
