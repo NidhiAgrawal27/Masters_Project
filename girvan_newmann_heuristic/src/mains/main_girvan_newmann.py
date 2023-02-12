@@ -23,7 +23,7 @@ from utilities.extract_subgraphs import extract_subgraphs
 from utilities.get_address_labels import get_address_labels
 
 
-def main(cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_files, fig_dir):
+def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_files, fig_dir):
     parser = argparse.ArgumentParser()
     parser.add_argument("--seed", type=int, help="random seed", required=True)
     args = parser.parse_args()
@@ -133,7 +133,10 @@ def main(cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_
                                             'new_modularity' : new_mod, 
                                             'original_modularity' : mod, 
                                             "count_of_known_entites": count_of_true_entity_labels,
-                                            'subgraph_index': subgraph_index
+                                            'subgraph_index': subgraph_index,
+                                            'num_of_unique_entities_in_comp' : num_entities,
+                                            'total_num_of_addresses_in_comp' : df_common_gt.shape[0]
+
                                         })
                     n = nx.number_connected_components(G)+1
                     G_gt, vp_graph = nx2gt(G)
@@ -154,23 +157,22 @@ def main(cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_
             plot_girvan_newmann_metrics(
                                             modularity_df['new_modularity'].index, 
                                             modularity_df['new_modularity'], 
-                                            "Iterations", 
+                                            "Iterations \n ({} graph)".format(wt.capitalize()), 
                                             'Modularity', 
-                                            'Girvin Newmann Modularity Mapping', 
+                                            'Girvin Newmann Modularity Mapping \n File idx: {}, Component idx: {} \n Original modularity: {}'.format(idx, modularity_df['subgraph_index'][0], round(modularity_df['original_modularity'][0], 4)),
                                             'blue', 
                                             fig_dir + 'comp_'+ str(subgraph_index) +'_modularity.png'
                                         )
             plot_girvan_newmann_metrics(
                                             modularity_df['count_of_known_entites'].index, 
                                             modularity_df['count_of_known_entites'], 
-                                            "Iterations", 
+                                            "Iterations \n ({} graph)".format(wt.capitalize()), 
                                             'count of addresses with known entities', 
-                                            'Girvin Newmann count of known entites Mapping \
-                                            \n Num of unique entities in the component-{} are {} \
-                                            \n Total num of addresses in the component-{} are {}'.format(subgraph_index, num_entities, df_common_gt.shape[0], num_entities), 
+                                            'Girvin Newmann count of known entites Mapping \n File idx: {}, Component idx: {} \n Num of unique entities: {} \n Total num of addresses: {}'.format(idx, modularity_df['subgraph_index'][0], modularity_df['num_of_unique_entities_in_comp'][0], modularity_df['total_num_of_addresses_in_comp'][0]),                                             
                                             'red', 
                                             fig_dir + 'comp_'+ str(subgraph_index) +'_count_of_known_entites.png'
                                         )
+
 
     print('\n\n*********************** Processing of ' + cur + ' ' + wt + ' completed ***********************\n')
     print()
@@ -206,6 +208,6 @@ if __name__ == "__main__":
             data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/' + cur
             graph_data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/graph/' + cur
 
-            main(cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_files, fig_dir)
+            main(i, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_files, fig_dir)
 
 
