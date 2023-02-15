@@ -2,9 +2,7 @@ def pathnames(cur, heuristic, wt):
 
     local_dir = '../gn_logs/' 
     server_dir = '/local/scratch/correspondence_network/gn_logs/'
-    data_path = '../data/'
-    ground_truth_path = data_path + 'ground_truth/btc_ground_truth.csv'
-    server_data_path = '/local/scratch/correspondence_network/Girvin_Newmann_data/btc_2012_logs/'
+    ground_truth_path = '../data/ground_truth/btc_ground_truth.csv'
 
     # below: change local_dir or server_dir in dir_name for accessing local or server dir
     
@@ -17,8 +15,6 @@ def pathnames(cur, heuristic, wt):
                     "figure_dir": figure_dir,
                     "generated_files": generated_files,
                     "logs_home_dir" : local_dir,
-                    # "data_path" : data_path,
-                    "data_path" : server_data_path,
                     "ground_truth_path" : ground_truth_path
                 }
 
