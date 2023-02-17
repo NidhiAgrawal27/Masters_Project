@@ -113,7 +113,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                 _,edge_betweenness = gtc.betweenness(G_gt)
                 
                 try:
-                    edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-500],max(edge_betweenness)])
+                    edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-100],max(edge_betweenness)])
                 except:
                     edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))
                 
