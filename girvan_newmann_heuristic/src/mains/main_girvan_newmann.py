@@ -220,7 +220,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                                             fig_dir + 'comp_'+ str(subgraph_index) +'_count_of_known_entites.png'
                                         )
             plot_girvan_newmann_metrics(
-                                            modularity_df['total edge splits'].index, 
+                                            modularity_df['total edge splits'], 
                                             modularity_df['number_of_components'], 
                                             "Total edge splits \n ({} graph)".format(wt.capitalize()), 
                                             'Number of components in the graph', 
@@ -229,7 +229,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                                             fig_dir + 'comp_'+ str(subgraph_index) +'_edge_splits_vs_components.png'
                                         )
             plot_girvan_newmann_metrics(
-                                            modularity_df['total edge splits'].index, 
+                                            modularity_df['total edge splits'], 
                                             modularity_df['number_of_communities'], 
                                             "Total edge splits \n ({} graph)".format(wt.capitalize()), 
                                             'Number of communities in the graph', 
@@ -238,7 +238,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                                             fig_dir + 'comp_'+ str(subgraph_index) +'_edge_splits_vs_communites.png'
                                         )
             plot_girvan_newmann_metrics(
-                                            modularity_df['total edge splits'].index, 
+                                            modularity_df['total edge splits'], 
                                             modularity_df['new_modularity'], 
                                             "Total edge splits \n ({} graph)".format(wt.capitalize()), 
                                             'Modularity', 
@@ -286,15 +286,15 @@ if __name__ == "__main__":
             dir_generated_files = dir_generated_files + cur + '_' + heuristic + '_'
             fig_dir = fig_dir + cur + '_' + heuristic + '_'
 
-            # local data path (comment server path below when using local path)
-            data_path = '../data/' # data path on local
-            data_dir = data_path + cur + '/' + cur
-            graph_data_dir = data_path + cur + '/' + cur
+            # # local data path (comment server path below when using local path)
+            # data_path = '../data/' # data path on local
+            # data_dir = data_path + cur + '/' + cur
+            # graph_data_dir = data_path + cur + '/' + cur
 
-            # # server data path (comment local path above when using server path)
-            # data_path = '/local/scratch/correspondence_network/Girvin_Newmann_data/btc_2012_logs/' # data path on server
-            # data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/' + cur
-            # graph_data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/graph/' + cur
+            # server data path (comment local path above when using server path)
+            data_path = '/local/scratch/correspondence_network/Girvin_Newmann_data/btc_2012_logs/' # data path on server
+            data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/' + cur
+            graph_data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/graph/' + cur
 
             main(i, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_files, fig_dir)
 
