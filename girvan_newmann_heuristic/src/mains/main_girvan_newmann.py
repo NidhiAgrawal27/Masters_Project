@@ -26,6 +26,7 @@ from utilities.gt2nx import gt2nx
 from utilities.nx2gt import nx2gt
 from utilities.extract_subgraphs import extract_subgraphs
 from utilities.get_address_labels import get_address_labels
+from utilities.get_address_labels import get_address_labels_2
 from utilities.label_propagation import label_prop
 
 
@@ -100,18 +101,19 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
             comm_split = 0  # total number of times the component split after removing the edges
 
             # initial true labels
-            df_true_pred_labels = pd.merge(sub_addresses, entity_df, left_on = "address", right_on = "address", how = "outer")
-            df_true_pred_labels['entity'] = df_true_pred_labels['entity'].fillna('Unknown')
-            df_true_pred_labels.drop(['address_id'], axis=1, inplace=True)
-            df_true_pred_labels.rename(columns={"entity": "true_entity"}, inplace=True)
+            # df_true_pred_labels = pd.merge(sub_addresses, entity_df, left_on = "address", right_on = "address", how = "outer")
+            # df_true_pred_labels['entity'] = df_true_pred_labels['entity'].fillna('Unknown')
+            # df_true_pred_labels.drop(['address_id'], axis=1, inplace=True)
+            # df_true_pred_labels.rename(columns={"entity": "true_entity"}, inplace=True)
 
             iter_idx = -1
 
-            while comm_split <= num_entities:
+            # while comm_split <= num_entities:
+            while total_comp <= 100:
                 _,edge_betweenness = gtc.betweenness(G_gt)
                 
                 try:
-                    edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-5],max(edge_betweenness)])
+                    edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-500],max(edge_betweenness)])
                 except:
                     edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))
                 
@@ -139,18 +141,21 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
 
                     # get labels of the addresses
                     # predicted_entity_labels, df_pred = get_address_labels(G, df_local_gt, iter_idx)
-                    count_of_known_entites, df_pred = get_address_labels(G, df_true_pred_labels, iter_idx)
-                    print('df_true_pred_labels.shape, df_pred.shape: ', df_true_pred_labels.shape, df_pred.shape)
-                    df_true_pred_labels = pd.merge(df_true_pred_labels, df_pred, left_on = "address", right_on = "address")
-                    df_true_pred_labels.to_csv(dir_generated_files + 'comp_'+ str(subgraph_index) +'_true_pred_labels.csv',index=False)
+                    # count_of_known_entites, df_pred = get_address_labels(G, df_true_pred_labels, iter_idx)
+                    # print('df_true_pred_labels.shape, df_pred.shape: ', df_true_pred_labels.shape, df_pred.shape)
+                    # df_true_pred_labels = pd.merge(df_true_pred_labels, df_pred, left_on = "address", right_on = "address")
+                    # df_true_pred_labels.to_csv(dir_generated_files + 'comp_'+ str(subgraph_index) +'_true_pred_labels.csv',index=False)
 
                     # count_of_known_entites = len([value for key,value in predicted_entity_labels.items() if value!="Unknown"])
                     
                     # metrics
-                    if iter_idx == 0:
-                        labels_true, labels_pred = df_true_pred_labels['true_entity'], df_true_pred_labels['pred_entity_'+str(iter_idx)]
-                    else:
-                        labels_true, labels_pred = df_true_pred_labels['pred_entity_'+str(iter_idx-1)], df_true_pred_labels['pred_entity_'+str(iter_idx)]
+                    # if iter_idx == 0:
+                    #     labels_true, labels_pred = df_true_pred_labels['true_entity'], df_true_pred_labels['pred_entity_'+str(iter_idx)]
+                    # else:
+                    #     labels_true, labels_pred = df_true_pred_labels['pred_entity_'+str(iter_idx-1)], df_true_pred_labels['pred_entity_'+str(iter_idx)]
+
+                    count_of_known_entites, labels_pred, labels_true = get_address_labels_2(G, df_common_gt)
+
                     ami = adjusted_mutual_info_score(labels_true=labels_true, labels_pred=labels_pred)
                     urs = rand_score(labels_true=labels_true, labels_pred=labels_pred)
                     homog = homogeneity_score(labels_true=labels_true, labels_pred=labels_pred)
@@ -175,7 +180,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                                             "count_of_known_entites" : count_of_known_entites,
                                             'subgraph_index': subgraph_index,
                                             'num_of_unique_entities_in_comp' : num_entities,
-                                            'total_num_of_addresses_in_comp' : df_true_pred_labels.shape[0],
+                                            'total_num_of_addresses_in_comp' : sub_addresses.shape[0],
                                             "ami" : ami,
                                             "ars" : ars,
                                             "urs" : urs,
@@ -186,7 +191,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
 
                     # #compare separated components with the ground truth and verify that they split into same entity comps # #
             
-            if num_entities == -1: continue
+            # if num_entities == -1: continue
 
             ### graphs to be plotted after exiting the while loop ###
             # modularity change vs component splits
@@ -217,12 +222,30 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                                         )
             plot_girvan_newmann_metrics(
                                             modularity_df['total edge splits'].index, 
+                                            modularity_df['number_of_components'], 
+                                            "Total edge splits \n ({} graph)".format(wt.capitalize()), 
+                                            'Number of components in the graph', 
+                                            'The total components generated with edge splits in the graph',                             
+                                            'blue', 
+                                            fig_dir + 'comp_'+ str(subgraph_index) +'_edge_splits_vs_components.png'
+                                        )
+            plot_girvan_newmann_metrics(
+                                            modularity_df['total edge splits'].index, 
                                             modularity_df['number_of_communities'], 
                                             "Total edge splits \n ({} graph)".format(wt.capitalize()), 
                                             'Number of communities in the graph', 
                                             'The total communites generated with edge splits in the graph',                             
-                                            'blue', 
+                                            'red', 
                                             fig_dir + 'comp_'+ str(subgraph_index) +'_edge_splits_vs_communites.png'
+                                        )
+            plot_girvan_newmann_metrics(
+                                            modularity_df['total edge splits'].index, 
+                                            modularity_df['new_modularity'], 
+                                            "Total edge splits \n ({} graph)".format(wt.capitalize()), 
+                                            'Modularity', 
+                                            'Modularity with edge splits in the graph',                             
+                                            'blue', 
+                                            fig_dir + 'comp_'+ str(subgraph_index) +'_edge_splits_vs_modularity.png'
                                         )
 
             metric_names = ['ami', 'ars', 'urs', 'homog']
