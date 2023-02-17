@@ -114,7 +114,10 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                 try:
                     edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-100],max(edge_betweenness)])
                 except:
-                    edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))
+                    try:
+                        edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))
+                    except:
+                        break
                 
                 for e in edge:
                     G_gt.remove_edge(e)
@@ -270,7 +273,7 @@ if __name__ == "__main__":
     heuristic = 'h0_h1'
     weighted = ['unweighted', 'weighted']
 
-    for i in range(13): # num of bitcoin files which have 14 days data each
+    for i in range(10, 13, 1): # num of bitcoin files which have 14 days data each
         cur = 'btc_2012_' + str(i)
         for wt in weighted:
             
