@@ -130,8 +130,12 @@ dmypy.json
 
 .DS_Store
 
-girvan_newmann_heuristic/data/
-correspondence_network/logs/
-correspondence_network/src/trial*
-correspondence_network/logs/
+*/gn_logs/*
+*/logs/*
+*/data/*
+*trial*
+
+*correspondence_network/logs/*
+*girvan_newmann_heuristic/gn_logs/*
+
 
