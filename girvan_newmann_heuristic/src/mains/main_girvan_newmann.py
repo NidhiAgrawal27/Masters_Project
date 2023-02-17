@@ -117,6 +117,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                     try:
                         edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))
                     except:
+                        print('edge_betweenness is null. exiting loop for subgraph idx ', subgraph_index)
                         break
                 
                 for e in edge:
@@ -129,7 +130,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                 if total_comp >= n:
                     iter_idx += 1
                     comm_split+=1
-                    print("\nThe graph has now {} components after removing edges in iteration .".format(nx.number_connected_components(G), iter_idx))
+                    print("\nThe graph has now {} components after removing edges in iteration {}.".format(nx.number_connected_components(G), iter_idx))
                     print("The graph has broken after {} edge removals".format(split))
                     # break
                     # new_label_prop_comm = nx_comm.label_propagation_communities(G)
