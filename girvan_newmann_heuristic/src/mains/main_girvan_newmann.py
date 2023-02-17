@@ -109,7 +109,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
             iter_idx = -1
 
             # while comm_split <= num_entities:
-            while total_comp <= 200:
+            while comm_split <= 100:
                 _,edge_betweenness = gtc.betweenness(G_gt)
                 
                 try:
