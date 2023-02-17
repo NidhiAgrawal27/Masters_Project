@@ -129,7 +129,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                 if total_comp >= n:
                     iter_idx += 1
                     comm_split+=1
-                    print("The graph has now {} components after removing edges.".format(nx.number_connected_components(G)))
+                    print("\nThe graph has now {} components after removing edges in iteration .".format(nx.number_connected_components(G), iter_idx))
                     print("The graph has broken after {} edge removals".format(split))
                     # break
                     # new_label_prop_comm = nx_comm.label_propagation_communities(G)
@@ -194,12 +194,6 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                     # #compare separated components with the ground truth and verify that they split into same entity comps # #
             
             # if num_entities == -1: continue
-
-            ### graphs to be plotted after exiting the while loop ###
-            # modularity change vs component splits
-            # AMI, ARI, homogeneity change vs component splits
-            # number of communities vs component split
-            # graph showing the change in increasing address validation
 
             modularity_df = pd.DataFrame(modularity_list)
             modularity_df.to_csv(dir_generated_files + 'comp_'+ str(subgraph_index) +'_modularity.csv',index=False)
@@ -273,7 +267,7 @@ if __name__ == "__main__":
     heuristic = 'h0_h1'
     weighted = ['unweighted', 'weighted']
 
-    for i in range(10, 13, 1): # num of bitcoin files which have 14 days data each
+    for i in range(13): # num of bitcoin files which have 14 days data each
         cur = 'btc_2012_' + str(i)
         for wt in weighted:
             
