@@ -10,6 +10,10 @@ warnings.filterwarnings('ignore')
 import graph_tool.all as gt
 import graph_tool.centrality as gtc
 import graph_tool.util as gtu
+import graph_tool.dynamics as gtd
+import graph_tool.generation as gtg
+import graph_tool.inference as gti
+import graph_tool.topology as gtt
 
 import networkx as nx
 import networkx.algorithms.community as nx_comm
@@ -22,6 +26,7 @@ from utilities.gt2nx import gt2nx
 from utilities.nx2gt import nx2gt
 from utilities.extract_subgraphs import extract_subgraphs
 from utilities.get_address_labels import get_address_labels
+from utilities.label_propagation import label_prop
 
 
 def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_files, fig_dir):
@@ -60,6 +65,12 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
     # convert graph tool graph to a networkx graph
     G = gt2nx(graph_gt, vertex_property)
 
+    print("The total number of vertices in the whole graph are {}".format(graph_gt.num_vertices()))
+    components, _ = gtt.label_components(graph_gt)
+    total_comp = len(set(np.unique(components.a)))
+    print("The total connected components in the whole graph from graph tool are {}".format(total_comp))
+    print("the total connected components in the whole graph from networkx are {}".format(nx.number_connected_components(G)))
+
     # extract the required components from the graph
     subgraphs = extract_subgraphs(G, entity_df)
     subgraph_index = -1
@@ -69,7 +80,7 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
         G = subgraph_and_num_entities[0]
         num_entities = subgraph_and_num_entities[1]
 
-        if num_entities>=2:
+        if num_entities>=2 and G.number_of_edges()>G.number_of_nodes():
             print("The number of entities in the subgraph-{} are {}".format(subgraph_index, num_entities))
 
             # common addresses in the ground truth
@@ -77,70 +88,83 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
             # df_local_gt = pd.merge(sub_addresses,entity_df,left_on="address",right_on="address", how = "outer")
             # df_local_gt['entity'] = df_local_gt['entity'].fillna('Unknown')
 
-            label_prop_comm = nx_comm.label_propagation_communities(G)
-            communities = [list(c) for c in label_prop_comm]
-            mod = nx_comm.modularity(G, communities)
+            df_common_gt = pd.merge(sub_addresses,entity_df,left_on="address",right_on="address")
+            G_gt,vp_graph = nx2gt(G)
+
+            # label_prop_comm = nx_comm.label_propagation_communities(G)
+            # communities = [list(c) for c in label_prop_comm]
+            # mod = nx_comm.modularity(G, communities)
+
+            communities = label_prop(G_gt,20)
+            comp_comm = len(set(communities.fa))  # total number of communities
+            mod = gti.modularity(G_gt,communities)
             print("mod :", mod)
             new_mod = mod
             n = 2
             modularity_list = []
-            G_gt,vp_graph = nx2gt(G)
             split = 0       # total edges being removed
             comm_split = 0  # total number of times the component split after removing the edges
 
             # initial true labels
-            df_true_pred_labels = pd.merge(sub_addresses, entity_df, left_on = "address", right_on = "address", how = "outer")
-            df_true_pred_labels['entity'] = df_true_pred_labels['entity'].fillna('Unknown')
-            df_true_pred_labels.drop(['address_id'], axis=1, inplace=True)
-            df_true_pred_labels.rename(columns={"entity": "true_entity"}, inplace=True)
+            # df_true_pred_labels = pd.merge(sub_addresses, entity_df, left_on = "address", right_on = "address", how = "outer")
+            # df_true_pred_labels['entity'] = df_true_pred_labels['entity'].fillna('Unknown')
+            # df_true_pred_labels.drop(['address_id'], axis=1, inplace=True)
+            # df_true_pred_labels.rename(columns={"entity": "true_entity"}, inplace=True)
 
             iter_idx = -1
 
-            while comm_split <= num_entities:
+            # while comm_split <= num_entities:
+            while comm_split <= 100:
                 _,edge_betweenness = gtc.betweenness(G_gt)
                 
                 try:
-                    # print('Splitting multiple edges at the same time')
-                    edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-10],max(edge_betweenness)])
+                    edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-100],max(edge_betweenness)])
                 except:
                     try:
-                        # print('Splitting single edge at a time')
                         edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))
                     except:
-                        print('Continue the loop for next subgraph')
-                        num_entities = -1
-                        continue
-
-                for e in edge:
-                    split += 1
-                    G_gt.remove_edge(e)
-                G = gt2nx(G_gt, vp_graph)
+                        print('edge_betweenness is null. exiting loop for subgraph idx ', subgraph_index)
+                        break
                 
-                if nx.number_connected_components(G) >= n:
+                for e in edge:
+                    G_gt.remove_edge(e)
+                    split+=1
+
+                G = gt2nx(G_gt, vp_graph)
+                total_comp = nx.number_connected_components(G)
+                
+                if total_comp >= n:
                     iter_idx += 1
                     comm_split+=1
-                    print("The graph has now {} components after removing edges.".format(nx.number_connected_components(G)))
+                    print("\nThe graph has now {} components after removing edges in iteration {}.".format(nx.number_connected_components(G), iter_idx))
                     print("The graph has broken after {} edge removals".format(split))
                     # break
-                    new_label_prop_comm = nx_comm.label_propagation_communities(G)
-                    new_communities = [list(c) for c in new_label_prop_comm]
-                    new_mod = nx_comm.modularity(G, new_communities)
+                    # new_label_prop_comm = nx_comm.label_propagation_communities(G)
+                    # new_communities = [list(c) for c in new_label_prop_comm]
+                    # new_mod = nx_comm.modularity(G, new_communities)
+
+                    communities = label_prop(G_gt,20)
+                    comp_comm = len(set(communities.fa))  # total number of communities
+                    new_mod = gti.modularity(G_gt,communities)
                     print('new_mod: ', new_mod)
 
                     # get labels of the addresses
                     # predicted_entity_labels, df_pred = get_address_labels(G, df_local_gt, iter_idx)
-                    count_of_known_entites, df_pred = get_address_labels(G, df_true_pred_labels, iter_idx)
-                    print('df_true_pred_labels.shape, df_pred.shape: ', df_true_pred_labels.shape, df_pred.shape)
-                    df_true_pred_labels = pd.merge(df_true_pred_labels, df_pred, left_on = "address", right_on = "address")
-                    df_true_pred_labels.to_csv(dir_generated_files + 'comp_'+ str(subgraph_index) +'_true_pred_labels.csv',index=False)
+                    # count_of_known_entites, df_pred = get_address_labels(G, df_true_pred_labels, iter_idx)
+                    # print('df_true_pred_labels.shape, df_pred.shape: ', df_true_pred_labels.shape, df_pred.shape)
+                    # df_true_pred_labels = pd.merge(df_true_pred_labels, df_pred, left_on = "address", right_on = "address")
+                    # df_true_pred_labels.to_csv(dir_generated_files + 'comp_'+ str(subgraph_index) +'_true_pred_labels.csv',index=False)
 
                     # count_of_known_entites = len([value for key,value in predicted_entity_labels.items() if value!="Unknown"])
                     
                     # metrics
-                    if iter_idx == 0:
-                        labels_true, labels_pred = df_true_pred_labels['true_entity'], df_true_pred_labels['pred_entity_'+str(iter_idx)]
-                    else:
-                        labels_true, labels_pred = df_true_pred_labels['pred_entity_'+str(iter_idx-1)], df_true_pred_labels['pred_entity_'+str(iter_idx)]
+                    # if iter_idx == 0:
+                    #     labels_true, labels_pred = df_true_pred_labels['true_entity'], df_true_pred_labels['pred_entity_'+str(iter_idx)]
+                    # else:
+                    #     labels_true, labels_pred = df_true_pred_labels['pred_entity_'+str(iter_idx-1)], df_true_pred_labels['pred_entity_'+str(iter_idx)]
+
+                    count_of_known_entites, labels_pred, labels_true = get_address_labels(G, df_common_gt)
+
                     ami = adjusted_mutual_info_score(labels_true=labels_true, labels_pred=labels_pred)
                     urs = rand_score(labels_true=labels_true, labels_pred=labels_pred)
                     homog = homogeneity_score(labels_true=labels_true, labels_pred=labels_pred)
@@ -158,13 +182,14 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                                             'iter_idx': iter_idx,
                                             'total edge splits' : split, 
                                             'total component splits' : comm_split, 
-                                            'number_of_components' : nx.number_connected_components(G), 
+                                            'number_of_components' : nx.number_connected_components(G),
+                                            'number_of_communities': comp_comm, 
                                             'new_modularity' : new_mod, 
                                             'original_modularity' : mod, 
                                             "count_of_known_entites" : count_of_known_entites,
                                             'subgraph_index': subgraph_index,
                                             'num_of_unique_entities_in_comp' : num_entities,
-                                            'total_num_of_addresses_in_comp' : df_true_pred_labels.shape[0],
+                                            'total_num_of_addresses_in_comp' : sub_addresses.shape[0],
                                             "ami" : ami,
                                             "ars" : ars,
                                             "urs" : urs,
@@ -175,13 +200,9 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
 
                     # #compare separated components with the ground truth and verify that they split into same entity comps # #
             
-            if num_entities == -1: continue
+            # if num_entities == -1: continue
 
-            ### graphs to be plotted after exiting the while loop ###
-            # modularity change vs component splits
-            # AMI, ARI, homogeneity change vs component splits
-            # number of communities vs component split
-            # graph showing the change in increasing address validation
+            if len(modularity_list) == 0: continue
 
             modularity_df = pd.DataFrame(modularity_list)
             modularity_df.to_csv(dir_generated_files + 'comp_'+ str(subgraph_index) +'_modularity.csv',index=False)
@@ -203,6 +224,33 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                                             'Girvin Newmann count of known entites Mapping \n File idx: {}, Component idx: {} \n Num of unique entities: {} \n Total num of addresses: {}'.format(idx, modularity_df['subgraph_index'][0], modularity_df['num_of_unique_entities_in_comp'][0], modularity_df['total_num_of_addresses_in_comp'][0]),
                                             'red', 
                                             fig_dir + 'comp_'+ str(subgraph_index) +'_count_of_known_entites.png'
+                                        )
+            plot_girvan_newmann_metrics(
+                                            modularity_df['total edge splits'], 
+                                            modularity_df['number_of_components'], 
+                                            "Total edge splits \n ({} graph)".format(wt.capitalize()), 
+                                            'Number of components in the graph', 
+                                            'The total components generated with edge splits in the graph',                             
+                                            'blue', 
+                                            fig_dir + 'comp_'+ str(subgraph_index) +'_edge_splits_vs_components.png'
+                                        )
+            plot_girvan_newmann_metrics(
+                                            modularity_df['total edge splits'], 
+                                            modularity_df['number_of_communities'], 
+                                            "Total edge splits \n ({} graph)".format(wt.capitalize()), 
+                                            'Number of communities in the graph', 
+                                            'The total communites generated with edge splits in the graph',                             
+                                            'red', 
+                                            fig_dir + 'comp_'+ str(subgraph_index) +'_edge_splits_vs_communites.png'
+                                        )
+            plot_girvan_newmann_metrics(
+                                            modularity_df['total edge splits'], 
+                                            modularity_df['new_modularity'], 
+                                            "Total edge splits \n ({} graph)".format(wt.capitalize()), 
+                                            'Modularity', 
+                                            'Modularity with edge splits in the graph',                             
+                                            'blue', 
+                                            fig_dir + 'comp_'+ str(subgraph_index) +'_edge_splits_vs_modularity.png'
                                         )
 
             metric_names = ['ami', 'ars', 'urs', 'homog']
@@ -244,15 +292,15 @@ if __name__ == "__main__":
             dir_generated_files = dir_generated_files + cur + '_' + heuristic + '_'
             fig_dir = fig_dir + cur + '_' + heuristic + '_'
 
-            # local data path (comment server path below when using local path)
-            data_path = '../data/' # data path on local
-            data_dir = data_path + cur + '/' + cur
-            graph_data_dir = data_path + cur + '/' + cur
+            # # local data path (comment server path below when using local path)
+            # data_path = '../data/' # data path on local
+            # data_dir = data_path + cur + '/' + cur
+            # graph_data_dir = data_path + cur + '/' + cur
 
-            # # server data path (comment local path above when using server path)
-            # data_path = '/local/scratch/correspondence_network/Girvin_Newmann_data/btc_2012_logs/' # data path on server
-            # data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/' + cur
-            # graph_data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/graph/' + cur
+            # server data path (comment local path above when using server path)
+            data_path = '/local/scratch/correspondence_network/Girvin_Newmann_data/btc_2012_logs/' # data path on server
+            data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/' + cur
+            graph_data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/graph/' + cur
 
             main(i, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_files, fig_dir)
 
