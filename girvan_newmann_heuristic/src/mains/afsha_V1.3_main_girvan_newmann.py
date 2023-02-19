@@ -27,25 +27,8 @@ from utilities.gt2nx import gt2nx
 from utilities.nx2gt import nx2gt
 from utilities.extract_subgraphs import extract_subgraphs
 from utilities.get_address_labels import get_address_labels
+from utilities.label_propagation import label_prop
 
-def label_prop(gin, max_iter = 100, each_update = None):  
-    no_nodes = gin.num_vertices()
-    if each_update is None:
-        each_update = gin.num_edges()
-
-    lp = gtd.MajorityVoterState(gin, q=no_nodes+1 )
-    for _ in range(no_nodes):
-        lp.get_state().fa[_] = _+1
-
-    converged = False
-    i_iter = 0    
-
-    while not converged and i_iter < max_iter:
-        ret = lp.iterate_async(each_update)
-        converged = (ret == 0)
-        i_iter += 1
-
-    return lp.get_state()
 
 def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_generated_files, fig_dir):
     parser = argparse.ArgumentParser()
@@ -106,6 +89,12 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
             df_common_gt = pd.merge(sub_addresses,entity_df,left_on="address",right_on="address")
             G_gt,vp_graph = nx2gt(G)
             
+            # df_local_gt = pd.merge(sub_addresses,entity_df,left_on="address",right_on="address", how = "outer")
+            # df_local_gt['entity'] = df_local_gt['entity'].fillna('Unknown')
+            # label_prop_comm = nx_comm.label_propagation_communities(G)
+            # communities = [list(c) for c in label_prop_comm]
+            # mod = nx_comm.modularity(G, communities)
+
             communities = label_prop(G_gt,20)
             comp_comm = len(set(communities.fa))  # total number of communities
             mod = gti.modularity(G_gt,communities)
@@ -116,8 +105,15 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
             split = 0       # total edges being removed
             comm_split = 0  # total number of times the component split after removing the edges
 
+            # initial true labels
+            # df_true_pred_labels = pd.merge(sub_addresses, entity_df, left_on = "address", right_on = "address", how = "outer")
+            # df_true_pred_labels['entity'] = df_true_pred_labels['entity'].fillna('Unknown')
+            # df_true_pred_labels.drop(['address_id'], axis=1, inplace=True)
+            # df_true_pred_labels.rename(columns={"entity": "true_entity"}, inplace=True)
+
             iter_idx = -1
             
+            # while comm_split <= num_entities:
             while comm_split <= 100:
                 
                 _,edge_betweenness = gtc.betweenness(G_gt)
@@ -125,7 +121,11 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                 try:
                     edge = gtu.find_edge_range(G_gt, edge_betweenness, [sorted(edge_betweenness)[-100],max(edge_betweenness)])
                 except:
-                    edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))
+                    try:
+                        edge = gtu.find_edge(G_gt, edge_betweenness, max(edge_betweenness))
+                    except:
+                        print('edge_betweenness is null. exiting loop for subgraph idx ', subgraph_index)
+                        break
                 
                 for e in edge:
                     G_gt.remove_edge(e)
@@ -138,12 +138,32 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                 if total_comp >= n:
                     iter_idx += 1
                     comm_split+=1
-                    print("The graph has now {} components after removing edges.".format(total_comp))
+                    print("The graph has now {} components after removing edges in iteration {}.".format(total_comp, iter_idx))
                     print("The graph has broken after {} edge removals".format(split))
+                    
+                    # new_label_prop_comm = nx_comm.label_propagation_communities(G)
+                    # new_communities = [list(c) for c in new_label_prop_comm]
+                    # new_mod = nx_comm.modularity(G, new_communities)
+
                     communities = label_prop(G_gt,20)
                     comp_comm = len(set(communities.fa))  # total number of communities
                     new_mod = gti.modularity(G_gt,communities)
                     print(new_mod)
+
+                    # get labels of the addresses
+                    # predicted_entity_labels, df_pred = get_address_labels(G, df_local_gt, iter_idx)
+                    # count_of_known_entites, df_pred = get_address_labels(G, df_true_pred_labels, iter_idx)
+                    # print('df_true_pred_labels.shape, df_pred.shape: ', df_true_pred_labels.shape, df_pred.shape)
+                    # df_true_pred_labels = pd.merge(df_true_pred_labels, df_pred, left_on = "address", right_on = "address")
+                    # df_true_pred_labels.to_csv(dir_generated_files + 'comp_'+ str(subgraph_index) +'_true_pred_labels.csv',index=False)
+
+                    # count_of_known_entites = len([value for key,value in predicted_entity_labels.items() if value!="Unknown"])
+                    
+                    # metrics
+                    # if iter_idx == 0:
+                    #     labels_true, labels_pred = df_true_pred_labels['true_entity'], df_true_pred_labels['pred_entity_'+str(iter_idx)]
+                    # else:
+                    #     labels_true, labels_pred = df_true_pred_labels['pred_entity_'+str(iter_idx-1)], df_true_pred_labels['pred_entity_'+str(iter_idx)]
 
                     count_of_known_entites, labels_pred, labels_true = get_address_labels(G, df_common_gt)
                     
@@ -182,6 +202,9 @@ def main(idx, cur, heuristic, wt, PATHNAMES, data_dir, graph_data_dir, dir_gener
                     
             # if total_entities == -1: continue
 
+            if len(modularity_list)==0:
+                continue
+                
             modularity_df = pd.DataFrame(modularity_list)
             modularity_df.to_csv(dir_generated_files + 'comp_'+ str(subgraph_index) +'_modularity.csv',index=False)
 
@@ -253,7 +276,7 @@ if __name__ == "__main__":
     heuristic = 'h0_h1'
     weighted = ['unweighted', 'weighted']
 
-    for i in range(6): # num of bitcoin files which have 14 days data each
+    for i in range(13): # num of bitcoin files which have 14 days data each
         cur = 'btc_2012_' + str(i)
         for wt in weighted:
             
@@ -268,13 +291,13 @@ if __name__ == "__main__":
             dir_generated_files = dir_generated_files + cur + '_' + heuristic + '_'
             fig_dir = fig_dir + cur + '_' + heuristic + '_'
 
-            data_path = PATHNAMES['data_path']
-
             # # local data path (comment server path below when using local path)
+            # data_path = '../data/' # data path on local
             # data_dir = data_path + cur + '/' + cur
             # graph_data_dir = data_path + cur + '/' + cur
 
             # server data path (comment local path above when using server path)
+            data_path = '/local/scratch/correspondence_network/Girvin_Newmann_data/btc_2012_logs/' # data path on server
             data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/' + cur
             graph_data_dir = data_path + cur + '_logs/' + wt + '/' + heuristic + '/generated_files/graph/' + cur
 
